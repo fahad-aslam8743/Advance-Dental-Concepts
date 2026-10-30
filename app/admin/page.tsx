@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { upload } from "@vercel/blob/client";
 import { services } from "@/data/services";
 
-type Settings = { clinicName:string; phone:string; addressLine:string; city:string; openingHours:string; logoUrl:string; googleReviewsUrl:string };
+type Settings = { clinicName:string; phone:string; addressLine:string; city:string; openingHours:string; logoUrl:string; googleReviewsUrl:string; mapUrl:string };
 type Review = { id:number; display_name:string; rating:number; treatment_slug:string; review_text:string; status:string; source:string; created_at:string };
 type Media = { id:number; treatment_slug:string; kind:string; url:string; alt_text:string; created_at:string };
 type Dashboard = { reviews:{total:number;pending:number;approved:number;average_rating:number}; media:{total:number}; trend:{day:string;date:string;count:number}[]; topTreatments:{treatment_slug:string;count:number}[] };
@@ -13,7 +13,7 @@ const inputStyle: React.CSSProperties = { width:"100%", border:"1px solid #d9e2d
 const labelStyle: React.CSSProperties = { display:"grid", gap:7, color:"#52645c", fontSize:12, fontWeight:700 };
 const cardStyle: React.CSSProperties = { background:"#fff", border:"1px solid #e2e9e2", borderRadius:16, padding:22, boxShadow:"0 8px 24px rgba(23,57,54,.04)" };
 const buttonStyle: React.CSSProperties = { border:0, borderRadius:9, padding:"11px 15px", background:"#183b39", color:"#fff", fontWeight:700, cursor:"pointer" };
-const defaultSettings:Settings = { clinicName:"Advance Dental Concepts", phone:"0332 4625847", addressLine:"44 F/1, Block F1, Phase 1", city:"Johar Town, Lahore, Pakistan", openingHours:"Monday–Saturday · 10:30 am–2:30 pm & 5:45 pm–10:00 pm", logoUrl:"", googleReviewsUrl:"" };
+const defaultSettings:Settings = { clinicName:"Advance Dental Concepts", phone:"0332 4625847", addressLine:"44 F/1, Block F1, Phase 1", city:"Johar Town, Lahore, Pakistan", openingHours:"Monday–Saturday · 10:30 am–2:30 pm & 5:45 pm–10:00 pm", logoUrl:"", googleReviewsUrl:"", mapUrl:"https://www.google.com/maps/search/?api=1&query=Advance+Dental+Concepts+44F1+Johar+Town+Lahore" };
 
 async function api(url:string, options:RequestInit = {}) {
   const response = await fetch(url, { ...options, headers:{ "Content-Type":"application/json", ...(options.headers || {}) } });
@@ -210,7 +210,7 @@ export default function AdminPage() {
       {tab==="settings"&&<section style={{display:"grid",gap:18}}>
         <div><h1 style={{fontSize:28,margin:"0 0 5px"}}>Clinic settings</h1><p style={{color:"#728078",margin:0,fontSize:13}}>These settings are shared by the website header, footer and contact details.</p></div>
         <form onSubmit={saveSettings} style={cardStyle}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:16}}>
-          {([["clinicName","Clinic / website name"],["phone","Phone number"],["addressLine","Street address"],["city","City / location"],["openingHours","Opening hours"],["logoUrl","Logo image URL"],["googleReviewsUrl","Google reviews link"]] as [keyof Settings,string][]).map(([key,label])=><label key={key} style={labelStyle}>{label}<input style={inputStyle} value={settings[key]} onChange={e=>setSettings({...settings,[key]:e.target.value})}/></label>)}
+          {([["clinicName","Clinic / website name"],["phone","Phone number"],["addressLine","Street address"],["city","City / location"],["openingHours","Opening hours"],["logoUrl","Logo image URL"],["googleReviewsUrl","Google reviews link"],["mapUrl","Google Maps / directions link"]] as [keyof Settings,string][]).map(([key,label])=><label key={key} style={labelStyle}>{label}<input style={inputStyle} value={settings[key]} onChange={e=>setSettings({...settings,[key]:e.target.value})}/></label>)}
         </div><label style={{...labelStyle,marginTop:18,maxWidth:420}}>Upload clinic logo (PNG, JPG, WebP · max 5 MB)<input style={inputStyle} type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={uploadLogo} disabled={busy}/></label>{settings.logoUrl&&<img src={settings.logoUrl} alt="Current clinic logo" style={{width:90,height:90,objectFit:"contain",marginTop:12,background:"#f2f4f0",borderRadius:10,padding:8}}/>}<button style={{...buttonStyle,marginTop:20}} disabled={busy}>{busy?"Saving...":"Save clinic settings"}</button></form>
       </section>}
     </div>

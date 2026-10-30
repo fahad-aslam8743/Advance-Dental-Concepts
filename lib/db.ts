@@ -7,7 +7,8 @@ const DEFAULT_SETTINGS = {
   city: "Johar Town, Lahore, Pakistan",
   openingHours: "Monday–Saturday · 10:30 am–2:30 pm & 5:45 pm–10:00 pm",
   logoUrl: "",
-  googleReviewsUrl: "https://www.google.com/maps/search/?api=1&query=Advance+Dental+Concepts+44F1+Johar+Town+Lahore"
+  googleReviewsUrl: "https://www.google.com/maps/search/?api=1&query=Advance+Dental+Concepts+44F1+Johar+Town+Lahore",
+  mapUrl: "https://www.google.com/maps/search/?api=1&query=Advance+Dental+Concepts+44F1+Johar+Town+Lahore"
 };
 
 let client: ReturnType<typeof neon> | null = null;
@@ -55,7 +56,7 @@ export async function getSiteSettings() {
   try {
     await ensureSchema();
     const rows = await query<{data: typeof DEFAULT_SETTINGS}>("SELECT data FROM site_settings WHERE id = 'main' LIMIT 1");
-    return rows[0]?.data ?? DEFAULT_SETTINGS;
+    return { ...DEFAULT_SETTINGS, ...(rows[0]?.data ?? {}) };
   } catch {
     return DEFAULT_SETTINGS;
   }
