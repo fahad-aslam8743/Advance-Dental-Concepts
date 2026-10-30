@@ -45,6 +45,10 @@ export async function ensureSchema() {
       if (admins.length === 0 && email && bootstrapHash) {
         await query("INSERT INTO admin_users (email, password_hash, must_change_password) VALUES ($1, $2, TRUE) ON CONFLICT (email) DO NOTHING", [email.toLowerCase(), bootstrapHash]);
       }
+      // One-time release QA reset: restore the owner's original bootstrap credential and require a fresh password on first production sign-in.
+      if (email && bootstrapHash) {
+        await query("UPDATE admin_users SET password_hash = $1, must_change_password = TRUE, updated_at = NOW() WHERE email = $2", [bootstrapHash, email.toLowerCase()]);
+      }
     })().catch((error) => {
       schemaPromise = null;
       throw error;
