@@ -33,8 +33,7 @@ export async function ensureSchema() {
       await query("CREATE TABLE IF NOT EXISTS reviews (id BIGSERIAL PRIMARY KEY, display_name TEXT NOT NULL, rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5), treatment_slug TEXT NOT NULL, review_text TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected')), source TEXT NOT NULL DEFAULT 'public', ip_hash TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
       await query("CREATE INDEX IF NOT EXISTS reviews_status_created_idx ON reviews(status, created_at DESC)");
       await query("CREATE INDEX IF NOT EXISTS reviews_ip_created_idx ON reviews(ip_hash, created_at DESC)");
-      // One-time release-QA cleanup: remove only the explicitly labelled synthetic reviews used in the preview workflow test.
-      await query("DELETE FROM reviews WHERE display_name IN ($1, $2, $3) AND review_text ILIKE $4", ["ADC AUTOMATED QA — NOT A PATIENT", "ADC QA EDITED — NOT A PATIENT", "ADC MANUAL QA — NOT A PATIENT", "AUTOMATED QA TEST ONLY%"]);
+
       await query("CREATE TABLE IF NOT EXISTS treatment_media (id BIGSERIAL PRIMARY KEY, treatment_slug TEXT NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('image','video')), url TEXT NOT NULL, pathname TEXT NOT NULL, alt_text TEXT NOT NULL DEFAULT '', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
       await query("CREATE INDEX IF NOT EXISTS treatment_media_slug_idx ON treatment_media(treatment_slug, created_at DESC)");
       await query("CREATE TABLE IF NOT EXISTS admin_login_attempts (id BIGSERIAL PRIMARY KEY, ip_hash TEXT NOT NULL, attempted_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
