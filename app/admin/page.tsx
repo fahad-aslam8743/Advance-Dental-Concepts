@@ -72,6 +72,16 @@ export default function AdminPage() {
     finally { setBusy(false); }
   }
 
+  async function uploadLogo(event:React.ChangeEvent<HTMLInputElement>) {
+    const file=event.target.files?.[0]; if(!file)return;
+    setBusy(true); setError(""); setMessage("");
+    try {
+      const result=await upload(file.name,file,{access:"public",handleUploadUrl:"/api/admin/media/upload",clientPayload:JSON.stringify({treatmentSlug:"site-logo",kind:"logo",altText:"Clinic logo"})});
+      setSettings({...settings,logoUrl:result.url}); await refresh(); setMessage("Clinic logo uploaded and saved.");
+    } catch(e) { setError(e instanceof Error ? e.message : "Logo upload failed"); }
+    finally { setBusy(false); event.target.value=""; }
+  }
+
   async function saveSettings(event:React.FormEvent) {
     event.preventDefault(); setBusy(true); setError(""); setMessage("");
     try { const data=await api("/api/admin/settings",{method:"PUT",body:JSON.stringify(settings)}); setSettings(data.settings); setMessage("Clinic settings saved. They will appear across the website after refresh."); }
@@ -201,7 +211,7 @@ export default function AdminPage() {
         <div><h1 style={{fontSize:28,margin:"0 0 5px"}}>Clinic settings</h1><p style={{color:"#728078",margin:0,fontSize:13}}>These settings are shared by the website header, footer and contact details.</p></div>
         <form onSubmit={saveSettings} style={cardStyle}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:16}}>
           {([["clinicName","Clinic / website name"],["phone","Phone number"],["addressLine","Street address"],["city","City / location"],["openingHours","Opening hours"],["logoUrl","Logo image URL"],["googleReviewsUrl","Google reviews link"]] as [keyof Settings,string][]).map(([key,label])=><label key={key} style={labelStyle}>{label}<input style={inputStyle} value={settings[key]} onChange={e=>setSettings({...settings,[key]:e.target.value})}/></label>)}
-        </div><button style={{...buttonStyle,marginTop:20}} disabled={busy}>{busy?"Saving...":"Save clinic settings"}</button></form>
+        </div><label style={{...labelStyle,marginTop:18,maxWidth:420}}>Upload clinic logo (PNG, JPG, WebP · max 5 MB)<input style={inputStyle} type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={uploadLogo} disabled={busy}/></label>{settings.logoUrl&&<img src={settings.logoUrl} alt="Current clinic logo" style={{width:90,height:90,objectFit:"contain",marginTop:12,background:"#f2f4f0",borderRadius:10,padding:8}}/>}<button style={{...buttonStyle,marginTop:20}} disabled={busy}>{busy?"Saving...":"Save clinic settings"}</button></form>
       </section>}
     </div>
   </main>;

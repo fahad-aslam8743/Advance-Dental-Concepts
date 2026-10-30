@@ -56,10 +56,13 @@ export function verifySession(token: string | undefined) {
   }
 }
 
-export async function getAdminSession() {
+export async function getAdminSession(allowPasswordChange = false) {
   const jar = await cookies();
-  const token = jar.get(COOKIE)?.value;
-  return verifySession(token);
+  const session = verifySession(jar.get(COOKIE)?.value);
+  if (!session) return null;
+  const rows = await query<{must_change_password:boolean}>("SELECT must_change_password FROM admin_users WHERE email = $1 LIMIT 1", [session.email]);
+  if (!rows[0] || (rows[0].must_change_password && !allowPasswordChange)) return null;
+  return session;
 }
 
 export async function isAdmin() {
