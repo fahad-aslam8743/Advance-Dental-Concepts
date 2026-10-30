@@ -41,6 +41,9 @@ export default function AdminPage() {
   const [mediaAlt,setMediaAlt] = useState("");
   const [mediaKind,setMediaKind] = useState("image");
   const [message,setMessage] = useState("");
+  const [editingReview,setEditingReview] = useState<Review|null>(null);
+  const [editDraft,setEditDraft] = useState({displayName:"",rating:"5",treatmentSlug:"",reviewText:""});
+  const [accountPassword,setAccountPassword] = useState("");
 
   async function refresh() {
     const [d,s,r,m] = await Promise.all([
@@ -94,13 +97,26 @@ export default function AdminPage() {
     catch(e) { setError(e instanceof Error ? e.message : "Could not update review"); }
   }
 
-  async function editReview(review:Review) {
-    const displayName=window.prompt("Display name",review.display_name); if(displayName===null)return;
-    const reviewText=window.prompt("Review text",review.review_text); if(reviewText===null)return;
-    const rating=Number(window.prompt("Rating (1–5)",String(review.rating))); if(!Number.isInteger(rating)||rating<1||rating>5)return;
-    const treatmentSlug=window.prompt("Treatment slug",review.treatment_slug); if(!treatmentSlug)return;
-    try { await api("/api/admin/reviews",{method:"PATCH",body:JSON.stringify({id:review.id,action:"edit",displayName,reviewText,rating,treatmentSlug})}); await refresh(); setMessage("Review edited."); }
-    catch(e) { setError(e instanceof Error ? e.message : "Could not edit review"); }
+  function editReview(review:Review) {
+    setEditingReview(review);
+    setEditDraft({displayName:review.display_name,rating:String(review.rating),treatmentSlug:review.treatment_slug,reviewText:review.review_text});
+  }
+
+  async function saveEditedReview(event:React.FormEvent) {
+    event.preventDefault();
+    if(!editingReview)return;
+    try {
+      await api("/api/admin/reviews",{method:"PATCH",body:JSON.stringify({id:editingReview.id,action:"edit",...editDraft,rating:Number(editDraft.rating)})});
+      setEditingReview(null); await refresh(); setMessage("Review updated.");
+    } catch(e) { setError(e instanceof Error ? e.message : "Could not edit review"); }
+  }
+
+  async function updateAccountPassword(event:React.FormEvent) {
+    event.preventDefault();
+    try {
+      await api("/api/admin/password",{method:"POST",body:JSON.stringify({password:accountPassword})});
+      setAccountPassword(""); setMessage("Your admin password has been changed.");
+    } catch(e) { setError(e instanceof Error ? e.message : "Could not change password"); }
   }
 
   async function addManualReview(event:React.FormEvent) {
@@ -131,7 +147,7 @@ export default function AdminPage() {
   const maxTrend = useMemo(()=>Math.max(1,...(dashboard?.trend || []).map(x=>Number(x.count))),[dashboard]);
   const treatmentName = (slug:string)=>services.find(s=>s.slug===slug)?.name || slug;
 
-  if(!authenticated) return <main style={{minHeight:"100vh",background:"#edf2ed",display:"grid",placeItems:"center",padding:20,fontFamily:"Arial,sans-serif"}}>
+  if(!authenticated) return <main className="admin-app" style={{minHeight:"100vh",background:"#edf2ed",display:"grid",placeItems:"center",padding:20,fontFamily:"Arial,sans-serif"}}>
     <form onSubmit={login} style={{...cardStyle,width:"min(430px,100%)",padding:32}}>
       <div style={{fontSize:11,fontWeight:800,letterSpacing:2,color:"#9a805d"}}>ADVANCE DENTAL CONCEPTS</div>
       <h1 style={{fontSize:30,color:"#183b39",margin:"12px 0 8px"}}>Admin sign in</h1>
@@ -157,7 +173,7 @@ export default function AdminPage() {
   </main>;
 
   const tabs=[["overview","Overview"],["reviews","Reviews"],["media","Treatment media"],["settings","Clinic settings"]];
-  return <main style={{minHeight:"100vh",background:"#f3f6f2",fontFamily:"Arial,sans-serif",color:"#183b39"}}>
+  return <main className="admin-app" style={{minHeight:"100vh",background:"#f3f6f2",fontFamily:"Arial,sans-serif",color:"#183b39"}}>
     <header style={{background:"#173936",color:"#fff",padding:"18px 24px"}}>
       <div style={{maxWidth:1250,margin:"auto",display:"flex",justifyContent:"space-between",alignItems:"center",gap:16,flexWrap:"wrap"}}>
         <div><div style={{fontSize:10,letterSpacing:2,color:"#d8c59f",fontWeight:800}}>ADVANCE DENTAL CONCEPTS</div><strong style={{fontSize:20}}>Website administration</strong></div>
@@ -212,7 +228,29 @@ export default function AdminPage() {
         <form onSubmit={saveSettings} style={cardStyle}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:16}}>
           {([["clinicName","Clinic / website name"],["phone","Phone number"],["addressLine","Street address"],["city","City / location"],["openingHours","Opening hours"],["logoUrl","Logo image URL"],["googleReviewsUrl","Google reviews link"],["mapUrl","Google Maps / directions link"]] as [keyof Settings,string][]).map(([key,label])=><label key={key} style={labelStyle}>{label}<input style={inputStyle} value={settings[key]} onChange={e=>setSettings({...settings,[key]:e.target.value})}/></label>)}
         </div><label style={{...labelStyle,marginTop:18,maxWidth:420}}>Upload clinic logo (PNG, JPG, WebP · max 5 MB)<input style={inputStyle} type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={uploadLogo} disabled={busy}/></label>{settings.logoUrl&&<img src={settings.logoUrl} alt="Current clinic logo" style={{width:90,height:90,objectFit:"contain",marginTop:12,background:"#f2f4f0",borderRadius:10,padding:8}}/>}<button style={{...buttonStyle,marginTop:20}} disabled={busy}>{busy?"Saving...":"Save clinic settings"}</button></form>
+        <form onSubmit={updateAccountPassword} style={{...cardStyle,display:"grid",gap:14}}>
+          <div><h2 style={{fontSize:18,margin:"0 0 5px"}}>Admin account security</h2><p style={{fontSize:12,color:"#728078",margin:0}}>Change your password whenever you need to. Use at least 10 characters with letters and numbers.</p></div>
+          <label style={{...labelStyle,maxWidth:440}}>New password<input style={inputStyle} type="password" minLength={10} value={accountPassword} onChange={e=>setAccountPassword(e.target.value)} autoComplete="new-password" required/></label>
+          <button style={{...buttonStyle,justifySelf:"start"}}>Update admin password</button>
+        </form>
       </section>}
     </div>
+
+    {editingReview&&<div className="admin-edit-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setEditingReview(null);}}>
+      <form className="admin-edit-dialog" data-review-editor onSubmit={saveEditedReview}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:15,marginBottom:18}}>
+          <div><small style={{fontWeight:800,letterSpacing:1.5,color:"#087f78"}}>REVIEW MANAGEMENT</small><h2 style={{fontSize:24,margin:"5px 0 0"}}>Edit patient review</h2></div>
+          <button type="button" onClick={()=>setEditingReview(null)} style={{background:"#e8f3f0",color:"#173447"}}>Close</button>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:13}}>
+          <label style={labelStyle}>Display name<input style={inputStyle} value={editDraft.displayName} onChange={e=>setEditDraft({...editDraft,displayName:e.target.value})} required/></label>
+          <label style={labelStyle}>Rating<select style={inputStyle} value={editDraft.rating} onChange={e=>setEditDraft({...editDraft,rating:e.target.value})}>{[5,4,3,2,1].map(x=><option key={x} value={x}>{x} stars</option>)}</select></label>
+          <label style={{...labelStyle,gridColumn:"1/-1"}}>Treatment<select style={inputStyle} value={editDraft.treatmentSlug} onChange={e=>setEditDraft({...editDraft,treatmentSlug:e.target.value})} required>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
+          <label style={{...labelStyle,gridColumn:"1/-1"}}>Review text<textarea style={inputStyle} rows={5} minLength={10} maxLength={1500} value={editDraft.reviewText} onChange={e=>setEditDraft({...editDraft,reviewText:e.target.value})} required/></label>
+        </div>
+        <div style={{display:"flex",justifyContent:"flex-end",gap:10,marginTop:18}}><button type="button" onClick={()=>setEditingReview(null)} style={{background:"#edf4f2",color:"#173447"}}>Cancel</button><button type="submit" style={buttonStyle}>Save changes</button></div>
+      </form>
+    </div>}
+
   </main>;
 }
