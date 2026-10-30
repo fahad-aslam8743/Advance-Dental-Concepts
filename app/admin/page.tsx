@@ -97,6 +97,12 @@ export default function AdminPage() {
     catch(e) { setError(e instanceof Error ? e.message : "Could not update review"); }
   }
 
+  async function deleteReview(id:number) {
+    if(!window.confirm("Permanently delete this review? This cannot be undone."))return;
+    try { await api("/api/admin/reviews",{method:"DELETE",body:JSON.stringify({id})}); await refresh(); setMessage("Review permanently deleted."); }
+    catch(e) { setError(e instanceof Error ? e.message : "Could not delete review"); }
+  }
+
   function editReview(review:Review) {
     setEditingReview(review);
     setEditDraft({displayName:review.display_name,rating:String(review.rating),treatmentSlug:review.treatment_slug,reviewText:review.review_text});
@@ -208,7 +214,7 @@ export default function AdminPage() {
         <div style={{display:"grid",gap:12}}>{reviews.length===0?<div style={cardStyle}>No reviews in this view yet.</div>:reviews.map(review=><article key={review.id} style={cardStyle}>
           <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><b>{review.display_name}</b><div style={{color:"#b28b45",marginTop:4}}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</div><small style={{color:"#829087"}}>{treatmentName(review.treatment_slug)} · {review.source} · {new Date(review.created_at).toLocaleString()}</small></div><span style={{fontSize:11,fontWeight:800,color:review.status==="approved"?"#24724d":review.status==="pending"?"#956d26":"#9b4545"}}>{review.status.toUpperCase()}</span></div>
           <p style={{fontSize:13,lineHeight:1.7,color:"#53665d"}}>{review.review_text}</p>
-          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={buttonStyle} onClick={()=>editReview(review)}>Edit</button>{review.status!=="approved"&&<button style={{...buttonStyle,background:"#286a4e"}} onClick={()=>reviewAction(review.id,"approve")}>Approve</button>}{review.status!=="rejected"&&<button style={{...buttonStyle,background:"#8e4545"}} onClick={()=>reviewAction(review.id,"reject")}>Reject</button>}</div>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={buttonStyle} onClick={()=>editReview(review)}>Edit</button><button style={{...buttonStyle,background:"#8e4545"}} onClick={()=>deleteReview(review.id)}>Delete</button>{review.status!=="approved"&&<button style={{...buttonStyle,background:"#286a4e"}} onClick={()=>reviewAction(review.id,"approve")}>Approve</button>}{review.status!=="rejected"&&<button style={{...buttonStyle,background:"#8e4545"}} onClick={()=>reviewAction(review.id,"reject")}>Reject</button>}</div>
         </article>)}</div>
       </section>}
 

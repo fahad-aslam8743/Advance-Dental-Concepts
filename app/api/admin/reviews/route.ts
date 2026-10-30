@@ -63,3 +63,21 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Could not update review." }, { status: 500 });
   }
 }
+
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getAdminSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    await ensureSchema();
+    const body = await request.json();
+    const id = Number(body.id);
+    if (!Number.isInteger(id) || id < 1) return NextResponse.json({ error: "Invalid review." }, { status: 400 });
+    const rows = await query("DELETE FROM reviews WHERE id = $1 RETURNING id", [id]);
+    if (!rows.length) return NextResponse.json({ error: "Review not found." }, { status: 404 });
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("Review delete error", error);
+    return NextResponse.json({ error: "Could not delete review." }, { status: 500 });
+  }
+}
