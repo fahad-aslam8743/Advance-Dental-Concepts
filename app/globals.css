@@ -131,3 +131,32 @@
  .clinic-contact-facts>div>a,.clinic-contact-facts .hours-note{grid-column:2}
 }
 @media(max-width:390px){.service-grid{grid-template-columns:1fr}.service-photo{height:190px}.treatment-jump{top:99px}}
+
+
+/* Admin-managed public review and treatment media */
+.review-submit-section{background:#f2f3ed}
+.public-review-form{background:#fff;border:1px solid #e0e6de;border-radius:14px;padding:28px;display:grid;gap:17px}
+.review-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.public-review-form label{display:grid;gap:7px;font-size:11px;font-weight:700;color:#52645c}
+.public-review-form input:not([type=checkbox]),.public-review-form select,.public-review-form textarea{width:100%;border:1px solid #d9e2dc;border-radius:8px;background:#fbfcfa;padding:12px;color:#183b39;font:inherit;font-size:12px}
+.public-review-form textarea{resize:vertical}
+.review-wide{grid-column:1/-1}
+.review-consent{display:flex!important;grid-template-columns:18px 1fr;align-items:start;gap:9px!important;font-weight:500!important;line-height:1.7}
+.review-consent input{margin-top:2px}
+.review-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important}
+.review-error{color:#b42318;font-size:11px}
+.review-privacy-note{font-size:10px;color:#7c8981;line-height:1.7;margin:0}
+.review-thanks{background:#fff;border:1px solid #dce5dc;border-radius:14px;padding:30px}
+.review-thanks>span{font:800 9px var(--display);letter-spacing:.16em;color:#9a805d}
+.review-thanks h3{font:600 26px var(--serif);color:#183b39;margin:10px 0}
+.review-thanks p{font-size:12px;line-height:1.8;color:#65736d}
+.treatment-media-item{margin:0;border-radius:12px;overflow:hidden;background:#fff;border:1px solid #e0e6de}
+.treatment-media-item img,.treatment-media-item video{display:block;width:100%;height:240px;object-fit:cover}
+.treatment-media-item figcaption{padding:12px;font-size:10px;color:#65736d}
+.approved-review-list{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.approved-review-list article,.home-approved-review{background:#fff;border:1px solid #e0e6de;border-radius:10px;padding:16px}
+.approved-review-list article>div{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:11px}
+.approved-review-list p,.home-approved-review p{font-size:11px;line-height:1.7;color:#5e6d68}
+.home-approved-review{margin-top:12px}
+.home-approved-review small{font-size:10px;color:#7a8981}
+@media(max-width:760px){.public-review-form{padding:20px}.review-form-grid{grid-template-columns:1fr}.review-wide{grid-column:auto}.treatment-media-item img,.treatment-media-item video{height:190px}}
