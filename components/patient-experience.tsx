@@ -29,6 +29,20 @@ export function PatientDetails({service}:{service:Service}) {
 
 function Placeholder({kind,title}:{kind:string;title:string}){return <div className="media-placeholder"><div className="media-placeholder-icon">{kind==="video"?<PlayCircle/>:<Images/>}</div><b>{title}</b><span>{kind==="video"?"A clinic-approved explainer video will be added here.":"Clinic-approved photos will appear here."}</span><small>NO MEDIA UPLOADED YET</small></div>}
 function Stars({rating}:{rating:number}){return <span aria-label={rating+" out of 5 stars"} style={{color:"#b28b45",letterSpacing:".12em"}}>{"★".repeat(rating)}{"☆".repeat(5-rating)}</span>}
+function GoogleReviewHighlights() {
+ const highlights = [
+  "professional competence and ethics",
+  "caring, friendly and systematic",
+  "affordable, caring and hygienic treatment"
+ ];
+ return <div className="google-review-highlights" aria-label="Selected excerpts from public Google reviews">
+  {highlights.map((quote) => <article key={quote}>
+   <span>GOOGLE REVIEW EXCERPT</span>
+   <p>“{quote}”</p>
+  </article>)}
+ </div>;
+}
+
 export async function TreatmentMedia({name,slug}:{name:string;slug:string}) {
  const items=await getTreatmentMedia(slug);
  const photos=items.filter((x:any)=>(x.placement||"gallery")==="gallery"&&x.kind==="image");
@@ -41,24 +55,97 @@ export async function TreatmentMedia({name,slug}:{name:string;slug:string}) {
    const after=afterItems.find((x:any)=>Number(x.pair_number)===pairNumber);
    const scenario=scenarios[pairNumber-1];
    if(!before||!after||!scenario)return null;
-   const illustration=Boolean(before.is_illustrative)&&Boolean(after.is_illustrative);
-   const patientCase=Boolean(before.patient_consent_verified)&&Boolean(after.patient_consent_verified)&&!illustration;
-   // Never pair one real patient photograph with one generic illustration.
-   if(!illustration&&!patientCase)return null;
-   return {pairNumber,...scenario,beforeUrl:before.url,afterUrl:after.url,sourceType:patientCase?"consented-patient-case" as const:"illustration" as const};
+   const patientCase=Boolean(before.patient_consent_verified)&&Boolean(after.patient_consent_verified)&&!before.is_illustrative&&!after.is_illustrative;
+   if(!patientCase)return null;
+   return {pairNumber,...scenario,beforeUrl:before.url,afterUrl:after.url};
  }).filter((item):item is TreatmentComparison=>Boolean(item));
- return <><TreatmentComparisons comparisons={comparisons} treatmentName={name}/><section className="media-section"><div className="wrap"><div className="patient-section-heading"><span>CLINIC & TREATMENT GALLERY</span><h2>Explore the details.</h2><p>These editorial images help explain the treatment setting and related dental care. They are not represented as actual patient outcomes.</p></div><div className="media-grid">{photos.length===0?<Placeholder kind="image" title={name+" — clinic gallery"}/>:photos.map((item:any)=><figure className="treatment-media-item" key={item.id}><img src={item.url} alt={item.alt_text||"Illustrative dental-care photograph for "+name} loading="lazy" decoding="async"/>{item.alt_text&&<figcaption>{item.alt_text}</figcaption>}</figure>)}</div>{videos.length>0&&<div className="video-grid">{videos.map((item:any)=><figure className="treatment-media-item" key={item.id}><video src={item.url} controls preload="metadata"/>{item.alt_text&&<figcaption>{item.alt_text}</figcaption>}</figure>)}</div>}</div></section></>;
+
+ return <section className="media-section" aria-label={name+" image gallery"}>
+  <div className="wrap">
+   <div className="patient-section-heading">
+    <span>TREATMENT IMAGE GALLERY</span>
+    <h2>Explore {name.toLowerCase()}.</h2>
+    <p>A curated set of treatment-related dental photographs. Consent-confirmed clinic before-and-after cases, when available, are placed in this same gallery.</p>
+   </div>
+   <div className="media-grid">
+    {photos.length===0?<Placeholder kind="image" title={name+" — image gallery"}/>:photos.map((item:any)=><figure className="treatment-media-item" key={item.id}>
+     <img src={item.url} alt={item.alt_text||"Dental photograph related to "+name} loading="lazy" decoding="async"/>
+     {item.alt_text&&<figcaption>{item.alt_text}</figcaption>}
+    </figure>)}
+    <TreatmentComparisons comparisons={comparisons} treatmentName={name}/>
+    {videos.map((item:any)=><figure className="treatment-media-item treatment-video-item" key={item.id}>
+     <video src={item.url} controls preload="metadata"/>
+     {item.alt_text&&<figcaption>{item.alt_text}</figcaption>}
+    </figure>)}
+   </div>
+  </div>
+ </section>;
 }
+
 export async function TreatmentReviews({name,slug}:{name:string;slug:string}) {
  const reviews=await getApprovedReviews(slug);
  const settings=await getSiteSettings();
- return <section className="patient-reviews"><div className="wrap review-panel"><div><span>APPROVED WEBSITE REVIEWS</span><h2>Reviews about {name.toLowerCase()}.</h2><p>These are reviews submitted to this website and approved by the clinic. Public Google reviews are hosted separately by Google.</p><a className="learn-link" href={settings.googleReviewsUrl} target="_blank" rel="noreferrer">View Google reviews <ArrowUpRight size={15}/></a></div><div className="review-rating">{reviews.length===0?<><strong>—</strong><small>No approved website reviews for this treatment yet.</small></>:<><strong>{reviews.length}</strong><small>Approved website reviews</small></>}</div>{reviews.length>0&&<div className="approved-review-list">{reviews.map((review:any)=><article key={review.id}><div><b>{review.display_name}</b><Stars rating={Number(review.rating)}/></div><p>{review.review_text}</p></article>)}</div>}</div></section>;
+ const googleUrl=settings.googleReviewsUrl||googleReviews;
+ return <section className="patient-reviews">
+  <div className="wrap">
+   <div className="patient-section-heading">
+    <span>PUBLIC PATIENT FEEDBACK</span>
+    <h2>What patients say about the clinic.</h2>
+    <p>The public Google rating is clinic-wide, not a rating for {name.toLowerCase()} specifically. Treatment-specific website reviews appear separately after clinic approval.</p>
+   </div>
+   <div className="review-panel review-panel-clinic-wide">
+    <div className="clinic-google-copy">
+     <span>CLINIC-WIDE GOOGLE FEEDBACK</span>
+     <h2>A 5.0 rating from local patients.</h2>
+     <p>Google currently lists a 5.0/5 rating across 32 clinic reviews. The short excerpts are general clinic feedback and are not assigned to an individual treatment.</p>
+     <a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read all 32 Google reviews <ArrowUpRight size={15}/></a>
+    </div>
+    <div className="review-rating clinic-google-rating">
+     <strong>5.0</strong>
+     <Stars rating={5}/>
+     <b>32 Google reviews</b>
+     <small>Overall clinic rating</small>
+    </div>
+    <GoogleReviewHighlights/>
+    {reviews.length>0&&<div className="approved-review-list treatment-approved-reviews">
+     {reviews.map((review:any)=><article key={review.id}>
+      <div><b>{review.display_name}</b><Stars rating={Number(review.rating)}/></div>
+      <p>{review.review_text}</p>
+      <small>Approved website review · {name}</small>
+     </article>)}
+    </div>}
+   </div>
+  </div>
+ </section>;
 }
+
 export async function HomeReviewSection() {
  const reviews=await getApprovedReviews();
  const settings=await getSiteSettings();
+ const googleUrl=settings.googleReviewsUrl||googleReviews;
  const treatmentName=(slug:string)=>services.find(service=>service.slug===slug)?.name||slug;
- return <section className="home-review-section" id="reviews"><div className="wrap home-review-inner"><div><span>VERIFIED WEBSITE FEEDBACK</span><h2>Patient experiences<br/>across our treatments.</h2><p>These are genuine reviews submitted to this website and approved by the clinic. Every treatment's approved feedback is collected here, with its treatment named.</p><a className="learn-link" href={settings.googleReviewsUrl} target="_blank" rel="noreferrer">Read Google reviews <ArrowUpRight size={15}/></a></div><div className="home-review-rating">{reviews.length===0?<><strong>—</strong><b>No approved website reviews yet</b><small>Genuine submissions will appear here after clinic approval.</small></>:<><strong>{reviews.length}</strong><b>Approved website reviews across all treatments</b><div className="home-approved-review-list">{reviews.map((review:any)=><article className="home-approved-review" key={review.id}><div><Stars rating={Number(review.rating)}/><small>{treatmentName(review.treatment_slug)}</small></div><p>{review.review_text}</p><small>{review.display_name}</small></article>)}</div></>}</div></div></section>;
+ return <section className="home-review-section" id="reviews">
+  <div className="wrap home-review-inner">
+   <div>
+    <span>PUBLIC GOOGLE FEEDBACK</span>
+    <h2>Patient experiences<br/>at our clinic.</h2>
+    <p>Google currently lists a 5.0/5 clinic rating from 32 reviews. The review excerpts are clinic-wide and are not labelled as feedback for a specific procedure.</p>
+    <a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read all 32 Google reviews <ArrowUpRight size={15}/></a>
+   </div>
+   <div className="home-review-rating">
+    <div className="google-rating-top"><strong>5.0</strong><span>★★★★★</span></div>
+    <b>32 Google reviews</b>
+    <small>Overall clinic rating · all services</small>
+    <GoogleReviewHighlights/>
+    {reviews.length>0&&<div className="home-approved-review-list">
+     {reviews.map((review:any)=><article className="home-approved-review" key={review.id}>
+      <div><Stars rating={Number(review.rating)}/><small>{treatmentName(review.treatment_slug)}</small></div>
+      <p>{review.review_text}</p><small>{review.display_name} · approved website review</small>
+     </article>)}
+    </div>}
+   </div>
+  </div>
+ </section>;
 }
 export async function ClinicContact() {
  const settings=await getSiteSettings();

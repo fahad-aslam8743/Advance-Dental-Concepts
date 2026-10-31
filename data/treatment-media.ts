@@ -7,182 +7,160 @@ export type ComparisonScenario = {
 };
 
 export const comparisonScenarios: Record<string, [ComparisonScenario, ComparisonScenario]> = {
+  "teeth-whitening": [{ title: "Whitening case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Whitening case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "clear-aligners": [{ title: "Alignment case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Alignment case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "dental-implants": [{ title: "Implant case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Implant case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "root-canal-treatment": [{ title: "Root canal case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Root canal case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "veneers": [{ title: "Veneer case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Veneer case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "crowns-bridges": [{ title: "Restoration case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Restoration case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "dental-fillings": [{ title: "Filling case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Filling case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "scaling-polishing": [{ title: "Cleaning case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Cleaning case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "wisdom-tooth-extraction": [{ title: "Wisdom tooth case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Wisdom tooth case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "dental-checkup": [{ title: "Dental check-up case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Dental check-up case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "minor-oral-surgery": [{ title: "Oral care case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Oral care case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "smile-makeover": [{ title: "Smile design case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Smile design case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "general-dentistry": [{ title: "General dentistry case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "General dentistry case 02", concern: "Before treatment", careConcept: "After treatment" }],
+  "oral-surgery": [{ title: "Oral surgery case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "Oral surgery case 02", concern: "Before treatment", careConcept: "After treatment" }]
+};
+
+export type GalleryPhoto = { id: number; caption: string };
+
+const gallerySets: Record<string, [GalleryPhoto, GalleryPhoto, GalleryPhoto, GalleryPhoto]> = {
   "teeth-whitening": [
-    { title: "Surface staining", concern: "Illustration of common surface staining", careConcept: "Illustration of a lighter natural tooth shade" },
-    { title: "Uneven tooth shade", concern: "Illustration of uneven natural tooth colour", careConcept: "Illustration of a more even shade concept" }
+    { id: 3779706, caption: "Professional teeth cleaning close-up" },
+    { id: 3845984, caption: "Dental hygiene treatment with clinical equipment" },
+    { id: 6627590, caption: "Close-up dental polishing detail" },
+    { id: 6529106, caption: "Close-up dental light procedure" }
   ],
   "clear-aligners": [
-    { title: "Crowding and overlap", concern: "Illustration of overlapping teeth", careConcept: "Illustration of a more aligned tooth position" },
-    { title: "Spacing concerns", concern: "Illustration of gaps between teeth", careConcept: "Illustration of a more even tooth arrangement" }
+    { id: 11887613, caption: "Clear aligner tray shown in hand" },
+    { id: 13085186, caption: "Dental technician finishing a clear aligner" },
+    { id: 6528861, caption: "Close-up orthodontic treatment" },
+    { id: 7584486, caption: "Close-up of teeth with orthodontic braces" }
   ],
   "dental-implants": [
-    { title: "Single missing tooth", concern: "Illustration of a missing tooth space", careConcept: "Illustration of an implant-supported crown concept" },
-    { title: "Restoring a tooth gap", concern: "Illustration of a visible tooth gap", careConcept: "Illustration of a restored tooth space concept" }
+    { id: 13207320, caption: "Dental implant kit and components" },
+    { id: 4687905, caption: "Dental implant model for treatment planning" },
+    { id: 7788504, caption: "Dental prosthetic fabrication" },
+    { id: 7788493, caption: "Dental technician crafting a tooth restoration" }
   ],
   "root-canal-treatment": [
-    { title: "Pulp inflammation", concern: "Illustration of inflammation inside a tooth", careConcept: "Illustration of a cleaned and sealed canal" },
-    { title: "Deep tooth damage", concern: "Illustration of deep decay approaching the pulp", careConcept: "Illustration of a treated tooth with a protective restoration" }
+    { id: 4687412, caption: "Microscope-assisted endodontic procedure" },
+    { id: 8176834, caption: "Root canal treatment under magnification" },
+    { id: 5355837, caption: "Close-up restorative dental procedure" },
+    { id: 6812568, caption: "Close-up of a patient's mouth during treatment" }
   ],
   "veneers": [
-    { title: "Chips and shape concerns", concern: "Illustration of small chips and uneven tooth edges", careConcept: "Illustration of a veneer design concept" },
-    { title: "Shade and proportion", concern: "Illustration of uneven shade and tooth proportions", careConcept: "Illustration of a balanced veneer design concept" }
+    { id: 6627599, caption: "Dental veneer shade guide" },
+    { id: 6627572, caption: "Veneer application close-up" },
+    { id: 6627571, caption: "Close-up of veneer treatment" },
+    { id: 6812502, caption: "Dental veneer samples on display" }
   ],
   "crowns-bridges": [
-    { title: "Weakened tooth", concern: "Illustration of a structurally weakened tooth", careConcept: "Illustration of a protective crown concept" },
-    { title: "Missing tooth unit", concern: "Illustration of a missing tooth in a row", careConcept: "Illustration of a fixed bridge concept" }
+    { id: 33748047, caption: "Ceramic dental restoration detail" },
+    { id: 6812494, caption: "Tooth shade selection for restorations" },
+    { id: 7789704, caption: "Dental photography for restoration planning" },
+    { id: 6627483, caption: "Close-up dental examination and tools" }
   ],
   "dental-fillings": [
-    { title: "Cavity in a tooth", concern: "Illustration of a cavity in the chewing surface", careConcept: "Illustration of a tooth-coloured filling concept" },
-    { title: "Small tooth fracture", concern: "Illustration of a chipped tooth edge", careConcept: "Illustration of a restored tooth contour" }
+    { id: 4971541, caption: "Dental filling procedure close-up" },
+    { id: 16842747, caption: "Close-up dental procedure with instruments" },
+    { id: 6627524, caption: "Restorative dental care in progress" },
+    { id: 5355839, caption: "Light-assisted dental restoration" }
   ],
   "scaling-polishing": [
-    { title: "Plaque and calculus", concern: "Illustration of deposits near the gumline", careConcept: "Illustration of a professionally cleaned tooth surface" },
-    { title: "Surface staining", concern: "Illustration of surface stain and deposits", careConcept: "Illustration of a cleaner tooth surface after hygiene care" }
+    { id: 6528858, caption: "Close-up professional dental procedure" },
+    { id: 6528855, caption: "Dentist examining teeth" },
+    { id: 6627531, caption: "Dental instruments used during oral care" },
+    { id: 6502620, caption: "Close-up dental check-up and cleaning" }
   ],
   "wisdom-tooth-extraction": [
-    { title: "Impacted wisdom tooth", concern: "Illustration of a wisdom tooth angled beneath the gum", careConcept: "Illustration of the area after indicated removal and healing" },
-    { title: "Partially erupted tooth", concern: "Illustration of a partially erupted back tooth", careConcept: "Illustration of a managed extraction site concept" }
+    { id: 7584489, caption: "Dental surgery in a clinical setting" },
+    { id: 7584482, caption: "Patient undergoing dental surgery" },
+    { id: 15688027, caption: "Dental team performing a procedure" },
+    { id: 16559199, caption: "Dentists working on a patient" }
   ],
   "dental-checkup": [
-    { title: "A concern to examine", concern: "Illustration of a tooth and gum concern to assess", careConcept: "Illustration of a documented examination and care plan" },
-    { title: "Early detection", concern: "Illustration of an early dental concern", careConcept: "Illustration of a monitored or treated concern concept" }
+    { id: 14458277, caption: "Dentist examining teeth with a mouth mirror" },
+    { id: 5622240, caption: "Routine dental examination" },
+    { id: 6502748, caption: "Close-up dental check-up" },
+    { id: 6502749, caption: "Dental instruments used during examination" }
   ],
   "minor-oral-surgery": [
-    { title: "A tissue change to assess", concern: "Illustration of a small oral tissue change requiring assessment", careConcept: "Illustration of a reviewed and managed site concept" },
-    { title: "Root-end concern", concern: "Illustration of inflammation near a tooth root tip", careConcept: "Illustration of a root-end treatment concept" }
+    { id: 10820349, caption: "Preparing sterile dental instruments" },
+    { id: 4269947, caption: "Close-up dental examination with gloves" },
+    { id: 6812531, caption: "Close-up patient procedure in a dental clinic" },
+    { id: 6627409, caption: "Patient positioned for dental treatment" }
   ],
   "smile-makeover": [
-    { title: "Smile balance", concern: "Illustration of uneven shade and tooth proportions", careConcept: "Illustration of a balanced smile-design concept" },
-    { title: "Several aesthetic concerns", concern: "Illustration of spacing, edge and shade concerns", careConcept: "Illustration of a coordinated smile-design concept" }
+    { id: 9774680, caption: "Orthodontic smile alignment close-up" },
+    { id: 5524023, caption: "Close-up view of orthodontic treatment" },
+    { id: 19476290, caption: "Dental assessment for smile care" },
+    { id: 6502740, caption: "Cosmetic dental examination" }
   ],
   "general-dentistry": [
-    { title: "Common dental concern", concern: "Illustration of a tooth with a common dental concern", careConcept: "Illustration of a conservative restorative care concept" },
-    { title: "Gumline and tooth health", concern: "Illustration of plaque and gumline irritation", careConcept: "Illustration of a preventive care concept" }
+    { id: 19976592, caption: "General dental examination" },
+    { id: 19976605, caption: "Dental care in a modern clinic" },
+    { id: 19976589, caption: "Dentists providing general care" },
+    { id: 19976584, caption: "Patient receiving dental treatment" }
   ],
   "oral-surgery": [
-    { title: "A surgical concern to assess", concern: "Illustration of a tooth or jaw concern requiring assessment", careConcept: "Illustration of a managed surgical site concept" },
-    { title: "Impaction or root concern", concern: "Illustration of an impacted tooth or root-area concern", careConcept: "Illustration of a post-treatment anatomical concept" }
+    { id: 18523995, caption: "Dental professionals treating a patient" },
+    { id: 18199893, caption: "Dentist in surgical attire attending a patient" },
+    { id: 20301626, caption: "Oral examination with dental instruments" },
+    { id: 6502629, caption: "Patient in a dental chair for treatment" }
   ]
+
 };
-
-const gallerySets: Record<string, string[]> = {
-  "teeth-whitening": ["teeth-whitening", "scaling-polishing", "veneers", "smile-makeover", "dental-checkup"],
-  "clear-aligners": ["clear-aligners", "smile-makeover", "veneers", "dental-checkup", "general-dentistry"],
-  "dental-implants": ["dental-implants", "crowns-bridges", "oral-surgery", "dental-checkup", "general-dentistry"],
-  "root-canal-treatment": ["root-canal-treatment", "dental-fillings", "crowns-bridges", "dental-checkup", "general-dentistry"],
-  "veneers": ["veneers", "teeth-whitening", "smile-makeover", "clear-aligners", "crowns-bridges"],
-  "crowns-bridges": ["crowns-bridges", "dental-implants", "root-canal-treatment", "dental-fillings", "general-dentistry"],
-  "dental-fillings": ["dental-fillings", "root-canal-treatment", "crowns-bridges", "dental-checkup", "general-dentistry"],
-  "scaling-polishing": ["scaling-polishing", "teeth-whitening", "dental-checkup", "general-dentistry", "smile-makeover"],
-  "wisdom-tooth-extraction": ["wisdom-tooth-extraction", "oral-surgery", "minor-oral-surgery", "dental-checkup", "general-dentistry"],
-  "dental-checkup": ["dental-checkup", "general-dentistry", "scaling-polishing", "dental-fillings", "dental-implants"],
-  "minor-oral-surgery": ["minor-oral-surgery", "wisdom-tooth-extraction", "oral-surgery", "dental-implants", "dental-checkup"],
-  "smile-makeover": ["smile-makeover", "veneers", "teeth-whitening", "clear-aligners", "crowns-bridges"],
-  "general-dentistry": ["general-dentistry", "dental-checkup", "dental-fillings", "scaling-polishing", "root-canal-treatment"],
-  "oral-surgery": ["oral-surgery", "minor-oral-surgery", "wisdom-tooth-extraction", "dental-implants", "dental-checkup"]
-};
-
-function svgToDataUrl(svg: string) {
-  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
-}
-
-function dentalIllustration(slug: string, side: "before" | "after", pairNumber: 1 | 2, serviceName: string) {
-  const before = side === "before";
-  const issueIndex = pairNumber === 1 ? 3 : 5;
-  const gapIndex = slug === "dental-implants" ? (pairNumber === 1 ? 3 : 5) : -1;
-  const toothXs = [178, 258, 338, 418, 498, 578, 658, 738];
-  const crowded = slug === "clear-aligners" && before;
-  const positions = toothXs.map((x, i) => x + (crowded ? ([0, 9, -13, 12, -10, 8, -5, 0][i]) : 0));
-  const teeth = positions.map((x, i) => {
-    if (i === gapIndex && (before || slug !== "dental-implants")) return "";
-    const isProblem = before && (i === issueIndex || (slug === "teeth-whitening" || slug === "scaling-polishing") || (slug === "veneers" && i === 4));
-    const fill = isProblem
-      ? (slug === "teeth-whitening" ? "#d8bd79" : slug === "scaling-polishing" ? "#d2b56e" : "#f1d8ad")
-      : "#fffdf7";
-    const transform = crowded && i % 2 === 0 ? `rotate(${i % 4 === 0 ? -7 : 6} ${x + 27} 286)` : "";
-    const chip = before && (slug === "veneers" || slug === "dental-fillings") && i === issueIndex
-      ? `<path d="M${x + 31} 215 l18 0 -9 16z" fill="#dfece8"/>` : "";
-    const cavity = before && (slug === "dental-fillings" || slug === "general-dentistry" || slug === "root-canal-treatment") && i === issueIndex
-      ? `<ellipse cx="${x + 27}" cy="276" rx="12" ry="9" fill="#725b50"/>` : "";
-    const crown = !before && (slug === "crowns-bridges" || slug === "dental-implants") && i === issueIndex
-      ? `<path d="M${x + 5} 220 Q${x + 27} 201 ${x + 49} 220 L${x + 47} 266 Q${x + 27} 282 ${x + 7} 266z" fill="#ffffff" stroke="#83aaa1" stroke-width="3"/><path d="M${x + 8} 230 Q${x + 27} 214 ${x + 46} 230" fill="none" stroke="#c4ded7" stroke-width="4"/>` : "";
-    const pulp = before && slug === "root-canal-treatment" && i === issueIndex
-      ? `<ellipse cx="${x + 27}" cy="282" rx="9" ry="19" fill="#d87970" opacity=".9"/>` : "";
-    return `<g transform="${transform}"><path d="M${x + 4} 222 Q${x + 3} 190 ${x + 27} 190 Q${x + 51} 190 ${x + 50} 222 L${x + 46} 300 Q${x + 42} 334 ${x + 27} 352 Q${x + 12} 334 ${x + 8} 300z" fill="${fill}" stroke="#b9b5a8" stroke-width="3"/><path d="M${x + 12} 211 Q${x + 27} 199 ${x + 42} 211" fill="none" stroke="#ffffff" stroke-width="5" opacity=".8"/>${chip}${cavity}${pulp}${crown}</g>`;
-  }).join("");
-  const lesion = before && ["minor-oral-surgery", "oral-surgery"].includes(slug)
-    ? `<ellipse cx="454" cy="382" rx="36" ry="17" fill="#cf7c79" opacity=".75"/><ellipse cx="454" cy="382" rx="18" ry="7" fill="#a54d51" opacity=".75"/>`
-    : "";
-  const plaque = before && ["scaling-polishing", "general-dentistry"].includes(slug)
-    ? `<path d="M140 204 Q450 168 820 204 L814 220 Q450 190 146 220z" fill="#c7a453" opacity=".88"/>`
-    : "";
-  const root = slug === "dental-implants" && !before
-    ? `<path d="M${positions[gapIndex] + 20} 348 l14 0 5 42 -24 0z" fill="#9da8ae" stroke="#7d8c94" stroke-width="3"/>`
-    : "";
-  const missing = before && slug === "dental-implants"
-    ? `<rect x="${positions[gapIndex] - 2}" y="210" width="58" height="145" rx="14" fill="#f0f7f4" opacity=".92" stroke="#c4d9d3" stroke-dasharray="7 7"/>`
-    : "";
-  const aligner = slug === "clear-aligners"
-    ? `<path d="M150 201 Q450 163 836 201 L830 232 Q450 194 156 232z" fill="#8bc4bb" fill-opacity=".23" stroke="#6baca1" stroke-width="5"/>`
-    : "";
-  const surgical = ["wisdom-tooth-extraction", "minor-oral-surgery", "oral-surgery"].includes(slug)
-    ? `<path d="M735 362 Q785 344 834 362" fill="none" stroke="#d28a84" stroke-width="13" stroke-linecap="round" opacity=".7"/>`
-    : "";
-  const tag = before ? "CONDITION" : "CARE CONCEPT";
-  return svgToDataUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560">
-    <defs><linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f5faf8"/><stop offset="1" stop-color="#e7f1ee"/></linearGradient><linearGradient id="gum" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#e9b1a9"/><stop offset="1" stop-color="#cc827d"/></linearGradient></defs>
-    <rect width="1000" height="560" rx="34" fill="url(#bg)"/>
-    <circle cx="850" cy="86" r="115" fill="#d4e8e2" opacity=".52"/><circle cx="140" cy="460" r="130" fill="#d8eae5" opacity=".45"/>
-    <text x="72" y="75" fill="#52746c" font-family="Arial,sans-serif" font-size="18" letter-spacing="4">DENTAL EDUCATION VISUAL</text>
-    <text x="72" y="120" fill="#1c4541" font-family="Arial,sans-serif" font-size="27" font-weight="700">${serviceName.replace(/&/g, "&amp;")}</text>
-    <rect x="72" y="164" width="856" height="270" rx="30" fill="#fff" opacity=".75"/>
-    <path d="M132 217 Q450 154 868 217 L850 282 Q450 235 150 282z" fill="url(#gum)"/>
-    <path d="M132 217 Q450 154 868 217" fill="none" stroke="#ad6865" stroke-width="5" opacity=".6"/>
-    ${missing}${teeth}${plaque}${lesion}${root}${aligner}${surgical}
-    <rect x="72" y="462" width="856" height="52" rx="16" fill="#1c4541"/>
-    <text x="500" y="496" fill="#ffffff" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" letter-spacing="3">${tag} · NOT A PATIENT PHOTO</text>
-  </svg>`);
-}
 
 export function buildSeedTreatmentMedia(services: Service[]) {
-  const bySlug = new Map(services.map(service => [service.slug, service]));
-  const rows: { treatment_slug: string; kind: "image"; url: string; pathname: string; alt_text: string; placement: "gallery" | "comparison_before" | "comparison_after"; pair_number: number | null; sort_order: number; is_illustrative: boolean; patient_consent_verified: boolean }[] = [];
+  const rows: {
+    treatment_slug: string;
+    kind: "image";
+    url: string;
+    pathname: string;
+    alt_text: string;
+    placement: "gallery";
+    pair_number: null;
+    sort_order: number;
+    is_illustrative: false;
+    patient_consent_verified: false;
+  }[] = [];
+
   for (const service of services) {
-    const gallerySlugs = gallerySets[service.slug] || [service.slug];
-    for (const [index, imageSlug] of gallerySlugs.entries()) {
-      const imageService = bySlug.get(imageSlug);
-      if (!imageService) continue;
+    const photos = gallerySets[service.slug];
+    if (!photos) continue;
+
+    // Keep the treatment's own unique hero photo, followed by four separately selected Pexels photos.
+    rows.push({
+      treatment_slug: service.slug,
+      kind: "image",
+      url: service.image,
+      pathname: "seed/treatment-gallery-v2/" + service.slug + "/1",
+      alt_text: service.name + " treatment overview photograph",
+      placement: "gallery",
+      pair_number: null,
+      sort_order: 1,
+      is_illustrative: false,
+      patient_consent_verified: false
+    });
+
+    photos.forEach((photo, index) => {
+      const url = "https://images.pexels.com/photos/" + photo.id + "/pexels-photo-" + photo.id + ".jpeg?auto=compress&cs=tinysrgb&w=1600";
       rows.push({
         treatment_slug: service.slug,
         kind: "image",
-        url: imageService.image,
-        pathname: `seed/gallery/${service.slug}/${index + 1}`,
-        alt_text: `Illustrative stock photograph for ${service.name}. This is not a documented patient result.`,
+        url,
+        pathname: "seed/treatment-gallery-v2/" + service.slug + "/" + (index + 2),
+        alt_text: photo.caption,
         placement: "gallery",
         pair_number: null,
-        sort_order: index + 1,
+        sort_order: index + 2,
         is_illustrative: false,
         patient_consent_verified: false
       });
-    }
-    for (const pairNumber of [1, 2] as const) {
-      for (const side of ["before", "after"] as const) {
-        rows.push({
-          treatment_slug: service.slug,
-          kind: "image",
-          url: dentalIllustration(service.slug, side, pairNumber, service.name),
-          pathname: `seed/comparison/${service.slug}/${pairNumber}/${side}`,
-          alt_text: side === "before"
-            ? `Educational condition illustration for ${service.name}; not an actual patient photograph.`
-            : `Educational care-concept illustration for ${service.name}; not a predicted or actual patient result.`,
-          placement: side === "before" ? "comparison_before" : "comparison_after",
-          pair_number: pairNumber,
-          sort_order: pairNumber,
-          is_illustrative: true,
-          patient_consent_verified: false
-        });
-      }
-    }
+    });
   }
+
   return rows;
 }

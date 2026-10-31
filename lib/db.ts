@@ -45,13 +45,19 @@ async function seedTreatmentMediaOnce() {
     return "(" + placeholders.join(", ") + ")";
   });
 
-  // The migration marker and initial media insert happen in one statement.
-  // A deleted starter image therefore stays deleted on later cold starts.
+  // Replace the old cross-treatment seed gallery and cartoon comparison art once.
+  // Uploaded clinic media is kept; only rows created by the old seed paths are removed.
   await query(
     `WITH seed_guard AS (
-       INSERT INTO app_migrations (key) VALUES ('adc-treatment-media-gallery-and-comparisons-v1')
+       INSERT INTO app_migrations (key) VALUES ('adc-treatment-gallery-photo-refresh-v2')
        ON CONFLICT (key) DO NOTHING
        RETURNING key
+     ),
+     deleted_seed_media AS (
+       DELETE FROM treatment_media
+       WHERE (pathname LIKE 'seed/gallery/%' OR pathname LIKE 'seed/comparison/%')
+         AND EXISTS (SELECT 1 FROM seed_guard)
+       RETURNING id
      )
      INSERT INTO treatment_media
        (treatment_slug, kind, url, pathname, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified)

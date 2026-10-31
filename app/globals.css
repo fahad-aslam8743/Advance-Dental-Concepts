@@ -415,3 +415,32 @@ body:has(.admin-app){background:#f3f7f7}
  .home-review-inner{grid-template-columns:1fr}
  .home-review-rating>.home-approved-review-list{max-height:none}
 }
+
+
+/* Unified treatment gallery and authentic public review highlights */
+.media-grid .clinical-compare-card{min-width:0;align-self:stretch}
+.media-grid .treatment-video-item{grid-column:span 1}
+.media-section .patient-section-heading>p{max-width:760px}
+.review-panel-clinic-wide{grid-template-columns:minmax(0,1fr) minmax(180px,.55fr);align-items:start;gap:26px}
+.clinic-google-copy>span{font:800 9px var(--display);letter-spacing:.16em;color:#9a805d}
+.clinic-google-copy h2{font:600 clamp(24px,2.4vw,32px)/1.2 var(--display);letter-spacing:-.04em;margin:10px 0}
+.clinic-google-copy p{font-size:11px;line-height:1.75;color:#65736d}
+.clinic-google-rating{border-left:1px solid #d6ded5;padding-left:28px}
+.clinic-google-rating>b{font-size:11px;margin-top:8px}
+.google-review-highlights{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.google-review-highlights article{background:#fff;border:1px solid #dfe7df;border-radius:11px;padding:16px;min-width:0}
+.google-review-highlights article>span{font:800 8px var(--display);letter-spacing:.12em;color:#9a805d}
+.google-review-highlights article p{font:500 15px/1.45 var(--serif);color:#294c46;margin:10px 0 0}
+.treatment-approved-reviews{margin-top:4px}
+.treatment-approved-reviews:before{content:"APPROVED TREATMENT-SPECIFIC WEBSITE REVIEWS";grid-column:1/-1;font:800 8px var(--display);letter-spacing:.15em;color:#9a805d;padding:4px 0}
+.home-review-rating .google-rating-top{display:flex;align-items:flex-end;gap:14px}
+.home-review-rating .google-rating-top>span{font-size:20px;line-height:1.2}
+.home-review-rating .google-review-highlights{grid-template-columns:1fr;margin-top:16px}
+.home-review-rating .google-review-highlights article{padding:13px}
+.home-review-rating .google-review-highlights article p{font-size:14px}
+@media(max-width:760px){
+ .review-panel-clinic-wide{grid-template-columns:1fr}
+ .clinic-google-rating{border-left:0;border-top:1px solid #d6ded5;padding:20px 0 0}
+ .google-review-highlights{grid-template-columns:1fr}
+ .media-grid .clinical-compare-card,.media-grid .treatment-video-item{grid-column:span 1}
+}
