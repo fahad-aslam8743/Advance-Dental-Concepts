@@ -36,7 +36,7 @@ export default function AdminPage() {
   const [reviews,setReviews] = useState<Review[]>([]);
   const [media,setMedia] = useState<Media[]>([]);
   const [reviewStatus,setReviewStatus] = useState("pending");
-  const [manual,setManual] = useState({displayName:"",rating:"5",treatmentSlug:"",reviewText:""});
+  const [manual,setManual] = useState({displayName:"",rating:"5",reviewText:""});
   const [manualVerified,setManualVerified] = useState(false);
   const [mediaTreatment,setMediaTreatment] = useState(services[0].slug);
   const [mediaAlt,setMediaAlt] = useState("");
@@ -48,7 +48,7 @@ export default function AdminPage() {
   const [mediaEditDraft,setMediaEditDraft] = useState({altText:"",placement:"gallery",pairNumber:"1",sortOrder:"100"});
   const [message,setMessage] = useState("");
   const [editingReview,setEditingReview] = useState<Review|null>(null);
-  const [editDraft,setEditDraft] = useState({displayName:"",rating:"5",treatmentSlug:"",reviewText:""});
+  const [editDraft,setEditDraft] = useState({displayName:"",rating:"5",reviewText:""});
   const [accountPassword,setAccountPassword] = useState("");
 
   async function refresh() {
@@ -111,7 +111,7 @@ export default function AdminPage() {
 
   function editReview(review:Review) {
     setEditingReview(review);
-    setEditDraft({displayName:review.display_name,rating:String(review.rating),treatmentSlug:review.treatment_slug,reviewText:review.review_text});
+    setEditDraft({displayName:review.display_name,rating:String(review.rating),reviewText:review.review_text});
   }
 
   async function saveEditedReview(event:React.FormEvent) {
@@ -136,7 +136,7 @@ export default function AdminPage() {
     if(!manualVerified){setError("Confirm that this review is genuine and may be shared before adding it.");return;}
     try {
       await api("/api/admin/reviews",{method:"POST",body:JSON.stringify({...manual,verified:true})});
-      setManual({displayName:"",rating:"5",treatmentSlug:"",reviewText:""});
+      setManual({displayName:"",rating:"5",reviewText:""});
       setManualVerified(false);
       setReviewStatus("pending");
       await refresh();
@@ -256,13 +256,13 @@ export default function AdminPage() {
         <div style={cardStyle}><h2 style={{fontSize:17,marginTop:0}}>Add a genuine review for verification</h2><p style={{fontSize:12,color:"#728078",lineHeight:1.7,marginTop:0}}>Enter the patient's actual words and rating only with permission to share them. New manual entries are added to the pending queue and are not published until an admin approves them.</p><form onSubmit={addManualReview} style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
           <label style={labelStyle}>Display name<input style={inputStyle} value={manual.displayName} onChange={e=>setManual({...manual,displayName:e.target.value})} required/></label>
           <label style={labelStyle}>Patient's actual rating<select style={inputStyle} value={manual.rating} onChange={e=>setManual({...manual,rating:e.target.value})}>{[5,4,3,2,1].map(x=><option key={x} value={x}>{x} stars</option>)}</select></label>
-          <label style={labelStyle}>Treatment<select style={inputStyle} value={manual.treatmentSlug} onChange={e=>setManual({...manual,treatmentSlug:e.target.value})} required><option value="">Choose treatment</option>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
+          
           <label style={{...labelStyle,gridColumn:"1/-1"}}>Review in the patient's own words<textarea style={inputStyle} rows={3} value={manual.reviewText} onChange={e=>setManual({...manual,reviewText:e.target.value})} required minLength={10}/></label>
           <label style={{gridColumn:"1/-1",display:"flex",alignItems:"flex-start",gap:9,fontSize:12,color:"#52645c",lineHeight:1.6}}><input type="checkbox" checked={manualVerified} onChange={e=>setManualVerified(e.target.checked)} style={{marginTop:3}}/>I confirm this is genuine feedback from a real patient, the name/rating/text are accurate, and the patient has permitted its publication.</label>
           <button style={{...buttonStyle,justifySelf:"start"}} disabled={!manualVerified}>Add to pending approval queue</button>
         </form></div>
         <div style={{display:"grid",gap:12}}>{reviews.length===0?<div style={cardStyle}>No reviews in this view yet.</div>:reviews.map(review=><article key={review.id} style={cardStyle}>
-          <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><b>{review.display_name}</b><div style={{color:"#b28b45",marginTop:4}}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</div><small style={{color:"#829087"}}>{treatmentName(review.treatment_slug)} · {review.source} · {new Date(review.created_at).toLocaleString()}</small></div><span style={{fontSize:11,fontWeight:800,color:review.status==="approved"?"#24724d":review.status==="pending"?"#956d26":"#9b4545"}}>{review.status.toUpperCase()}</span></div>
+          <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><b>{review.display_name}</b><div style={{color:"#b28b45",marginTop:4}}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</div><small style={{color:"#829087"}}>{review.treatment_slug==="clinic-wide"?"Clinic-wide review":treatmentName(review.treatment_slug)} · {review.source} · {new Date(review.created_at).toLocaleString()}</small></div><span style={{fontSize:11,fontWeight:800,color:review.status==="approved"?"#24724d":review.status==="pending"?"#956d26":"#9b4545"}}>{review.status.toUpperCase()}</span></div>
           <p style={{fontSize:13,lineHeight:1.7,color:"#53665d"}}>{review.review_text}</p>
           <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={buttonStyle} onClick={()=>editReview(review)}>Edit</button><button style={{...buttonStyle,background:"#8e4545"}} onClick={()=>deleteReview(review.id)}>Delete</button>{review.status!=="approved"&&<button style={{...buttonStyle,background:"#286a4e"}} onClick={()=>reviewAction(review.id,"approve")}>Approve</button>}{review.status!=="rejected"&&<button style={{...buttonStyle,background:"#8e4545"}} onClick={()=>reviewAction(review.id,"reject")}>Reject</button>}</div>
         </article>)}</div>
@@ -312,7 +312,7 @@ export default function AdminPage() {
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:13}}>
           <label style={labelStyle}>Display name<input style={inputStyle} value={editDraft.displayName} onChange={e=>setEditDraft({...editDraft,displayName:e.target.value})} required/></label>
           <label style={labelStyle}>Rating<select style={inputStyle} value={editDraft.rating} onChange={e=>setEditDraft({...editDraft,rating:e.target.value})}>{[5,4,3,2,1].map(x=><option key={x} value={x}>{x} stars</option>)}</select></label>
-          <label style={{...labelStyle,gridColumn:"1/-1"}}>Treatment<select style={inputStyle} value={editDraft.treatmentSlug} onChange={e=>setEditDraft({...editDraft,treatmentSlug:e.target.value})} required>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
+          
           <label style={{...labelStyle,gridColumn:"1/-1"}}>Review text<textarea style={inputStyle} rows={5} minLength={10} maxLength={1500} value={editDraft.reviewText} onChange={e=>setEditDraft({...editDraft,reviewText:e.target.value})} required/></label>
         </div>
         <div style={{display:"flex",justifyContent:"flex-end",gap:10,marginTop:18}}><button type="button" onClick={()=>setEditingReview(null)} style={{background:"#edf4f2",color:"#173447"}}>Cancel</button><button type="submit" style={buttonStyle}>Save changes</button></div>
