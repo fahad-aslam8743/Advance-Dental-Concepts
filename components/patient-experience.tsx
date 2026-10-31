@@ -65,7 +65,7 @@ export async function TreatmentMedia({name,slug}:{name:string;slug:string}) {
    <div className="patient-section-heading">
     <span>TREATMENT IMAGE GALLERY</span>
     <h2>Explore {name.toLowerCase()}.</h2>
-    <p>A curated set of treatment-related dental photographs. Consent-confirmed clinic before-and-after cases, when available, are placed in this same gallery.</p>
+    <p>Five treatment-related stock photographs showing relevant procedures, equipment and clinical settings. Consent-confirmed clinic before-and-after cases, when available, are placed in this same gallery.</p>
    </div>
    <div className="media-grid">
     {photos.length===0?<Placeholder kind="image" title={name+" — image gallery"}/>:photos.map((item:any)=><figure className="treatment-media-item" key={item.id}>

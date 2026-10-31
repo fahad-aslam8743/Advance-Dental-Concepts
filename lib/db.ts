@@ -45,18 +45,22 @@ async function seedTreatmentMediaOnce() {
     return "(" + placeholders.join(", ") + ")";
   });
 
-  // Replace the old cross-treatment seed gallery and cartoon comparison art once.
-  // Uploaded clinic media is kept; only rows created by the old seed paths are removed.
+  // Replace v1 and v2 seed media with five unique, treatment-selected stock photos per page.
+  // Admin-uploaded clinic media is preserved.
   await query(
     `WITH seed_guard AS (
-       INSERT INTO app_migrations (key) VALUES ('adc-treatment-gallery-photo-refresh-v2')
+       INSERT INTO app_migrations (key) VALUES ('adc-treatment-gallery-photo-refresh-v3')
        ON CONFLICT (key) DO NOTHING
        RETURNING key
      ),
      deleted_seed_media AS (
        DELETE FROM treatment_media
-       WHERE (pathname LIKE 'seed/gallery/%' OR pathname LIKE 'seed/comparison/%')
-         AND EXISTS (SELECT 1 FROM seed_guard)
+       WHERE (
+         pathname LIKE 'seed/gallery/%'
+         OR pathname LIKE 'seed/comparison/%'
+         OR pathname LIKE 'seed/treatment-gallery-v2/%'
+       )
+       AND EXISTS (SELECT 1 FROM seed_guard)
        RETURNING id
      )
      INSERT INTO treatment_media
