@@ -1,6 +1,9 @@
 import Link from "next/link";
 import {ArrowUpRight, Images, PlayCircle, MapPin, Phone, Clock3} from "lucide-react";
 import {getApprovedReviews,getTreatmentMedia,getSiteSettings} from "@/lib/db";
+import {services} from "@/data/services";
+import {comparisonScenarios} from "@/data/treatment-media";
+import TreatmentComparisons, {type TreatmentComparison} from "@/components/treatment-comparisons";
 import type {Service} from "@/data/services";
 const googleReviews="https://www.google.com/maps/search/?api=1&query=Advance+Dental+Concepts+44F1+Johar+Town+Lahore";
 const patientNotes:Record<string,{simple:string;goodToKnow:string[];steps:string[];priceFactors:string[];aftercare:string[]}>={
@@ -28,9 +31,18 @@ function Placeholder({kind,title}:{kind:string;title:string}){return <div classN
 function Stars({rating}:{rating:number}){return <span aria-label={rating+" out of 5 stars"} style={{color:"#b28b45",letterSpacing:".12em"}}>{"★".repeat(rating)}{"☆".repeat(5-rating)}</span>}
 export async function TreatmentMedia({name,slug}:{name:string;slug:string}) {
  const items=await getTreatmentMedia(slug);
- const photos=items.filter((x:any)=>x.kind==="image");
+ const photos=items.filter((x:any)=>(x.placement||"gallery")==="gallery"&&x.kind==="image");
  const videos=items.filter((x:any)=>x.kind==="video");
- return <section className="media-section"><div className="wrap"><div className="patient-section-heading"><span>SEE WHAT TO EXPECT</span><h2>Photos & videos</h2><p>Only clinic-owned or patient-consented media is shown here. Images are not represented as patient results unless the clinic has verified consent and context.</p></div>{items.length===0?<div className="media-grid"><Placeholder kind="image" title={name+" — clinic photo"}/><Placeholder kind="image" title="Treatment stages / close-up gallery"/><Placeholder kind="video" title="Treatment explainer video"/></div>:<><div className="media-grid">{photos.map((item:any)=><figure className="treatment-media-item" key={item.id}><img src={item.url} alt={item.alt_text||name+" clinic photo"}/>{item.alt_text&&<figcaption>{item.alt_text}</figcaption>}</figure>)}</div>{videos.length>0&&<div className="video-grid">{videos.map((item:any)=><figure className="treatment-media-item" key={item.id}><video src={item.url} controls preload="metadata"/>{item.alt_text&&<figcaption>{item.alt_text}</figcaption>}</figure>)}</div>}</>}</div></section>;
+ const beforeItems=items.filter((x:any)=>x.placement==="comparison_before");
+ const afterItems=items.filter((x:any)=>x.placement==="comparison_after");
+ const scenarios=comparisonScenarios[slug]||[];
+ const comparisons:TreatmentComparison[]=[1,2].map(pairNumber=>{
+   const before=beforeItems.find((x:any)=>Number(x.pair_number)===pairNumber);
+   const after=afterItems.find((x:any)=>Number(x.pair_number)===pairNumber);
+   const scenario=scenarios[pairNumber-1];
+   return before&&after&&scenario?{pairNumber,...scenario,beforeUrl:before.url,afterUrl:after.url}:null;
+ }).filter((item):item is TreatmentComparison=>Boolean(item));
+ return <><TreatmentComparisons comparisons={comparisons} treatmentName={name}/><section className="media-section"><div className="wrap"><div className="patient-section-heading"><span>CLINIC & TREATMENT GALLERY</span><h2>Explore the details.</h2><p>These editorial images help explain the treatment setting and related dental care. They are not represented as actual patient outcomes.</p></div><div className="media-grid">{photos.length===0?<Placeholder kind="image" title={name+" — clinic gallery"}/>:photos.map((item:any)=><figure className="treatment-media-item" key={item.id}><img src={item.url} alt={item.alt_text||"Illustrative dental-care photograph for "+name} loading="lazy" decoding="async"/>{item.alt_text&&<figcaption>{item.alt_text}</figcaption>}</figure>)}</div>{videos.length>0&&<div className="video-grid">{videos.map((item:any)=><figure className="treatment-media-item" key={item.id}><video src={item.url} controls preload="metadata"/>{item.alt_text&&<figcaption>{item.alt_text}</figcaption>}</figure>)}</div>}</div></section></>;
 }
 export async function TreatmentReviews({name,slug}:{name:string;slug:string}) {
  const reviews=await getApprovedReviews(slug);
@@ -40,7 +52,8 @@ export async function TreatmentReviews({name,slug}:{name:string;slug:string}) {
 export async function HomeReviewSection() {
  const reviews=await getApprovedReviews();
  const settings=await getSiteSettings();
- return <section className="home-review-section" id="reviews"><div className="wrap home-review-inner"><div><span>WHAT PATIENTS SAY</span><h2>Real feedback.<br/>Reviewed by the clinic.</h2><p>Website reviews appear here only after approval. You can also read the clinic's separate public Google feedback.</p><a className="learn-link" href={settings.googleReviewsUrl} target="_blank" rel="noreferrer">Read Google reviews <ArrowUpRight size={15}/></a></div><div className="home-review-rating">{reviews.length===0?<><strong>—</strong><b>No approved website reviews yet</b><small>Genuine submissions will appear here after clinic approval.</small></>:<><strong>{reviews.length}</strong><b>Approved website reviews</b>{reviews.slice(0,3).map((review:any)=><div className="home-approved-review" key={review.id}><Stars rating={Number(review.rating)}/><p>{review.review_text}</p><small>{review.display_name}</small></div>)}</>}</div></div></section>;
+ const treatmentName=(slug:string)=>services.find(service=>service.slug===slug)?.name||slug;
+ return <section className="home-review-section" id="reviews"><div className="wrap home-review-inner"><div><span>VERIFIED WEBSITE FEEDBACK</span><h2>Patient experiences<br/>across our treatments.</h2><p>These are genuine reviews submitted to this website and approved by the clinic. Every treatment's approved feedback is collected here, with its treatment named.</p><a className="learn-link" href={settings.googleReviewsUrl} target="_blank" rel="noreferrer">Read Google reviews <ArrowUpRight size={15}/></a></div><div className="home-review-rating">{reviews.length===0?<><strong>—</strong><b>No approved website reviews yet</b><small>Genuine submissions will appear here after clinic approval.</small></>:<><strong>{reviews.length}</strong><b>Approved website reviews across all treatments</b><div className="home-approved-review-list">{reviews.map((review:any)=><article className="home-approved-review" key={review.id}><div><Stars rating={Number(review.rating)}/><small>{treatmentName(review.treatment_slug)}</small></div><p>{review.review_text}</p><small>{review.display_name}</small></article>)}</div></>}</div></div></section>;
 }
 export async function ClinicContact() {
  const settings=await getSiteSettings();
