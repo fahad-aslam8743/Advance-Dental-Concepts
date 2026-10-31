@@ -141,6 +141,12 @@ export async function ensureSchema() {
         await query("UPDATE reviews SET date_label = CASE WHEN created_at > NOW() - INTERVAL '45 days' THEN 'a month ago' WHEN created_at > NOW() - INTERVAL '120 days' THEN '2 months ago' ELSE '2 years ago' END WHERE source='clinic' AND date_label IS NULL");
         await query("INSERT INTO app_migrations (key) VALUES ($1) ON CONFLICT (key) DO NOTHING", [dateLabelMigration]);
       }
+      const excerptMigration = "adc-clinic-review-visible-excerpts-v1";
+      const excerptsApplied = await query("SELECT key FROM app_migrations WHERE key=$1 LIMIT 1", [excerptMigration]);
+      if (!excerptsApplied.length) {
+        await query("UPDATE reviews SET review_text = 'A reliable, safe and cost-effective solution place …' WHERE source='clinic' AND display_name='Ahmad Kamal' AND review_text='A reliable, safe and cost-effective solution place'");
+        await query("INSERT INTO app_migrations (key) VALUES ($1) ON CONFLICT (key) DO NOTHING", [excerptMigration]);
+      }
 
       const admins = await query<{id:number}>("SELECT id FROM admin_users LIMIT 1");
       const email = process.env.ADMIN_EMAIL;
