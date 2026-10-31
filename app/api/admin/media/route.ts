@@ -34,9 +34,10 @@ export async function PATCH(request: NextRequest) {
     if (placement !== "gallery" && pairNumber !== 1 && pairNumber !== 2) {
       return NextResponse.json({ error: "Comparison images must belong to pair 1 or pair 2." }, { status: 400 });
     }
-    const current = await query<{kind:string;treatment_slug:string}>("SELECT kind, treatment_slug FROM treatment_media WHERE id=$1", [id]);
+    const current = await query<{kind:string;treatment_slug:string;placement:string}>("SELECT kind, treatment_slug, placement FROM treatment_media WHERE id=$1", [id]);
     if (!current[0]) return NextResponse.json({ error: "Media item not found." }, { status: 404 });
     if (!treatmentSlugs.includes(current[0].treatment_slug)) return NextResponse.json({ error: "The media item is not linked to a valid treatment." }, { status: 400 });
+    if (current[0].placement !== "gallery") return NextResponse.json({ error: "Fixed comparison artwork cannot be edited." }, { status: 403 });
     if (current[0].kind === "video" && placement !== "gallery") {
       return NextResponse.json({ error: "Videos can only be placed in the treatment gallery." }, { status: 400 });
     }
@@ -57,8 +58,9 @@ export async function DELETE(request: NextRequest) {
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     await ensureSchema();
     const id = Number((await request.json()).id);
-    const rows = await query<{url:string}>("SELECT url FROM treatment_media WHERE id=$1", [id]);
+    const rows = await query<{url:string;placement:string}>("SELECT url, placement FROM treatment_media WHERE id=$1", [id]);
     if (!rows[0]) return NextResponse.json({ error: "Media item not found." }, { status: 404 });
+    if (rows[0].placement !== "gallery") return NextResponse.json({ error: "Fixed comparison artwork cannot be deleted." }, { status: 403 });
     // Starter gallery assets and educational SVGs are external/data URLs, not Vercel Blob objects.
     if (rows[0].url.includes(".blob.vercel-storage.com/")) await del(rows[0].url);
     await query("DELETE FROM treatment_media WHERE id=$1", [id]);
