@@ -133,7 +133,7 @@ export function buildSeedTreatmentMedia(services: Service[]) {
     placement: "gallery";
     pair_number: null;
     sort_order: number;
-    is_illustrative: false;
+    is_illustrative: true;
     patient_consent_verified: false;
   }[] = [];
 
@@ -147,12 +147,12 @@ export function buildSeedTreatmentMedia(services: Service[]) {
         treatment_slug: service.slug,
         kind: "image",
         url,
-        pathname: "seed/treatment-gallery-v3/" + service.slug + "/" + (index + 1),
+        pathname: "seed/treatment-gallery-v5/" + service.slug + "/" + (index + 1),
         alt_text: "",
         placement: "gallery",
         pair_number: null,
         sort_order: index + 1,
-        is_illustrative: false,
+        is_illustrative: true,
         patient_consent_verified: false
       });
     });
