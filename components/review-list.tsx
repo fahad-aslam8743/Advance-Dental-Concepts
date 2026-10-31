@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-type Review = { id: number | string; display_name: string; rating: number; review_text: string; source?: string; created_at?: string };
+type Review = { id: number | string; display_name: string; rating: number; review_text: string; created_at?: string };
 export default function ReviewList({ reviews, variant = "home" }: { reviews: Review[]; variant?: string }) {
  const [initialCount,setInitialCount]=useState(3);
  const [visibleCount,setVisibleCount]=useState(3);
@@ -34,8 +34,8 @@ export default function ReviewList({ reviews, variant = "home" }: { reviews: Rev
     const visible=index<visibleRows;
     return <div className="shared-review-row" key={String(row[0]?.id||index)} style={{maxHeight:visible?"1000px":"0px",opacity:visible?1:0,marginBottom:visible?"14px":"0px"}} onTransitionEnd={event=>{if(event.propertyName==="max-height"&&index===rows.length-1&&visibleCount<renderCount){setRenderCount(visibleCount);setExpanded(false);}}}>
      {row.map(review=><article className="shared-review-card" key={review.id}>
-      <div className="shared-review-card-top"><span className="shared-review-stars" aria-label={review.rating+" out of 5 stars"}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</span><small>{review.source==="google"?"GOOGLE REVIEW":"PATIENT REVIEW"}</small></div>
-      <p>{review.review_text}</p>
+      <div className="shared-review-card-top"><span className="shared-review-stars" aria-label={review.rating+" out of 5 stars"}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</span></div>
+      {review.review_text?.trim()&&<p>{review.review_text}</p>}
       <div className="shared-review-author"><b>{review.display_name}</b>{review.created_at&&<time>{new Date(review.created_at).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"})}</time>}</div>
      </article>)}
     </div>;
