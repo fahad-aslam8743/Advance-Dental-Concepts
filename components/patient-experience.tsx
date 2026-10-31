@@ -79,8 +79,8 @@ export async function TreatmentReviews({name,slug}:{name:string;slug:string}) {
 export async function HomeReviewSection() {
  const reviews=await getApprovedReviews();
  return <section className="home-review-section" id="reviews"><div className="wrap home-review-inner">
-  <div><span>PATIENT FEEDBACK</span><h2>Patient experiences<br/>at our clinic.</h2><p>What people say about their visits to Advance Dental Concepts.</p></div>
-  <div className="home-review-rating"><ReviewList reviews={reviews as any[]} variant="home"/></div>
+  <div className="patient-section-heading"><span>PATIENT FEEDBACK</span><h2>Patient experiences at our clinic.</h2><p>What people say about their visits to Advance Dental Concepts.</p></div>
+  <div className="home-review-cards"><ReviewList reviews={reviews as any[]} variant="home"/></div>
  </div></section>;
 }
 export async function ClinicContact() {
