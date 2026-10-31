@@ -421,7 +421,7 @@ body:has(.admin-app){background:#f3f7f7}
 .media-grid .clinical-compare-card{min-width:0;align-self:stretch}
 .media-grid .treatment-video-item{grid-column:span 1}
 .media-section .patient-section-heading>p{max-width:760px}
-.review-panel-clinic-wide{grid-template-columns:minmax(0,1fr) minmax(180px,.55fr);align-items:start;gap:26px}
+.review-panel-clinic-wide{grid-template-columns:minmax(0,1fr);align-items:start;gap:26px}
 .clinic-google-copy>span{font:800 9px var(--display);letter-spacing:.16em;color:#9a805d}
 .clinic-google-copy h2{font:600 clamp(24px,2.4vw,32px)/1.2 var(--display);letter-spacing:-.04em;margin:10px 0}
 .clinic-google-copy p{font-size:11px;line-height:1.75;color:#65736d}
