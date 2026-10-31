@@ -148,16 +148,15 @@ export default function AdminPage() {
     const file=event.target.files?.[0]; if(!file)return;
     setBusy(true); setError(""); setMessage("");
     try {
-      if(mediaPlacement!=="gallery"&&!mediaConsentVerified) throw new Error("Real before/after patient photos require written patient consent before publication.");
       const result=await upload(file.name,file,{
         access:"public", handleUploadUrl:"/api/admin/media/upload",
         clientPayload:JSON.stringify({
           treatmentSlug:mediaTreatment,
           kind:mediaKind,
           altText:mediaAlt,
-          placement:mediaKind==="video"?"gallery":mediaPlacement,
-          pairNumber:mediaPlacement==="gallery"?null:Number(mediaPairNumber),
-          patientConsentVerified:mediaConsentVerified
+          placement:"gallery",
+          pairNumber:null,
+          patientConsentVerified:false
         })
       });
       await refresh(); setMessage("Media uploaded: "+result.pathname);
@@ -182,8 +181,8 @@ export default function AdminPage() {
       await api("/api/admin/media",{method:"PATCH",body:JSON.stringify({
         id:editingMedia.id,
         altText:mediaEditDraft.altText,
-        placement:mediaEditDraft.placement,
-        pairNumber:mediaEditDraft.placement==="gallery"?null:Number(mediaEditDraft.pairNumber),
+        placement:"gallery",
+        pairNumber:null,
         sortOrder:Number(mediaEditDraft.sortOrder)
       })});
       setEditingMedia(null);
@@ -200,7 +199,7 @@ export default function AdminPage() {
 
   const maxTrend = useMemo(()=>Math.max(1,...(dashboard?.trend || []).map(x=>Number(x.count))),[dashboard]);
   const treatmentName = (slug:string)=>services.find(s=>s.slug===slug)?.name || slug;
-  const mediaForTreatment = media.filter(item=>item.treatment_slug===mediaTreatment);
+  const mediaForTreatment = media.filter(item=>item.treatment_slug===mediaTreatment && item.placement==="gallery");
 
   if(!authenticated) return <main className="admin-app" style={{minHeight:"100vh",background:"#edf2ed",display:"grid",placeItems:"center",padding:20,fontFamily:"Arial,sans-serif"}}>
     <form onSubmit={login} style={{...cardStyle,width:"min(430px,100%)",padding:32}}>
@@ -262,24 +261,21 @@ export default function AdminPage() {
           <button style={{...buttonStyle,justifySelf:"start"}} disabled={!manualVerified}>Add to pending approval queue</button>
         </form></div>
         <div style={{display:"grid",gap:12}}>{reviews.length===0?<div style={cardStyle}>No reviews in this view yet.</div>:reviews.map(review=><article key={review.id} style={cardStyle}>
-          <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><b>{review.display_name}</b><div style={{color:"#b28b45",marginTop:4}}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</div><small style={{color:"#829087"}}>Clinic-wide review · {review.source} · {new Date(review.created_at).toLocaleString()}</small></div><span style={{fontSize:11,fontWeight:800,color:review.status==="approved"?"#24724d":review.status==="pending"?"#956d26":"#9b4545"}}>{review.status.toUpperCase()}</span></div>
-          <p style={{fontSize:13,lineHeight:1.7,color:"#53665d"}}>{review.review_text}</p>
+          <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><b>{review.display_name}</b><div style={{color:"#b28b45",marginTop:4}}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</div><small style={{color:"#829087"}}>Added {new Date(review.created_at).toLocaleString()}</small></div><span style={{fontSize:11,fontWeight:800,color:review.status==="approved"?"#24724d":review.status==="pending"?"#956d26":"#9b4545"}}>{review.status.toUpperCase()}</span></div>
+          {review.review_text?.trim()&&<p style={{fontSize:13,lineHeight:1.7,color:"#53665d"}}>{review.review_text}</p>}
           <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={buttonStyle} onClick={()=>editReview(review)}>Edit</button><button style={{...buttonStyle,background:"#8e4545"}} onClick={()=>deleteReview(review.id)}>Delete</button>{review.status!=="approved"&&<button style={{...buttonStyle,background:"#286a4e"}} onClick={()=>reviewAction(review.id,"approve")}>Approve</button>}{review.status!=="rejected"&&<button style={{...buttonStyle,background:"#8e4545"}} onClick={()=>reviewAction(review.id,"reject")}>Reject</button>}</div>
         </article>)}</div>
       </section>}
 
       {tab==="media"&&<section style={{display:"grid",gap:18}}>
-        <div><h1 style={{fontSize:28,margin:"0 0 5px"}}>Treatment photos & comparison images</h1><p style={{color:"#728078",margin:0,fontSize:13}}>Starter galleries and educational sliders are stored here. Filter by treatment to edit captions, change placement, delete items or upload replacements.</p></div>
+        <div><h1 style={{fontSize:28,margin:"0 0 5px"}}>Treatment gallery photos & videos</h1><p style={{color:"#728078",margin:0,fontSize:13}}>Edit or delete the five starter gallery photos, and upload as many additional gallery images or videos as you need. The two before-and-after sliders on each service page are fixed and are not managed here.</p></div>
         <div style={cardStyle}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,alignItems:"end"}}>
           <label style={labelStyle}>Treatment<select style={inputStyle} value={mediaTreatment} onChange={e=>setMediaTreatment(e.target.value)}>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
           <label style={labelStyle}>Media type<select style={inputStyle} value={mediaKind} onChange={e=>{setMediaKind(e.target.value);if(e.target.value==="video")setMediaPlacement("gallery");}}><option value="image">Photo</option><option value="video">Video</option></select></label>
-          <label style={labelStyle}>Display location<select style={inputStyle} value={mediaPlacement} onChange={e=>setMediaPlacement(e.target.value)} disabled={mediaKind==="video"}><option value="gallery">Gallery image</option><option value="comparison_before">Comparison — condition / before</option><option value="comparison_after">Comparison — care concept / after</option></select></label>
-          {mediaPlacement!=="gallery"&&<label style={labelStyle}>Comparison pair<select style={inputStyle} value={mediaPairNumber} onChange={e=>setMediaPairNumber(e.target.value)}><option value="1">Pair 1</option><option value="2">Pair 2</option></select></label>}
           <label style={labelStyle}>Photo caption (optional)<input style={inputStyle} value={mediaAlt} onChange={e=>setMediaAlt(e.target.value)} placeholder="Leave blank to hide the caption"/></label><small style={{fontSize:11,color:"#829087",lineHeight:1.5}}>This caption appears beneath the image only when filled in. It is editable here.</small>
           <label style={labelStyle}>Choose file<input style={inputStyle} type="file" accept={mediaKind==="video"?"video/mp4,video/webm,video/quicktime":"image/jpeg,image/png,image/webp,image/avif"} onChange={uploadMedia} disabled={busy}/></label>
         </div>
-        {mediaPlacement!=="gallery"&&<label style={{display:"flex",alignItems:"flex-start",gap:9,fontSize:12,color:"#52645c",lineHeight:1.6,marginTop:12}}><input type="checkbox" checked={mediaConsentVerified} onChange={e=>setMediaConsentVerified(e.target.checked)} style={{marginTop:3}}/>I confirm this is the correct matching before/after patient photograph and the clinic holds written consent specifically covering publication of these images.</label>}
-        <p style={{fontSize:11,color:"#829087",lineHeight:1.6,marginBottom:0}}>Images: up to 15 MB. Videos: up to 100 MB. Comparison uploads require written consent; each new comparison upload replaces the selected side of that pair. The default comparison assets are educational illustrations.</p></div>
+        <p style={{fontSize:11,color:"#829087",lineHeight:1.6,marginBottom:0}}>Images: up to 15 MB. Videos: up to 100 MB. New uploads are added to the gallery; they do not replace existing photos.</p></div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}><b>{treatmentName(mediaTreatment)} · {mediaForTreatment.length} media items</b><span style={{fontSize:11,color:"#829087"}}>Changes appear on the matching treatment page.</span></div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:14}}>{mediaForTreatment.length===0?<div style={cardStyle}>No media found for this treatment.</div>:mediaForTreatment.map(item=><article key={item.id} style={cardStyle}>
           <div style={{height:155,background:"#edf2ed",borderRadius:10,overflow:"hidden",display:"grid",placeItems:"center"}}>{item.kind==="video"?<video src={item.url} controls style={{width:"100%",height:"100%",objectFit:"contain"}}/>:<img src={item.url} alt={item.alt_text} style={{width:"100%",height:"100%",objectFit:"cover"}}/>}</div>
@@ -313,7 +309,7 @@ export default function AdminPage() {
           <label style={labelStyle}>Display name<input style={inputStyle} value={editDraft.displayName} onChange={e=>setEditDraft({...editDraft,displayName:e.target.value})} required/></label>
           <label style={labelStyle}>Rating<select style={inputStyle} value={editDraft.rating} onChange={e=>setEditDraft({...editDraft,rating:e.target.value})}>{[5,4,3,2,1].map(x=><option key={x} value={x}>{x} stars</option>)}</select></label>
           
-          <label style={{...labelStyle,gridColumn:"1/-1"}}>Review text<textarea style={inputStyle} rows={5} minLength={10} maxLength={1500} value={editDraft.reviewText} onChange={e=>setEditDraft({...editDraft,reviewText:e.target.value})} required/></label>
+          <label style={{...labelStyle,gridColumn:"1/-1"}}>Review text<textarea style={inputStyle} rows={5} maxLength={1500} value={editDraft.reviewText} onChange={e=>setEditDraft({...editDraft,reviewText:e.target.value})}/></label>
         </div>
         <div style={{display:"flex",justifyContent:"flex-end",gap:10,marginTop:18}}><button type="button" onClick={()=>setEditingReview(null)} style={{background:"#edf4f2",color:"#173447"}}>Cancel</button><button type="submit" style={buttonStyle}>Save changes</button></div>
       </form>
@@ -327,11 +323,8 @@ export default function AdminPage() {
         </div>
         <label style={{...labelStyle,marginBottom:14}}>Caption / alt text<input style={inputStyle} value={mediaEditDraft.altText} onChange={e=>setMediaEditDraft({...mediaEditDraft,altText:e.target.value})} maxLength={200}/></label>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:13}}>
-          <label style={labelStyle}>Display location<select style={inputStyle} value={mediaEditDraft.placement} onChange={e=>setMediaEditDraft({...mediaEditDraft,placement:e.target.value})}><option value="gallery">Gallery image</option><option value="comparison_before">Comparison condition / before</option><option value="comparison_after">Comparison care concept / after</option></select></label>
-          {mediaEditDraft.placement!=="gallery"&&<label style={labelStyle}>Comparison pair<select style={inputStyle} value={mediaEditDraft.pairNumber} onChange={e=>setMediaEditDraft({...mediaEditDraft,pairNumber:e.target.value})}><option value="1">Pair 1</option><option value="2">Pair 2</option></select></label>}
           <label style={labelStyle}>Display order<input style={inputStyle} type="number" min="0" max="9999" value={mediaEditDraft.sortOrder} onChange={e=>setMediaEditDraft({...mediaEditDraft,sortOrder:e.target.value})}/></label>
         </div>
-        {editingMedia.placement!=="gallery"&&<p style={{fontSize:11,color:"#829087",lineHeight:1.6}}>Comparison images are shown only as a complete pair. A real patient photo must be paired with its matching consent-confirmed image from the same case.</p>}
         <div style={{display:"flex",justifyContent:"flex-end",gap:10,marginTop:18}}><button type="button" onClick={()=>setEditingMedia(null)} style={{background:"#edf4f2",color:"#173447"}}>Cancel</button><button type="submit" style={buttonStyle}>Save media details</button></div>
       </form>
     </div>}
