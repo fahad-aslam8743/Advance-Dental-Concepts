@@ -5,7 +5,7 @@ import { upload } from "@vercel/blob/client";
 import { services } from "@/data/services";
 
 type Settings = { clinicName:string; phone:string; addressLine:string; city:string; openingHours:string; logoUrl:string; googleReviewsUrl:string; mapUrl:string };
-type Review = { id:number; display_name:string; rating:number; treatment_slug:string; review_text:string; status:string; source:string; created_at:string };
+type Review = { id:number; display_name:string; rating:number; treatment_slug:string; review_text:string; status:string; source:string; date_label?:string|null; created_at:string };
 type Media = { id:number; treatment_slug:string; kind:string; url:string; alt_text:string; placement:string; pair_number:number|null; sort_order:number; is_illustrative:boolean; patient_consent_verified:boolean; created_at:string };
 type Dashboard = { reviews:{total:number;pending:number;approved:number;average_rating:number}; media:{total:number}; trend:{day:string;date:string;count:number}[]; topTreatments:{treatment_slug:string;count:number}[] };
 
@@ -256,7 +256,7 @@ export default function AdminPage() {
           <button style={{...buttonStyle,justifySelf:"start"}} disabled={!manualVerified}>Add to pending approval queue</button>
         </form></div>
         <div style={{display:"grid",gap:12}}>{reviews.length===0?<div style={cardStyle}>No reviews in this view yet.</div>:reviews.map(review=><article key={review.id} style={cardStyle}>
-          <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><b>{review.display_name}</b><div style={{color:"#b28b45",marginTop:4}}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</div><small style={{color:"#829087"}}>Added {new Date(review.created_at).toLocaleString()}</small></div><span style={{fontSize:11,fontWeight:800,color:review.status==="approved"?"#24724d":review.status==="pending"?"#956d26":"#9b4545"}}>{review.status.toUpperCase()}</span></div>
+          <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><b>{review.display_name}</b><div style={{color:"#b28b45",marginTop:4}}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</div><small style={{color:"#829087"}}>{review.date_label || ("Added " + new Date(review.created_at).toLocaleString())}</small></div><span style={{fontSize:11,fontWeight:800,color:review.status==="approved"?"#24724d":review.status==="pending"?"#956d26":"#9b4545"}}>{review.status.toUpperCase()}</span></div>
           {review.review_text?.trim()&&<p style={{fontSize:13,lineHeight:1.7,color:"#53665d"}}>{review.review_text}</p>}
           <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={buttonStyle} onClick={()=>editReview(review)}>Edit</button><button style={{...buttonStyle,background:"#8e4545"}} onClick={()=>deleteReview(review.id)}>Delete</button>{review.status!=="approved"&&<button style={{...buttonStyle,background:"#286a4e"}} onClick={()=>reviewAction(review.id,"approve")}>Approve</button>}{review.status!=="rejected"&&<button style={{...buttonStyle,background:"#8e4545"}} onClick={()=>reviewAction(review.id,"reject")}>Reject</button>}</div>
         </article>)}</div>
