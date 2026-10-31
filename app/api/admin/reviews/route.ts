@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const reviewText = String(body.reviewText || "").trim().slice(0, 1500);
     const rating = Number(body.rating);
     if (!displayName || reviewText.length < 10 || !Number.isInteger(rating) || rating < 1 || rating > 5) {
-      return NextResponse.json({ error: "Enter a name, a review of at least 10 characters, a 1–5 rating and a valid treatment." }, { status: 400 });
+      return NextResponse.json({ error: "Enter a name, a review of at least 10 characters, a 1–5 rating." }, { status: 400 });
     }
     if (body.verified !== true) {
       return NextResponse.json({ error: "Confirm that this is a genuine patient review and that you have permission to publish it." }, { status: 400 });
@@ -54,7 +54,7 @@ export async function PATCH(request: NextRequest) {
       const name = String(body.displayName || "").trim().slice(0, 80);
       const text = String(body.reviewText || "").trim().slice(0, 1500);
       const rating = Number(body.rating);
-      if (!name || text.length < 10 || !Number.isInteger(rating) || rating < 1 || rating > 5 || !treatmentSlugs.includes(slug)) return NextResponse.json({ error: "Review details are invalid." }, { status: 400 });
+      if (!name || text.length < 10 || !Number.isInteger(rating) || rating < 1 || rating > 5) return NextResponse.json({ error: "Review details are invalid." }, { status: 400 });
       await query("UPDATE reviews SET display_name=$1, rating=$2, review_text=$3, updated_at=NOW() WHERE id=$4", [name,rating,text,id]);
     } else {
       return NextResponse.json({ error: "Unknown action." }, { status: 400 });
