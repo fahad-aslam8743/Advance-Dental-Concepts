@@ -145,7 +145,7 @@ export const seedClinicReviews: SeedClinicReview[] = [
   {
     "display_name": "Ahmad Kamal",
     "rating": 5,
-    "review_text": "A reliable, safe and cost-effective solution place",
+    "review_text": "A reliable, safe and cost-effective solution place …",
     "age_days": 730
   },
   {
