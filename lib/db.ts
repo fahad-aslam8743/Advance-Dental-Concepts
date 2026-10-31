@@ -116,6 +116,7 @@ export async function ensureSchema() {
       await query("CREATE TABLE IF NOT EXISTS admin_users (id BIGSERIAL PRIMARY KEY, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, must_change_password BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
       await query("CREATE TABLE IF NOT EXISTS site_settings (id TEXT PRIMARY KEY, data JSONB NOT NULL, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
       await query("CREATE TABLE IF NOT EXISTS reviews (id BIGSERIAL PRIMARY KEY, display_name TEXT NOT NULL, rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5), treatment_slug TEXT NOT NULL, review_text TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected')), source TEXT NOT NULL DEFAULT 'public', ip_hash TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
+      await query("ALTER TABLE reviews ADD COLUMN IF NOT EXISTS date_label TEXT");
       await query("CREATE INDEX IF NOT EXISTS reviews_status_created_idx ON reviews(status, created_at DESC)");
       await query("CREATE INDEX IF NOT EXISTS reviews_ip_created_idx ON reviews(ip_hash, created_at DESC)");
 
@@ -134,6 +135,12 @@ export async function ensureSchema() {
       await query("INSERT INTO site_settings (id, data) VALUES ('main', $1::jsonb) ON CONFLICT (id) DO NOTHING", [JSON.stringify(DEFAULT_SETTINGS)]);
       await seedTreatmentMediaOnce();
       await seedClinicReviewsOnce();
+      const dateLabelMigration = "adc-clinic-review-date-labels-v1";
+      const dateLabelsApplied = await query("SELECT key FROM app_migrations WHERE key=$1 LIMIT 1", [dateLabelMigration]);
+      if (!dateLabelsApplied.length) {
+        await query("UPDATE reviews SET date_label = CASE WHEN created_at > NOW() - INTERVAL '45 days' THEN 'a month ago' WHEN created_at > NOW() - INTERVAL '120 days' THEN '2 months ago' ELSE '2 years ago' END WHERE source='clinic' AND date_label IS NULL");
+        await query("INSERT INTO app_migrations (key) VALUES ($1) ON CONFLICT (key) DO NOTHING", [dateLabelMigration]);
+      }
 
       const admins = await query<{id:number}>("SELECT id FROM admin_users LIMIT 1");
       const email = process.env.ADMIN_EMAIL;
@@ -163,7 +170,7 @@ export async function getSiteSettings() {
 export async function getApprovedReviews(_treatmentSlug?: string) {
   try {
     await ensureSchema();
-    return await query("SELECT id, display_name, rating, treatment_slug, review_text, source, created_at FROM reviews WHERE status = 'approved' ORDER BY created_at DESC LIMIT 1000");
+    return await query("SELECT id, display_name, rating, treatment_slug, review_text, source, date_label, created_at FROM reviews WHERE status = 'approved' ORDER BY created_at DESC LIMIT 1000");
   } catch {
     return [];
   }
