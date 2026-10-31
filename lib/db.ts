@@ -10,6 +10,7 @@ const DEFAULT_SETTINGS = {
   city: "Johar Town, Lahore, Pakistan",
   openingHours: "Monday–Saturday · 10:30 am–2:30 pm & 5:45 pm–10:00 pm",
   logoUrl: "https://advancedentalconcepts.pk/wp-content/uploads/2024/09/Untitled-design-62-e1783416393934-768x154.png",
+  heroImageUrl: "https://advancedentalconcepts.pk/wp-content/uploads/2024/09/hero-image.jpg",
   googleReviewsUrl: "https://www.google.com/maps/search/?api=1&query=Advance+Dental+Concepts+44F1+Johar+Town+Lahore",
   mapUrl: "https://www.google.com/maps/search/?api=1&query=Advance+Dental+Concepts+44F1+Johar+Town+Lahore"
 };
