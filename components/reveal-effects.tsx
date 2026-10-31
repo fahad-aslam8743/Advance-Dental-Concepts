@@ -9,7 +9,7 @@ export function RevealEffects() {
 
     document.documentElement.classList.add("motion-enabled");
 
-    const targets = document.querySelectorAll([
+    const targets = document.querySelectorAll<HTMLElement>([
       ".section-heading", ".service-card", ".doctor-about-photo",
       ".doctor-about-copy", ".clinic-approach-heading", ".approach-card",
       ".clinic-approach-foot", ".guide-top", ".guide-card",
