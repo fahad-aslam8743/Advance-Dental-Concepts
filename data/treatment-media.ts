@@ -19,6 +19,7 @@ export const comparisonScenarios: Record<string, [ComparisonScenario, Comparison
   "oral-surgery": [{ title: "oral-surgery case 01", concern: "Before treatment", careConcept: "After treatment" }, { title: "oral-surgery case 02", concern: "Before treatment", careConcept: "After treatment" }]
 };
 
+// Educational before-and-after examples are generated as fixed illustrations.
 export type GalleryPhoto = { id: number; caption: string };
 
 const gallerySets: Record<string, [GalleryPhoto, GalleryPhoto, GalleryPhoto, GalleryPhoto, GalleryPhoto]> = {
