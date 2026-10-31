@@ -4,11 +4,12 @@ type Review = { id: number | string; display_name: string; rating: number; revie
 export default function ReviewList({ reviews, variant = "home" }: { reviews: Review[]; variant?: string }) {
  const [initialCount,setInitialCount]=useState(3);
  const [visibleCount,setVisibleCount]=useState(3);
+ const [renderCount,setRenderCount]=useState(3);
  const [expanded,setExpanded]=useState(false);
  const [isMobile,setIsMobile]=useState(true);
  useEffect(()=>{
   const media=window.matchMedia("(min-width: 768px)");
-  const update=()=>{const mobile=!media.matches;const count=mobile?3:6;setIsMobile(mobile);setInitialCount(count);setVisibleCount(current=>expanded?current:count);};
+  const update=()=>{const mobile=!media.matches;const count=mobile?3:6;setIsMobile(mobile);setInitialCount(count);if(!expanded){setVisibleCount(count);setRenderCount(count);}};
   update();media.addEventListener?.("change",update);return()=>media.removeEventListener?.("change",update);
  },[expanded]);
  const ordered=useMemo(()=>{
@@ -19,16 +20,26 @@ export default function ReviewList({ reviews, variant = "home" }: { reviews: Rev
  },[reviews,variant]);
  const canShowMore=visibleCount<ordered.length;
  const canShowLess=visibleCount>=ordered.length&&visibleCount>initialCount;
- function showMore(){setVisibleCount(current=>Math.min(current+3,ordered.length));setExpanded(true);}
+ const perRow=isMobile?1:2;
+ const visibleRows=isMobile?visibleCount:Math.ceil(visibleCount/2);
+ const rows:Review[][]=[];
+ const rendered=ordered.slice(0,renderCount);
+ for(let i=0;i<rendered.length;i+=perRow)rows.push(rendered.slice(i,i+perRow));
+ function showMore(){const next=Math.min(visibleCount+3,ordered.length);setRenderCount(next);setVisibleCount(next);setExpanded(true);}
  function showLess(){setVisibleCount(initialCount);setExpanded(false);}
  if(!ordered.length)return <div className="shared-review-empty"><p>There are no approved reviews published yet.</p></div>;
  return <div className="shared-review-list-wrap">
-  <div className="shared-review-list" style={{maxHeight:(visibleCount>=ordered.length?Math.max(1,Math.ceil(ordered.length/(isMobile?1:2))):Math.ceil(visibleCount/(isMobile?1:2)))*520+"px"}} aria-live="polite">
-   {ordered.slice(0,visibleCount).map(review=><article className="shared-review-card" key={review.id}>
-    <div className="shared-review-card-top"><span className="shared-review-stars" aria-label={review.rating+" out of 5 stars"}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</span><small>{review.source==="google"?"GOOGLE REVIEW":"PATIENT REVIEW"}</small></div>
-    <p>{review.review_text}</p>
-    <div className="shared-review-author"><b>{review.display_name}</b>{review.created_at&&<time>{new Date(review.created_at).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"})}</time>}</div>
-   </article>)}
+  <div className="shared-review-list" aria-live="polite">
+   {rows.map((row,index)=>{
+    const visible=index<visibleRows;
+    return <div className="shared-review-row" key={String(row[0]?.id||index)} style={{maxHeight:visible?"1000px":"0px",opacity:visible?1:0,marginBottom:visible?"14px":"0px"}} onTransitionEnd={event=>{if(event.propertyName==="max-height"&&index===rows.length-1&&visibleCount<renderCount)setRenderCount(visibleCount);}}>
+     {row.map(review=><article className="shared-review-card" key={review.id}>
+      <div className="shared-review-card-top"><span className="shared-review-stars" aria-label={review.rating+" out of 5 stars"}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</span><small>{review.source==="google"?"GOOGLE REVIEW":"PATIENT REVIEW"}</small></div>
+      <p>{review.review_text}</p>
+      <div className="shared-review-author"><b>{review.display_name}</b>{review.created_at&&<time>{new Date(review.created_at).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"})}</time>}</div>
+     </article>)}
+    </div>;
+   })}
   </div>
   <div className="shared-review-actions">{canShowMore&&<button type="button" onClick={showMore}>Show more <span aria-hidden="true">↓</span></button>}{canShowLess&&<button type="button" onClick={showLess}>Show less <span aria-hidden="true">↑</span></button>}</div>
  </div>;
