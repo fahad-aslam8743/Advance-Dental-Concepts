@@ -660,3 +660,47 @@ img,video,iframe,svg{max-width:100%}
  .treatment-hero h1{font-size:34px}
  .footer-main{grid-template-columns:minmax(0,1fr)}
 }
+
+/* Final mobile layout refinement and dentist profile section */
+.doctor-about-grid{display:grid;grid-template-columns:minmax(280px,.82fr) minmax(0,1.18fr);gap:clamp(34px,6vw,88px);align-items:center}
+.doctor-about-photo{position:relative;min-width:0;min-height:560px;background:#d8e2dc;overflow:hidden}
+.doctor-about-photo>img{display:block;width:100%;height:560px;object-fit:cover;object-position:center 18%}
+.doctor-photo-caption{position:absolute;left:0;right:0;bottom:0;padding:25px;background:linear-gradient(transparent,rgba(13,35,33,.9));color:#fff;display:flex;flex-direction:column;gap:5px}
+.doctor-photo-caption>span,.doctor-credentials>div>span{font:800 8px var(--display);letter-spacing:.16em;color:#d6c29e}
+.doctor-photo-caption>b{font:600 25px var(--serif)}
+.doctor-photo-caption>small{font:500 10px var(--sans);color:#e0e8e2}
+.doctor-about-copy h2{font:600 clamp(36px,4.3vw,56px)/1.13 var(--display);letter-spacing:-.06em;margin:18px 0 23px}
+.doctor-about-copy h2 em{font:500 1em var(--serif);color:var(--teal);letter-spacing:-.04em}
+.doctor-about-copy>p:not(.large-copy){font-size:12px;line-height:1.9;color:var(--muted)}
+.doctor-credentials{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:25px 0;padding:16px 0;border-block:1px solid #cbd6cd}
+.doctor-credentials>div{min-width:0;display:flex;flex-direction:column;gap:5px}
+.doctor-credentials>div>span{color:#9a805d}
+.doctor-credentials>div>b{font:700 17px var(--display);color:var(--ink)}
+.doctor-credentials>div>small{font-size:10px;color:var(--muted)}
+@media(max-width:760px){
+ .treatment-page .wrap{width:calc(100% - 40px)!important}
+ .treatment-page .treatment-hero-content{width:calc(100% - 40px)!important;max-width:1200px;margin-inline:auto;padding:40px 0!important}
+ .treatment-page .treatment-hero h1{max-width:100%;font-size:clamp(34px,8.2vw,46px);line-height:1.08;letter-spacing:-.055em}
+ .treatment-page .treatment-hero-content>p{max-width:100%;font-size:13px;line-height:1.75}
+ .treatment-page .treatment-hero-actions{max-width:100%}
+ .treatment-page .treatment-hero-actions .button{width:100%;white-space:normal;line-height:1.35;padding:14px 12px}
+ .treatment-page .treatment-jump{width:calc(100% - 40px)!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+ .treatment-page .treatment-jump a{grid-column:span 2;min-height:48px;padding:9px 5px!important;font-size:10px!important;white-space:normal;overflow-wrap:normal}
+ .treatment-page .treatment-jump a:nth-child(4):nth-last-child(2){grid-column:2/span 2}
+ .treatment-page .treatment-jump a:nth-child(5):last-child{grid-column:4/span 2}
+ .treatment-page .treatment-jump a:nth-child(4):last-child{grid-column:3/span 2}
+ .treatment-page .treatment-intro-grid>div,.treatment-page .treatment-faq-grid>div{min-width:0}
+ .treatment-page .treatment-intro h2,.treatment-page .treatment-faq h2{max-width:100%;overflow-wrap:normal;font-size:clamp(31px,8vw,39px)}
+ .treatment-page .button{max-width:100%;white-space:normal}
+ .doctor-about-grid{grid-template-columns:minmax(0,1fr);gap:30px}
+ .doctor-about-photo{min-height:0;aspect-ratio:4/4.4}
+ .doctor-about-photo>img{height:100%;position:absolute;inset:0}
+ .doctor-about-copy h2{font-size:clamp(34px,8vw,44px)}
+ .doctor-credentials{gap:10px}
+}
+@media(max-width:380px){
+ .treatment-page .wrap{width:calc(100% - 36px)!important}
+ .treatment-page .treatment-hero-content{width:calc(100% - 36px)!important}
+ .treatment-page .treatment-jump{width:calc(100% - 36px)!important}
+ .treatment-page .treatment-jump a{font-size:9px!important}
+}
