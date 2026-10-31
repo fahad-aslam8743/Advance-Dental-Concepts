@@ -571,3 +571,92 @@ body:has(.admin-app){background:#f3f7f7}
  .treatment-videos-grid{grid-template-columns:1fr}
  .video-empty-skeleton{min-height:135px}
 }
+
+
+/* Mobile stability pass: prevent any child from widening the viewport */
+html,body{width:100%;max-width:100%;overflow-x:clip}
+body{position:relative}
+main,.treatment-page,.treatment-page>section,.treatment-page>div,.treatment-page nav,
+.site-header,.footer,.wrap,.media-section,.media-section>.wrap{min-width:0;max-width:100%}
+img,video,iframe,svg{max-width:100%}
+.treatment-page *{min-width:0}
+.treatment-page .wrap{width:min(1200px,calc(100% - 48px))}
+.treatment-page .treatment-jump{box-sizing:border-box;width:min(1200px,calc(100% - 48px));margin-inline:auto}
+.treatment-jump a{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:760px){
+ .wrap,.treatment-page .wrap{width:calc(100% - 32px);max-width:100%}
+ .treatment-page .breadcrumbs{gap:6px;flex-wrap:wrap;font-size:8px;overflow-wrap:anywhere}
+ .treatment-page .treatment-hero{width:100%;max-width:100%;overflow:hidden}
+ .treatment-page .treatment-hero-content{width:100%;padding-block:38px}
+ .treatment-page .treatment-hero h1{font-size:clamp(34px,9vw,48px);overflow-wrap:anywhere}
+ .treatment-page .treatment-hero-content>p{font-size:12px;overflow-wrap:anywhere}
+ .treatment-jump{
+   display:grid!important;
+   grid-template-columns:repeat(3,minmax(0,1fr));
+   grid-auto-rows:minmax(42px,auto);
+   gap:7px;
+   width:calc(100% - 32px)!important;
+   max-width:100%;
+   padding:10px 0;
+   margin:0 auto;
+   overflow:visible;
+   position:relative;
+   top:auto;
+ }
+ .treatment-jump a{
+   display:flex;
+   align-items:center;
+   justify-content:center;
+   width:100%;
+   min-width:0;
+   max-width:100%;
+   min-height:42px;
+   padding:8px 3px!important;
+   white-space:normal!important;
+   overflow-wrap:anywhere;
+   text-overflow:clip;
+   text-align:center;
+   font-size:10px!important;
+   line-height:1.2;
+   border-radius:8px;
+ }
+ .treatment-jump a:nth-child(4):nth-last-child(2){grid-column:2}
+ .treatment-jump a:nth-child(5):last-child{grid-column:3}
+ .treatment-jump a:nth-child(4):last-child{grid-column:2}
+ .treatment-intro,.treatment-options,.treatment-content,.treatment-faq,.related-section{padding-block:48px}
+ .treatment-intro-grid,.content-layout,.treatment-faq-grid,.related-grid,.option-grid{grid-template-columns:minmax(0,1fr);gap:22px}
+ .content-layout{display:block}
+ .aside-sticky{position:static;margin-bottom:28px}
+ .treatment-intro h2,.treatment-faq h2{font-size:clamp(30px,8vw,40px)}
+ .content-block h2{font-size:23px;overflow-wrap:anywhere}
+ .content-block>p,.clinical-note p{overflow-wrap:anywhere}
+ .price-callout{gap:12px;padding:15px;min-width:0}
+ .price-callout b{font-size:20px;overflow-wrap:anywhere}
+ .treatment-cta-inner{align-items:flex-start;flex-direction:column}
+ .treatment-cta-inner .button{max-width:100%;white-space:normal;text-align:center}
+ .related-card{grid-template-columns:100px minmax(0,1fr)}
+ .related-card>div:last-child{min-width:0;overflow-wrap:anywhere}
+ .media-section{width:100%;overflow:hidden}
+ .clinical-comparisons-grid{grid-template-columns:minmax(0,1fr)!important;gap:14px}
+ .clinical-compare-card{width:100%;min-width:0}
+ .clinical-pair-images{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .clinical-photo-empty{min-width:0;width:100%}
+ .treatment-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .treatment-videos-grid{grid-template-columns:minmax(0,1fr)}
+ .treatment-gallery-grid img{width:100%;height:clamp(120px,38vw,180px)}
+ .shared-review-list,.shared-review-row,.shared-review-card{min-width:0;max-width:100%}
+ .shared-review-card>p{overflow-wrap:anywhere}
+ .faq-item>button{min-width:0;overflow-wrap:anywhere}
+ .faq-answer{min-width:0}
+ .footer-main{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px}
+ .footer-main>div{min-width:0}
+}
+@media(max-width:380px){
+ .treatment-jump{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .treatment-jump a:nth-child(4):nth-last-child(2),
+ .treatment-jump a:nth-child(5):last-child,
+ .treatment-jump a:nth-child(4):last-child{grid-column:auto}
+ .treatment-jump a:last-child:nth-child(odd){grid-column:1/-1;width:60%;justify-self:center}
+ .treatment-hero h1{font-size:34px}
+ .footer-main{grid-template-columns:minmax(0,1fr)}
+}
