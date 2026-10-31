@@ -859,3 +859,48 @@ img,video,iframe,svg{max-width:100%}
   .treatment-page .treatment-jump{width:calc(100% - 24px)!important;gap:10px!important}
   .treatment-page .treatment-jump>a{font-size:9px!important}
 }
+
+
+/* Review cards use independent masonry columns: short cards are followed immediately by the next card. */
+.shared-review-list{
+  display:block!important;
+  columns:2!important;
+  column-gap:14px!important;
+  overflow:visible!important;
+  max-height:none!important;
+}
+.shared-review-list>.shared-review-card{
+  display:inline-flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0 0 14px!important;
+  break-inside:avoid!important;
+  page-break-inside:avoid!important;
+  vertical-align:top!important;
+}
+.shared-review-card>.shared-review-author{margin-top:0!important}
+@media(max-width:767px){
+  .shared-review-list{columns:1!important}
+  .shared-review-list>.shared-review-card{margin-bottom:11px!important}
+}
+/* More compact service tabs on small screens */
+@media(max-width:760px){
+  .treatment-page .treatment-jump{
+    gap:7px!important;
+    column-gap:7px!important;
+    row-gap:7px!important;
+    padding:4px 0!important;
+  }
+  .treatment-page .treatment-jump>a{
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    padding:3px 3px!important;
+    font-size:9px!important;
+  }
+}
+@media(max-width:380px){
+  .treatment-page .treatment-jump{gap:7px!important}
+}
