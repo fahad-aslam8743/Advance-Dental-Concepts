@@ -141,13 +141,10 @@ export async function getSiteSettings() {
   }
 }
 
-export async function getApprovedReviews(treatmentSlug?: string) {
+export async function getApprovedReviews(_treatmentSlug?: string) {
   try {
     await ensureSchema();
-    if (treatmentSlug) {
-      return await query("SELECT id, display_name, rating, treatment_slug, review_text, created_at FROM reviews WHERE status = 'approved' AND treatment_slug = $1 ORDER BY created_at DESC LIMIT 12", [treatmentSlug]);
-    }
-    return await query("SELECT id, display_name, rating, treatment_slug, review_text, created_at FROM reviews WHERE status = 'approved' ORDER BY created_at DESC LIMIT 100");
+    return await query("SELECT id, display_name, rating, treatment_slug, review_text, source, created_at FROM reviews WHERE status = 'approved' ORDER BY created_at DESC LIMIT 1000");
   } catch {
     return [];
   }
