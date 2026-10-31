@@ -4,6 +4,7 @@ import {getApprovedReviews,getTreatmentMedia,getSiteSettings} from "@/lib/db";
 import {services} from "@/data/services";
 import {comparisonScenarios} from "@/data/treatment-media";
 import TreatmentComparisons, {type TreatmentComparison} from "@/components/treatment-comparisons";
+import ReviewList from "@/components/review-list";
 import type {Service} from "@/data/services";
 const googleReviews="https://www.google.com/maps/place/?q=place_id:ChIJ3WMDzdQBGTkRwcFbl76bFc4";
 const patientNotes:Record<string,{simple:string;goodToKnow:string[];steps:string[];priceFactors:string[];aftercare:string[]}>={
@@ -29,50 +30,6 @@ export function PatientDetails({service}:{service:Service}) {
 
 function Placeholder({kind,title}:{kind:string;title:string}){return <div className="media-placeholder"><div className="media-placeholder-icon">{kind==="video"?<PlayCircle/>:<Images/>}</div><b>{title}</b><span>{kind==="video"?"A clinic-approved explainer video will be added here.":"Clinic-approved photos will appear here."}</span><small>NO MEDIA UPLOADED YET</small></div>}
 function Stars({rating}:{rating:number}){return <span aria-label={rating+" out of 5 stars"} style={{color:"#b28b45",letterSpacing:".12em"}}>{"★".repeat(rating)}{"☆".repeat(5-rating)}</span>}
-const googleReviewSummaries = [
-  {
-    id: "google-review-1",
-    author: "Najeeb UrRehman",
-    rating: 5,
-    date: "1 month ago",
-    treatment: "Extraction · Root canal · Implants · Crowns",
-    text: "He describes treatment across extraction, root canal work, implants and crowns, and praises the clinician's professionalism, gentle manner, clear explanations and natural-looking results."
-  },
-  {
-    id: "google-review-2",
-    author: "Ammar jutt",
-    rating: 5,
-    date: "2 months ago",
-    treatment: "Dental implants",
-    text: "He says he was nervous before an implant but found the procedure smooth and painless, and appreciated the team's attention to detail and the post-treatment guidance."
-  },
-  {
-    id: "google-review-3",
-    author: "Hina Mushtaq",
-    rating: 5,
-    date: "2 months ago",
-    treatment: "Clinic experience",
-    text: "She praises the clinic's hygiene and sterilisation standards and says the doctors explained her procedure clearly, making the visit feel smooth and comfortable."
-  }
-];
-
-function GoogleReviewHighlights() {
- return <div className="google-review-highlights" aria-label="Recent Google patient reviews">
-  {googleReviewSummaries.map((review) => <article className="google-review-card" key={review.id}>
-   <div className="google-review-card-meta">
-    <span>GOOGLE REVIEW</span>
-    <time>{review.date}</time>
-   </div>
-   <div className="google-review-author">
-    <b>{review.author}</b>
-    <Stars rating={review.rating}/>
-   </div>
-   <p>{review.text}</p>
-   <small>{review.treatment}</small>
-  </article>)}
- </div>;
-}
-
 export async function TreatmentMedia({name,slug}:{name:string;slug:string}) {
  const items=await getTreatmentMedia(slug);
  const photos=items.filter((x:any)=>(x.placement||"gallery")==="gallery"&&x.kind==="image");
@@ -113,70 +70,27 @@ export async function TreatmentMedia({name,slug}:{name:string;slug:string}) {
 }
 
 export async function TreatmentReviews({name,slug}:{name:string;slug:string}) {
- const reviews=await getApprovedReviews(slug);
+ const reviews=await getApprovedReviews();
  const settings=await getSiteSettings();
  const googleUrl=settings.googleReviewsUrl||googleReviews;
- return <section className="patient-reviews">
-  <div className="wrap">
-   <div className="patient-section-heading">
-    <span>PUBLIC PATIENT FEEDBACK</span>
-    <h2>What patients say about the clinic.</h2>
-    <p>These are clinic-wide Google reviews, not testimonials assigned to {name.toLowerCase()}. These are recent, publicly visible Google reviews, with the names, individual ratings and dates shown on the listing.</p>
-   </div>
-   <div className="review-panel review-panel-clinic-wide">
-    <div className="clinic-google-copy">
-     <span>CLINIC-WIDE GOOGLE RATING</span>
-     <h2>A 5.0 rating from local patients.</h2>
-     <p>Advance Dental Concepts currently has a 5.0/5 overall rating from 31 Google reviews. The three cards below show recent patient feedback visible on Google.</p>
-     <a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read all Google reviews <ArrowUpRight size={15}/></a>
-    </div>
-    <div className="review-rating clinic-google-rating">
-     <strong>5.0</strong>
-     <Stars rating={5}/>
-     <b>31 Google reviews</b>
-     <small>Overall clinic rating</small>
-    </div>
-    <GoogleReviewHighlights/>
-    {reviews.length>0&&<div className="approved-review-list treatment-approved-reviews">
-     <h3>Approved website reviews for {name}</h3>
-     {reviews.map((review:any)=><article key={review.id}>
-      <div><b>{review.display_name}</b><Stars rating={Number(review.rating)}/></div>
-      <p>{review.review_text}</p>
-      <small>Approved website review · {name}</small>
-     </article>)}
-    </div>}
-   </div>
+ return <section className="patient-reviews"><div className="wrap">
+  <div className="patient-section-heading"><span>PUBLIC PATIENT FEEDBACK</span><h2>What patients say about the clinic.</h2><p>Every approved clinic review is shown here. Reviews are not assigned to individual treatments.</p></div>
+  <div className="review-panel review-panel-clinic-wide">
+   <div className="clinic-google-copy"><span>CLINIC-WIDE GOOGLE RATING</span><h2>A 5.0 rating from local patients.</h2><p>Read patient feedback about their experience at Advance Dental Concepts.</p><a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read Google reviews <ArrowUpRight size={15}/></a></div>
+   <div className="review-rating clinic-google-rating"><strong>5.0</strong><Stars rating={5}/><b>Google rating</b><small>Overall clinic feedback</small></div>
+   <ReviewList reviews={reviews as any[]} variant={slug}/>
   </div>
- </section>;
+ </div></section>;
 }
 
 export async function HomeReviewSection() {
  const reviews=await getApprovedReviews();
  const settings=await getSiteSettings();
  const googleUrl=settings.googleReviewsUrl||googleReviews;
- const treatmentName=(slug:string)=>services.find(service=>service.slug===slug)?.name||slug;
- return <section className="home-review-section" id="reviews">
-  <div className="wrap home-review-inner">
-   <div>
-    <span>GOOGLE PATIENT FEEDBACK</span>
-    <h2>Patient experiences<br/>at our clinic.</h2>
-    <p>Advance Dental Concepts currently has a 5.0/5 overall rating from 31 Google reviews. These are recent clinic-wide review summaries; The cards show the reviewer name, individual score and date available on the live Google listing.</p>
-    <a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read all Google reviews <ArrowUpRight size={15}/></a>
-   </div>
-   <div className="home-review-rating">
-    <div className="google-rating-top"><strong>5.0</strong><span>★★★★★</span></div>
-    <b>31 Google reviews</b>
-    <small>Overall clinic rating · all services</small>
-    <GoogleReviewHighlights/>
-    {reviews.length>0&&<div className="home-approved-review-list">
-     {reviews.map((review:any)=><article className="home-approved-review" key={review.id}>
-      <div><Stars rating={Number(review.rating)}/><small>{treatmentName(review.treatment_slug)}</small></div>
-      <p>{review.review_text}</p><small>{review.display_name} · approved website review</small>
-     </article>)}
-    </div>}
-   </div>
-  </div>
- </section>;
+ return <section className="home-review-section" id="reviews"><div className="wrap home-review-inner">
+  <div><span>PATIENT FEEDBACK</span><h2>Patient experiences<br/>at our clinic.</h2><p>Read approved reviews shared by patients of Advance Dental Concepts.</p><a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read Google reviews <ArrowUpRight size={15}/></a></div>
+  <div className="home-review-rating"><ReviewList reviews={reviews as any[]} variant="home"/></div>
+ </div></section>;
 }
 export async function ClinicContact() {
  const settings=await getSiteSettings();
