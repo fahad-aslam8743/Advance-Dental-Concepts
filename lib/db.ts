@@ -28,7 +28,7 @@ export async function query<T = Record<string, unknown>>(text: string, params: u
 }
 
 async function seedTreatmentMediaOnce() {
-  const migrationKey = "adc-treatment-gallery-photo-refresh-v4";
+  const migrationKey = "adc-treatment-gallery-photo-refresh-v5";
   const applied = await query("SELECT key FROM app_migrations WHERE key = $1 LIMIT 1", [migrationKey]);
   if (applied.length) return;
 
@@ -86,7 +86,7 @@ async function seedTreatmentMediaOnce() {
   // Remove older seed versions, including the cartoon comparison assets.
   // Uploaded Vercel Blob media uses its own blob pathname and is preserved.
   await query(
-    "DELETE FROM treatment_media WHERE pathname LIKE 'seed/%' AND pathname NOT LIKE 'seed/treatment-gallery-v4/%'"
+    "DELETE FROM treatment_media WHERE pathname LIKE 'seed/%' AND pathname NOT LIKE 'seed/treatment-gallery-v5/%'"
   );
   await query("INSERT INTO app_migrations (key) VALUES ($1) ON CONFLICT (key) DO NOTHING", [migrationKey]);
   console.info("ADC treatment gallery v4 seeded", { services: services.length, images: inserted.length });
