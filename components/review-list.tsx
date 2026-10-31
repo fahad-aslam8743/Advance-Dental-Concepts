@@ -4,10 +4,9 @@ type Review = { id: number | string; display_name: string; rating: number; revie
 export default function ReviewList({ reviews, variant = "home" }: { reviews: Review[]; variant?: string }) {
  const [initialCount,setInitialCount]=useState(3);
  const [visibleCount,setVisibleCount]=useState(3);
- const [isMobile,setIsMobile]=useState(true);
  useEffect(()=>{
   const media=window.matchMedia("(min-width: 768px)");
-  const update=()=>{const mobile=!media.matches;const count=mobile?3:6;setIsMobile(mobile);setInitialCount(count);setVisibleCount(current=>Math.min(Math.max(current,count),reviews.length));};
+  const update=()=>{const mobile=!media.matches;const count=mobile?3:6;setInitialCount(count);setVisibleCount(current=>Math.min(Math.max(current,count),reviews.length));};
   update();media.addEventListener?.("change",update);return()=>media.removeEventListener?.("change",update);
  },[reviews.length]);
  const ordered=useMemo(()=>{
