@@ -33,9 +33,9 @@ async function seedTreatmentMediaOnce() {
 
   const values: unknown[] = [];
   const tuples = seedRows.map((row, index) => {
-    const offset = index * 7;
-    values.push(row.treatment_slug, row.kind, row.url, row.pathname, row.alt_text, row.placement, row.pair_number);
-    return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${offset + 6}, $${offset + 7})`;
+    const offset = index * 10;
+    values.push(row.treatment_slug, row.kind, row.url, row.pathname, row.alt_text, row.placement, row.pair_number, row.sort_order, row.is_illustrative, row.patient_consent_verified);
+    return `(${offset + 1}, ${offset + 2}, ${offset + 3}, ${offset + 4}, ${offset + 5}, ${offset + 6}, ${offset + 7}, ${offset + 8}, ${offset + 9}, ${offset + 10})`;
   });
 
   // The migration marker and initial media insert happen in one statement.
@@ -47,10 +47,10 @@ async function seedTreatmentMediaOnce() {
        RETURNING key
      )
      INSERT INTO treatment_media
-       (treatment_slug, kind, url, pathname, alt_text, placement, pair_number)
+       (treatment_slug, kind, url, pathname, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified)
      SELECT seed_data.*
      FROM (VALUES ${tuples.join(",")}) AS seed_data
-       (treatment_slug, kind, url, pathname, alt_text, placement, pair_number)
+       (treatment_slug, kind, url, pathname, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified)
      CROSS JOIN seed_guard
      ON CONFLICT DO NOTHING`,
     values
@@ -70,6 +70,8 @@ export async function ensureSchema() {
       await query("ALTER TABLE treatment_media ADD COLUMN IF NOT EXISTS placement TEXT NOT NULL DEFAULT 'gallery'");
       await query("ALTER TABLE treatment_media ADD COLUMN IF NOT EXISTS pair_number SMALLINT");
       await query("ALTER TABLE treatment_media ADD COLUMN IF NOT EXISTS sort_order INTEGER NOT NULL DEFAULT 100");
+      await query("ALTER TABLE treatment_media ADD COLUMN IF NOT EXISTS is_illustrative BOOLEAN NOT NULL DEFAULT FALSE");
+      await query("ALTER TABLE treatment_media ADD COLUMN IF NOT EXISTS patient_consent_verified BOOLEAN NOT NULL DEFAULT FALSE");
       await query("CREATE INDEX IF NOT EXISTS treatment_media_slug_idx ON treatment_media(treatment_slug, placement, sort_order, created_at DESC)");
       await query("CREATE UNIQUE INDEX IF NOT EXISTS treatment_media_asset_identity_idx ON treatment_media(treatment_slug, placement, COALESCE(pair_number, 0), url)");
       await query("CREATE TABLE IF NOT EXISTS app_migrations (key TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
@@ -119,7 +121,7 @@ export async function getTreatmentMedia(treatmentSlug: string) {
   try {
     await ensureSchema();
     return await query(
-      "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, created_at FROM treatment_media WHERE treatment_slug = $1 ORDER BY CASE placement WHEN 'comparison_before' THEN 1 WHEN 'comparison_after' THEN 2 ELSE 0 END, pair_number NULLS FIRST, sort_order ASC, created_at ASC",
+      "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified, created_at FROM treatment_media WHERE treatment_slug = $1 ORDER BY CASE placement WHEN 'comparison_before' THEN 1 WHEN 'comparison_after' THEN 2 ELSE 0 END, pair_number NULLS FIRST, sort_order ASC, created_at ASC",
       [treatmentSlug]
     );
   } catch {
