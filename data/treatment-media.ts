@@ -146,7 +146,7 @@ function dentalIllustration(slug: string, side: "before" | "after", pairNumber: 
 
 export function buildSeedTreatmentMedia(services: Service[]) {
   const bySlug = new Map(services.map(service => [service.slug, service]));
-  const rows: { treatment_slug: string; kind: "image"; url: string; pathname: string; alt_text: string; placement: "gallery" | "comparison_before" | "comparison_after"; pair_number: number | null }[] = [];
+  const rows: { treatment_slug: string; kind: "image"; url: string; pathname: string; alt_text: string; placement: "gallery" | "comparison_before" | "comparison_after"; pair_number: number | null; sort_order: number; is_illustrative: boolean; patient_consent_verified: boolean }[] = [];
   for (const service of services) {
     const gallerySlugs = gallerySets[service.slug] || [service.slug];
     for (const [index, imageSlug] of gallerySlugs.entries()) {
@@ -159,7 +159,10 @@ export function buildSeedTreatmentMedia(services: Service[]) {
         pathname: `seed/gallery/${service.slug}/${index + 1}`,
         alt_text: `Illustrative stock photograph for ${service.name}. This is not a documented patient result.`,
         placement: "gallery",
-        pair_number: null
+        pair_number: null,
+        sort_order: index + 1,
+        is_illustrative: false,
+        patient_consent_verified: false
       });
     }
     for (const pairNumber of [1, 2] as const) {
@@ -173,7 +176,10 @@ export function buildSeedTreatmentMedia(services: Service[]) {
             ? `Educational condition illustration for ${service.name}; not an actual patient photograph.`
             : `Educational care-concept illustration for ${service.name}; not a predicted or actual patient result.`,
           placement: side === "before" ? "comparison_before" : "comparison_after",
-          pair_number: pairNumber
+          pair_number: pairNumber,
+          sort_order: pairNumber,
+          is_illustrative: true,
+          patient_consent_verified: false
         });
       }
     }
