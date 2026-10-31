@@ -464,3 +464,21 @@ body:has(.admin-app){background:#f3f7f7}
  .review-panel-clinic-wide{grid-template-columns:1fr}
  .clinic-google-rating{border-left:0;border-top:1px solid #d6ded5;padding:20px 0 0}
 }
+
+/* Shared clinic-wide review list */
+.shared-review-list-wrap{grid-column:1/-1;min-width:0;width:100%}
+.shared-review-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;overflow:hidden;transition:max-height .55s cubic-bezier(.2,.7,.2,1)}
+.shared-review-card{min-width:0;background:#fff;border:1px solid #e2e8e1;padding:22px 23px;display:flex;flex-direction:column;gap:13px;box-shadow:0 8px 22px rgba(24,42,43,.035)}
+.shared-review-card-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.shared-review-stars{color:#b28b45;letter-spacing:.12em;font-size:13px;white-space:nowrap}
+.shared-review-card-top small{font:700 8px var(--display);letter-spacing:.13em;color:#8b9a91}
+.shared-review-card>p{font:500 14px/1.85 var(--serif);color:#344c48;margin:0;white-space:pre-wrap}
+.shared-review-author{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;padding-top:10px;border-top:1px solid #edf0eb}
+.shared-review-author b{font:700 10px var(--display);color:var(--ink)}
+.shared-review-author time{font-size:9px;color:#89968f}
+.shared-review-actions{display:flex;justify-content:center;gap:12px;padding-top:24px}
+.shared-review-actions button{border:1px solid #b8c9bf;background:transparent;color:var(--teal);padding:11px 20px;font:700 10px var(--display);letter-spacing:.03em;cursor:pointer;transition:background .2s,color .2s}
+.shared-review-actions button:hover{background:var(--teal);color:#fff}
+.shared-review-empty{grid-column:1/-1;padding:30px;background:#f0f2ed;border:1px solid #e0e7df;color:#64736b;font-size:12px}
+.shared-review-empty p{margin:0}
+@media(max-width:767px){.shared-review-list{grid-template-columns:1fr;gap:11px}.shared-review-card{padding:18px}.shared-review-card>p{font-size:13px}.shared-review-actions{padding-top:18px}}
