@@ -29,8 +29,12 @@ export async function POST(request: NextRequest) {
     if (!displayName || reviewText.length < 10 || !Number.isInteger(rating) || rating < 1 || rating > 5 || !treatmentSlugs.includes(slug)) {
       return NextResponse.json({ error: "Enter a name, a review of at least 10 characters, a 1–5 rating and a valid treatment." }, { status: 400 });
     }
-    const rows = await query("INSERT INTO reviews (display_name, rating, treatment_slug, review_text, status, source) VALUES ($1,$2,$3,$4,'approved','manual') RETURNING id", [displayName, rating, slug, reviewText]);
-    return NextResponse.json({ ok: true, id: rows[0]?.id });
+    if (body.verified !== true) {
+      return NextResponse.json({ error: "Confirm that this is a genuine patient review and that you have permission to publish it." }, { status: 400 });
+    }
+    // Manual entries join the pending queue. They are never auto-published by this endpoint.
+    const rows = await query("INSERT INTO reviews (display_name, rating, treatment_slug, review_text, status, source) VALUES ($1,$2,$3,$4,'pending','manual') RETURNING id", [displayName, rating, slug, reviewText]);
+    return NextResponse.json({ ok: true, id: rows[0]?.id, status: "pending" });
   } catch (error) {
     console.error("Manual review error", error);
     return NextResponse.json({ error: "Could not add review." }, { status: 500 });
