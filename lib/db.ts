@@ -9,7 +9,7 @@ const DEFAULT_SETTINGS = {
   addressLine: "44 F/1, Block F1, Phase 1",
   city: "Johar Town, Lahore, Pakistan",
   openingHours: "Monday–Saturday · 10:30 am–2:30 pm & 5:45 pm–10:00 pm",
-  logoUrl: "",
+  logoUrl: "https://advancedentalconcepts.pk/wp-content/uploads/2024/09/Untitled-design-62-e1783416393934-768x154.png",
   googleReviewsUrl: "https://www.google.com/maps/search/?api=1&query=Advance+Dental+Concepts+44F1+Johar+Town+Lahore",
   mapUrl: "https://www.google.com/maps/search/?api=1&query=Advance+Dental+Concepts+44F1+Johar+Town+Lahore"
 };
@@ -133,6 +133,12 @@ export async function ensureSchema() {
       await query("CREATE TABLE IF NOT EXISTS admin_login_attempts (id BIGSERIAL PRIMARY KEY, ip_hash TEXT NOT NULL, attempted_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
       await query("CREATE INDEX IF NOT EXISTS admin_login_attempts_ip_idx ON admin_login_attempts(ip_hash, attempted_at DESC)");
       await query("INSERT INTO site_settings (id, data) VALUES ('main', $1::jsonb) ON CONFLICT (id) DO NOTHING", [JSON.stringify(DEFAULT_SETTINGS)]);
+      const logoMigration = "adc-default-clinic-logo-v1";
+      const logoMigrationApplied = await query("SELECT key FROM app_migrations WHERE key=$1 LIMIT 1", [logoMigration]);
+      if (!logoMigrationApplied.length) {
+        await query("UPDATE site_settings SET data = jsonb_set(data, '{logoUrl}', to_jsonb($1::text), TRUE), updated_at = NOW() WHERE id='main' AND COALESCE(data->>'logoUrl','')=''", [DEFAULT_SETTINGS.logoUrl]);
+        await query("INSERT INTO app_migrations (key) VALUES ($1) ON CONFLICT (key) DO NOTHING", [logoMigration]);
+      }
       await seedTreatmentMediaOnce();
       await seedClinicReviewsOnce();
       const dateLabelMigration = "adc-clinic-review-date-labels-v1";
