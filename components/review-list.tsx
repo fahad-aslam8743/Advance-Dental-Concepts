@@ -19,7 +19,7 @@ export default function ReviewList({ reviews, variant = "home" }: { reviews: Rev
   return [...reviews.slice(offset),...reviews.slice(0,offset)];
  },[reviews,variant]);
  const canShowMore=visibleCount<ordered.length;
- const canShowLess=visibleCount>=ordered.length&&visibleCount>initialCount;
+ const canShowLess=visibleCount>initialCount;
  const perRow=isMobile?1:2;
  const visibleRows=isMobile?visibleCount:Math.ceil(visibleCount/2);
  const rows:Review[][]=[];
