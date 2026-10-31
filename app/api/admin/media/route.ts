@@ -31,7 +31,7 @@ export async function PATCH(request: NextRequest) {
     if (!Number.isInteger(id) || id < 1 || !placements.includes(placement as typeof placements[number])) {
       return NextResponse.json({ error: "Choose a valid media item and display location." }, { status: 400 });
     }
-    if (placement !== "gallery" && (!Number.isInteger(pairNumber) || ![1,2].includes(pairNumber as number))) return NextResponse.json({ error: "Choose comparison pair 1 or 2." }, { status: 400 });
+    if (placement !== "gallery" && (pairNumber === null || !Number.isInteger(pairNumber) || ![1,2].includes(pairNumber))) return NextResponse.json({ error: "Choose comparison pair 1 or 2." }, { status: 400 });
     const current = await query<{kind:string;treatment_slug:string;placement:string}>("SELECT kind, treatment_slug, placement FROM treatment_media WHERE id=$1", [id]);
     if (!current[0]) return NextResponse.json({ error: "Media item not found." }, { status: 404 });
     if (!treatmentSlugs.includes(current[0].treatment_slug)) return NextResponse.json({ error: "The media item is not linked to a valid treatment." }, { status: 400 });
