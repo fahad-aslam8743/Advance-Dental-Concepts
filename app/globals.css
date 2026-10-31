@@ -521,3 +521,53 @@ body:has(.admin-app){background:#f3f7f7}
  .treatment-jump{justify-content:center}
  .treatment-jump a{padding-inline:16px}
 }
+
+
+/* Gallery ordering, compact mobile service actions and centered final tab row */
+@media(max-width:760px){
+ .service-card-copy .learn-link{font-size:0;gap:0;justify-content:center;width:100%;padding:11px 8px;white-space:nowrap}
+ .service-card-copy .learn-link::before{content:"View details";font:700 10px var(--display);letter-spacing:.02em}
+ .service-card-copy .learn-link svg{display:none}
+ .treatment-jump{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;padding-block:12px}
+ .treatment-jump a{flex:0 0 calc((100% - 14px)/3);max-width:calc((100% - 14px)/3);min-height:38px}
+ .treatment-jump a:nth-child(4):nth-last-child(2){margin-left:calc(16.666% + 2px)}
+ .treatment-jump a:nth-child(5):last-child{margin-right:calc(16.666% + 2px)}
+ .clinical-comparisons-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .clinical-compare-card{padding:8px;border-radius:12px}
+ .clinical-compare-card-heading h3{font-size:13px;margin:2px 0 8px}
+ .clinical-pair-images{gap:5px}
+ .clinical-photo-slot>span{font-size:7px}
+ .clinical-photo-empty{min-height:100px}
+ .clinical-photo-empty span{font-size:8px}
+}
+.media-section{padding:68px 0;background:#f0f6f3}
+.media-section>.wrap{min-width:0}
+.clinical-comparisons-heading{margin-bottom:24px}
+.clinical-comparisons-heading p{display:none}
+.clinical-comparisons-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-bottom:42px}
+.clinical-compare-card{min-width:0;background:#fff;border:1px solid #dce8e3;border-radius:16px;padding:14px}
+.clinical-compare-card-heading h3{font:700 17px var(--display);margin:0 0 12px;color:#193944}
+.clinical-pair-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.clinical-photo-slot{min-width:0}
+.clinical-photo-slot>span{display:block;font:800 9px var(--display);letter-spacing:.12em;color:#087f78;margin-bottom:6px}
+.clinical-photo-empty{aspect-ratio:1.15/1;min-height:150px;display:grid;place-items:center;border:1px dashed #b9cbc2;border-radius:9px;background:linear-gradient(135deg,#edf3ef,#e6eeea)}
+.clinical-photo-empty span{font:600 10px var(--display);color:#71827a;text-align:center;padding:5px}
+.gallery-subheading{margin:0 0 16px;padding-top:8px}
+.gallery-subheading>span{font:800 9px var(--display);letter-spacing:.17em;color:#087f78}
+.gallery-subheading h3{font:600 25px var(--display);letter-spacing:-.03em;margin:4px 0 0;color:#193944}
+.treatment-gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:36px}
+.treatment-gallery-grid .treatment-media-item,.treatment-videos-grid .treatment-media-item{margin:0;min-width:0;background:#fff;border:1px solid #dce8e3;border-radius:12px;overflow:hidden}
+.treatment-gallery-grid img{display:block;width:100%;height:230px;object-fit:cover}
+.treatment-videos-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.treatment-videos-grid video{display:block;width:100%;aspect-ratio:16/9;background:#172e2c;object-fit:contain}
+.video-empty-skeleton{min-height:180px;border:1px dashed #b9cbc2;border-radius:12px;background:linear-gradient(135deg,#edf3ef,#e6eeea);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.video-skeleton-play{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#668078;font-size:13px;padding-left:3px}
+.video-skeleton-line{height:7px;width:42%;border-radius:8px;background:#d4e0d9}
+.video-skeleton-line.short{width:25%}
+@media(max-width:760px){
+ .media-section{padding:46px 0}
+ .treatment-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .treatment-gallery-grid img{height:145px}
+ .treatment-videos-grid{grid-template-columns:1fr}
+ .video-empty-skeleton{min-height:135px}
+}
