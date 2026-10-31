@@ -186,7 +186,7 @@ export async function getTreatmentMedia(treatmentSlug: string) {
   try {
     await ensureSchema();
     const rows = await query(
-      "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified, created_at FROM treatment_media WHERE treatment_slug = $1 AND (placement = 'gallery' OR kind = 'video') ORDER BY sort_order ASC, created_at ASC",
+      "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified, created_at FROM treatment_media WHERE treatment_slug = $1 AND placement IN ('gallery','comparison_before','comparison_after') ORDER BY sort_order ASC, created_at ASC",
       [treatmentSlug]
     );
     return rows;
