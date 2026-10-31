@@ -17,7 +17,7 @@ export async function PUT(request: NextRequest) {
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     await ensureSchema();
     const body = await request.json();
-    const allowed = ["clinicName", "phone", "addressLine", "city", "openingHours", "logoUrl", "googleReviewsUrl", "mapUrl"];
+    const allowed = ["clinicName", "phone", "addressLine", "city", "openingHours", "logoUrl", "heroImageUrl", "googleReviewsUrl", "mapUrl"];
     const current = await getSiteSettings();
     const next: Record<string,string> = { ...current };
     for (const key of allowed) {
