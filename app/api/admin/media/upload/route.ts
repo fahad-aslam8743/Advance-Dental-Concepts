@@ -21,8 +21,9 @@ export async function POST(request: NextRequest) {
         if (!currentSession) throw new Error("Unauthorized");
         const payload = JSON.parse(clientPayload || "{}");
         const isLogo = payload.kind === "logo";
-        if (!isLogo && !treatmentSlugs.includes(String(payload.treatmentSlug || ""))) throw new Error("Choose a valid treatment.");
-        const kind = isLogo ? "logo" : payload.kind === "video" ? "video" : "image";
+        const isHero = payload.kind === "hero";
+        if (!isLogo && !isHero && !treatmentSlugs.includes(String(payload.treatmentSlug || ""))) throw new Error("Choose a valid treatment.");
+        const kind = isLogo ? "logo" : isHero ? "hero" : payload.kind === "video" ? "video" : "image";
         const requestedPlacement = String(payload.placement || "gallery");
         if (!allowedPlacements.includes(requestedPlacement as typeof allowedPlacements[number])) throw new Error("Choose a valid media placement.");
         const placement = requestedPlacement;
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
         }
         return {
           allowedContentTypes: kind === "video" ? ["video/mp4", "video/webm", "video/quicktime"] : ["image/jpeg", "image/png", "image/webp", "image/avif"],
-          maximumSizeInBytes: kind === "video" ? 100 * 1024 * 1024 : isLogo ? 5 * 1024 * 1024 : 15 * 1024 * 1024,
+          maximumSizeInBytes: kind === "video" ? 100 * 1024 * 1024 : (isLogo || isHero) ? 5 * 1024 * 1024 : 15 * 1024 * 1024,
           addRandomSuffix: true,
           tokenPayload: JSON.stringify({
             treatmentSlug: payload.treatmentSlug,
@@ -48,8 +49,9 @@ export async function POST(request: NextRequest) {
       onUploadCompleted: async ({ blob, tokenPayload }) => {
         const payload = JSON.parse(tokenPayload || "{}");
         await ensureSchema();
-        if (payload.kind === "logo") {
-          await query("UPDATE site_settings SET data = jsonb_set(data, '{logoUrl}', to_jsonb($1::text), TRUE), updated_at = NOW() WHERE id = 'main'", [blob.url]);
+        if (payload.kind === "logo" || payload.kind === "hero") {
+          const settingKey = payload.kind === "logo" ? "logoUrl" : "heroImageUrl";
+          await query("UPDATE site_settings SET data = jsonb_set(data, ARRAY[$1]::text[], to_jsonb($2::text), TRUE), updated_at = NOW() WHERE id = 'main'", [settingKey, blob.url]);
         } else {
           const placement = payload.placement || "gallery";
           const pairNumber = payload.pairNumber ?? null;
