@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { services } from "@/data/services";
 
 export const runtime = "nodejs";
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 const allowed = new Set(services.map((service) => service.slug));
 
