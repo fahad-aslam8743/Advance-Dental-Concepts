@@ -6,7 +6,7 @@ import { ensureSchema, query, treatmentSlugs } from "@/lib/db";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const placements = ["gallery", "comparison_before", "comparison_after"] as const;
+const placements = ["gallery"] as const;
 
 export async function GET() {
   const session = await getAdminSession();
@@ -31,9 +31,7 @@ export async function PATCH(request: NextRequest) {
     if (!Number.isInteger(id) || id < 1 || !placements.includes(placement as typeof placements[number])) {
       return NextResponse.json({ error: "Choose a valid media item and display location." }, { status: 400 });
     }
-    if (placement !== "gallery" && pairNumber !== 1 && pairNumber !== 2) {
-      return NextResponse.json({ error: "Comparison images must belong to pair 1 or pair 2." }, { status: 400 });
-    }
+    if (placement !== "gallery") return NextResponse.json({ error: "Before-and-after artwork is fixed and cannot be changed here." }, { status: 403 });
     const current = await query<{kind:string;treatment_slug:string;placement:string}>("SELECT kind, treatment_slug, placement FROM treatment_media WHERE id=$1", [id]);
     if (!current[0]) return NextResponse.json({ error: "Media item not found." }, { status: 404 });
     if (!treatmentSlugs.includes(current[0].treatment_slug)) return NextResponse.json({ error: "The media item is not linked to a valid treatment." }, { status: 400 });
