@@ -26,13 +26,13 @@ export default function ReviewList({ reviews, variant = "home" }: { reviews: Rev
  const rendered=ordered.slice(0,renderCount);
  for(let i=0;i<rendered.length;i+=perRow)rows.push(rendered.slice(i,i+perRow));
  function showMore(){const next=Math.min(visibleCount+3,ordered.length);setRenderCount(next);setVisibleCount(next);setExpanded(true);}
- function showLess(){setVisibleCount(initialCount);setExpanded(false);}
+ function showLess(){setVisibleCount(initialCount);}
  if(!ordered.length)return <div className="shared-review-empty"><p>There are no approved reviews published yet.</p></div>;
  return <div className="shared-review-list-wrap">
   <div className="shared-review-list" aria-live="polite">
    {rows.map((row,index)=>{
     const visible=index<visibleRows;
-    return <div className="shared-review-row" key={String(row[0]?.id||index)} style={{maxHeight:visible?"1000px":"0px",opacity:visible?1:0,marginBottom:visible?"14px":"0px"}} onTransitionEnd={event=>{if(event.propertyName==="max-height"&&index===rows.length-1&&visibleCount<renderCount)setRenderCount(visibleCount);}}>
+    return <div className="shared-review-row" key={String(row[0]?.id||index)} style={{maxHeight:visible?"1000px":"0px",opacity:visible?1:0,marginBottom:visible?"14px":"0px"}} onTransitionEnd={event=>{if(event.propertyName==="max-height"&&index===rows.length-1&&visibleCount<renderCount){setRenderCount(visibleCount);setExpanded(false);}}}>
      {row.map(review=><article className="shared-review-card" key={review.id}>
       <div className="shared-review-card-top"><span className="shared-review-stars" aria-label={review.rating+" out of 5 stars"}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</span><small>{review.source==="google"?"GOOGLE REVIEW":"PATIENT REVIEW"}</small></div>
       <p>{review.review_text}</p>
