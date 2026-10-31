@@ -35,7 +35,13 @@ async function seedTreatmentMediaOnce() {
   const tuples = seedRows.map((row, index) => {
     const offset = index * 10;
     values.push(row.treatment_slug, row.kind, row.url, row.pathname, row.alt_text, row.placement, row.pair_number, row.sort_order, row.is_illustrative, row.patient_consent_verified);
-    const placeholders = Array.from({length:10}, (_, placeholderIndex) => "$" + (offset + placeholderIndex + 1));
+    const placeholders = Array.from({length:10}, (_, placeholderIndex) => {
+      const placeholder = "$" + (offset + placeholderIndex + 1);
+      if (placeholderIndex === 6) return placeholder + "::smallint";
+      if (placeholderIndex === 7) return placeholder + "::integer";
+      if (placeholderIndex === 8 || placeholderIndex === 9) return placeholder + "::boolean";
+      return placeholder;
+    });
     return "(" + placeholders.join(", ") + ")";
   });
 
