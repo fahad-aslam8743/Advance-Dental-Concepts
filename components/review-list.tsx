@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-type Review = { id: number | string; display_name: string; rating: number; review_text: string; created_at?: string };
+type Review = { id: number | string; display_name: string; rating: number; review_text: string; date_label?: string | null; created_at?: string };
 export default function ReviewList({ reviews, variant = "home" }: { reviews: Review[]; variant?: string }) {
  const [initialCount,setInitialCount]=useState(3);
  const [visibleCount,setVisibleCount]=useState(3);
@@ -36,7 +36,7 @@ export default function ReviewList({ reviews, variant = "home" }: { reviews: Rev
      {row.map(review=><article className="shared-review-card" key={review.id}>
       <div className="shared-review-card-top"><span className="shared-review-stars" aria-label={review.rating+" out of 5 stars"}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</span></div>
       {review.review_text?.trim()&&<p>{review.review_text}</p>}
-      <div className="shared-review-author"><b>{review.display_name}</b>{review.created_at&&<time>{new Date(review.created_at).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"})}</time>}</div>
+      <div className="shared-review-author"><b>{review.display_name}</b>{(review.date_label||review.created_at)&&<time>{review.date_label||new Date(review.created_at as string).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"})}</time>}</div>
      </article>)}
     </div>;
    })}
