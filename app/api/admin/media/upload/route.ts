@@ -24,10 +24,10 @@ export async function POST(request: NextRequest) {
         if (!isLogo && !treatmentSlugs.includes(String(payload.treatmentSlug || ""))) throw new Error("Choose a valid treatment.");
         const kind = isLogo ? "logo" : payload.kind === "video" ? "video" : "image";
         const requestedPlacement = String(payload.placement || "gallery");
-        if (requestedPlacement !== "gallery") throw new Error("Comparison artwork is fixed. Upload additional images to the gallery instead.");
-        const placement = "gallery";
+        if (!allowedPlacements.includes(requestedPlacement as typeof allowedPlacements[number])) throw new Error("Choose a valid media placement.");
+        const placement = requestedPlacement;
         const pairNumber = Number(payload.pairNumber);
-        if (placement !== "gallery" && pairNumber !== 1 && pairNumber !== 2) throw new Error("Comparison media must be assigned to pair 1 or pair 2.");
+        if (placement !== "gallery" && (pairNumber !== 1 && pairNumber !== 2 || kind !== "image")) throw new Error("Comparison images must be assigned to pair 1 or pair 2.");
         if (placement !== "gallery" && payload.patientConsentVerified !== true) {
           throw new Error("Before/after patient images require confirmed written patient consent. Use the educational illustrations until consent is confirmed.");
         }
