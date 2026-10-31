@@ -39,7 +39,6 @@ export default function AdminPage() {
   const [manual,setManual] = useState({displayName:"",rating:"5",reviewText:""});
   const [manualVerified,setManualVerified] = useState(false);
   const [mediaTreatment,setMediaTreatment] = useState(services[0].slug);
-  const [mediaAlt,setMediaAlt] = useState("");
   const [mediaKind,setMediaKind] = useState("image");
   const [editingMedia,setEditingMedia] = useState<Media|null>(null);
   const [mediaEditDraft,setMediaEditDraft] = useState({altText:"",sortOrder:"100"});
@@ -150,7 +149,7 @@ export default function AdminPage() {
         clientPayload:JSON.stringify({
           treatmentSlug:mediaTreatment,
           kind:mediaKind,
-          altText:mediaAlt,
+          altText:"",
           placement:"gallery",
           pairNumber:null,
           patientConsentVerified:false
@@ -164,7 +163,7 @@ export default function AdminPage() {
   function editMedia(item:Media) {
     setEditingMedia(item);
     setMediaEditDraft({
-      altText:item.alt_text||"",
+      altText:"",
       sortOrder:String(item.sort_order??100)
     });
   }
@@ -175,7 +174,7 @@ export default function AdminPage() {
     try {
       await api("/api/admin/media",{method:"PATCH",body:JSON.stringify({
         id:editingMedia.id,
-        altText:mediaEditDraft.altText,
+        altText:"",
         placement:"gallery",
         pairNumber:null,
         sortOrder:Number(mediaEditDraft.sortOrder)
@@ -267,7 +266,6 @@ export default function AdminPage() {
         <div style={cardStyle}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,alignItems:"end"}}>
           <label style={labelStyle}>Treatment<select style={inputStyle} value={mediaTreatment} onChange={e=>setMediaTreatment(e.target.value)}>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
           <label style={labelStyle}>Media type<select style={inputStyle} value={mediaKind} onChange={e=>setMediaKind(e.target.value)}><option value="image">Photo</option><option value="video">Video</option></select></label>
-          <label style={labelStyle}>Photo caption (optional)<input style={inputStyle} value={mediaAlt} onChange={e=>setMediaAlt(e.target.value)} placeholder="Leave blank to hide the caption"/></label><small style={{fontSize:11,color:"#829087",lineHeight:1.5}}>This caption appears beneath the image only when filled in. It is editable here.</small>
           <label style={labelStyle}>Choose file<input style={inputStyle} type="file" accept={mediaKind==="video"?"video/mp4,video/webm,video/quicktime":"image/jpeg,image/png,image/webp,image/avif"} onChange={uploadMedia} disabled={busy}/></label>
         </div>
         <p style={{fontSize:11,color:"#829087",lineHeight:1.6,marginBottom:0}}>Images: up to 15 MB. Videos: up to 100 MB. New uploads are added to the gallery; they do not replace existing photos.</p></div>
@@ -316,7 +314,6 @@ export default function AdminPage() {
           <div><small style={{fontWeight:800,letterSpacing:1.5,color:"#087f78"}}>TREATMENT MEDIA</small><h2 style={{fontSize:24,margin:"5px 0 0"}}>Edit media details</h2></div>
           <button type="button" onClick={()=>setEditingMedia(null)} style={{background:"#e8f3f0",color:"#173447"}}>Close</button>
         </div>
-        <label style={{...labelStyle,marginBottom:14}}>Caption / alt text<input style={inputStyle} value={mediaEditDraft.altText} onChange={e=>setMediaEditDraft({...mediaEditDraft,altText:e.target.value})} maxLength={200}/></label>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:13}}>
           <label style={labelStyle}>Display order<input style={inputStyle} type="number" min="0" max="9999" value={mediaEditDraft.sortOrder} onChange={e=>setMediaEditDraft({...mediaEditDraft,sortOrder:e.target.value})}/></label>
         </div>
