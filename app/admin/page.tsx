@@ -41,11 +41,8 @@ export default function AdminPage() {
   const [mediaTreatment,setMediaTreatment] = useState(services[0].slug);
   const [mediaAlt,setMediaAlt] = useState("");
   const [mediaKind,setMediaKind] = useState("image");
-  const [mediaPlacement,setMediaPlacement] = useState("gallery");
-  const [mediaPairNumber,setMediaPairNumber] = useState("1");
-  const [mediaConsentVerified,setMediaConsentVerified] = useState(false);
   const [editingMedia,setEditingMedia] = useState<Media|null>(null);
-  const [mediaEditDraft,setMediaEditDraft] = useState({altText:"",placement:"gallery",pairNumber:"1",sortOrder:"100"});
+  const [mediaEditDraft,setMediaEditDraft] = useState({altText:"",sortOrder:"100"});
   const [message,setMessage] = useState("");
   const [editingReview,setEditingReview] = useState<Review|null>(null);
   const [editDraft,setEditDraft] = useState({displayName:"",rating:"5",reviewText:""});
@@ -168,8 +165,6 @@ export default function AdminPage() {
     setEditingMedia(item);
     setMediaEditDraft({
       altText:item.alt_text||"",
-      placement:item.placement||"gallery",
-      pairNumber:String(item.pair_number||1),
       sortOrder:String(item.sort_order??100)
     });
   }
@@ -271,7 +266,7 @@ export default function AdminPage() {
         <div><h1 style={{fontSize:28,margin:"0 0 5px"}}>Treatment gallery photos & videos</h1><p style={{color:"#728078",margin:0,fontSize:13}}>Edit or delete the five starter gallery photos, and upload as many additional gallery images or videos as you need. The two before-and-after sliders on each service page are fixed and are not managed here.</p></div>
         <div style={cardStyle}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,alignItems:"end"}}>
           <label style={labelStyle}>Treatment<select style={inputStyle} value={mediaTreatment} onChange={e=>setMediaTreatment(e.target.value)}>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
-          <label style={labelStyle}>Media type<select style={inputStyle} value={mediaKind} onChange={e=>{setMediaKind(e.target.value);if(e.target.value==="video")setMediaPlacement("gallery");}}><option value="image">Photo</option><option value="video">Video</option></select></label>
+          <label style={labelStyle}>Media type<select style={inputStyle} value={mediaKind} onChange={e=>setMediaKind(e.target.value)}><option value="image">Photo</option><option value="video">Video</option></select></label>
           <label style={labelStyle}>Photo caption (optional)<input style={inputStyle} value={mediaAlt} onChange={e=>setMediaAlt(e.target.value)} placeholder="Leave blank to hide the caption"/></label><small style={{fontSize:11,color:"#829087",lineHeight:1.5}}>This caption appears beneath the image only when filled in. It is editable here.</small>
           <label style={labelStyle}>Choose file<input style={inputStyle} type="file" accept={mediaKind==="video"?"video/mp4,video/webm,video/quicktime":"image/jpeg,image/png,image/webp,image/avif"} onChange={uploadMedia} disabled={busy}/></label>
         </div>
