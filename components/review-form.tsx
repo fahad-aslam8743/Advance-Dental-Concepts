@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { services } from "@/data/services";
 
-export function ReviewSubmissionForm({ initialTreatment = "" }: { initialTreatment?: string }) {
+export function ReviewSubmissionForm() {
   const [name, setName] = useState("");
   const [rating, setRating] = useState("5");
-  const [treatment, setTreatment] = useState(initialTreatment);
   const [review, setReview] = useState("");
   const [consent, setConsent] = useState(false);
   const [website, setWebsite] = useState("");
@@ -20,7 +18,7 @@ export function ReviewSubmissionForm({ initialTreatment = "" }: { initialTreatme
     try {
       const response = await fetch("/api/reviews", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ displayName: name, rating, treatmentSlug: treatment, reviewText: review, consent, website })
+        body: JSON.stringify({ displayName: name, rating, reviewText: review, consent, website })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not submit your review.");
@@ -35,7 +33,6 @@ export function ReviewSubmissionForm({ initialTreatment = "" }: { initialTreatme
   return <form className="public-review-form" onSubmit={submit}>
     <div className="review-form-grid">
       <label>Your display name<input required maxLength={80} value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. Ayesha" /></label>
-      <label>Treatment or service<select required value={treatment} onChange={e=>setTreatment(e.target.value)}><option value="">Choose a treatment</option>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
       <label>Your rating<select value={rating} onChange={e=>setRating(e.target.value)}><option value="5">5 — Excellent</option><option value="4">4 — Very good</option><option value="3">3 — Good</option><option value="2">2 — Fair</option><option value="1">1 — Poor</option></select></label>
       <label className="review-wide">Your review<textarea required minLength={15} maxLength={1500} rows={5} value={review} onChange={e=>setReview(e.target.value)} placeholder="Tell us about your experience..." /></label>
     </div>
