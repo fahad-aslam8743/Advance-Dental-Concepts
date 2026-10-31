@@ -3,6 +3,7 @@ import "./globals.css";
 import { SiteHeader, SiteFooter } from "@/components/site-shell";
 import { getSiteSettings } from "@/lib/db";
 import { VisitTracker } from "@/components/visit-tracker";
+import { RevealEffects } from "@/components/reveal-effects";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
@@ -16,5 +17,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 export default async function RootLayout({children}:{children:React.ReactNode}) {
  const settings=await getSiteSettings();
- return <html lang="en"><body><VisitTracker/><SiteHeader settings={settings}/>{children}<SiteFooter settings={settings}/></body></html>;
+ return <html lang="en"><body><RevealEffects/><VisitTracker/><SiteHeader settings={settings}/>{children}<SiteFooter settings={settings}/></body></html>;
 }
