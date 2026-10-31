@@ -40,7 +40,12 @@ export async function TreatmentMedia({name,slug}:{name:string;slug:string}) {
    const before=beforeItems.find((x:any)=>Number(x.pair_number)===pairNumber);
    const after=afterItems.find((x:any)=>Number(x.pair_number)===pairNumber);
    const scenario=scenarios[pairNumber-1];
-   return before&&after&&scenario?{pairNumber,...scenario,beforeUrl:before.url,afterUrl:after.url}:null;
+   if(!before||!after||!scenario)return null;
+   const illustration=Boolean(before.is_illustrative)&&Boolean(after.is_illustrative);
+   const patientCase=Boolean(before.patient_consent_verified)&&Boolean(after.patient_consent_verified)&&!illustration;
+   // Never pair one real patient photograph with one generic illustration.
+   if(!illustration&&!patientCase)return null;
+   return {pairNumber,...scenario,beforeUrl:before.url,afterUrl:after.url,sourceType:patientCase?"consented-patient-case" as const:"illustration" as const};
  }).filter((item):item is TreatmentComparison=>Boolean(item));
  return <><TreatmentComparisons comparisons={comparisons} treatmentName={name}/><section className="media-section"><div className="wrap"><div className="patient-section-heading"><span>CLINIC & TREATMENT GALLERY</span><h2>Explore the details.</h2><p>These editorial images help explain the treatment setting and related dental care. They are not represented as actual patient outcomes.</p></div><div className="media-grid">{photos.length===0?<Placeholder kind="image" title={name+" — clinic gallery"}/>:photos.map((item:any)=><figure className="treatment-media-item" key={item.id}><img src={item.url} alt={item.alt_text||"Illustrative dental-care photograph for "+name} loading="lazy" decoding="async"/>{item.alt_text&&<figcaption>{item.alt_text}</figcaption>}</figure>)}</div>{videos.length>0&&<div className="video-grid">{videos.map((item:any)=><figure className="treatment-media-item" key={item.id}><video src={item.url} controls preload="metadata"/>{item.alt_text&&<figcaption>{item.alt_text}</figcaption>}</figure>)}</div>}</div></section></>;
 }
