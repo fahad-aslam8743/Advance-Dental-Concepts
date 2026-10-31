@@ -13,7 +13,7 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await ensureSchema();
   return NextResponse.json(await query(
-    "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified, created_at FROM treatment_media ORDER BY treatment_slug, placement, pair_number NULLS FIRST, sort_order ASC, created_at DESC"
+    "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified, created_at FROM treatment_media WHERE placement = 'gallery' ORDER BY treatment_slug, sort_order ASC, created_at DESC"
   ));
 }
 
