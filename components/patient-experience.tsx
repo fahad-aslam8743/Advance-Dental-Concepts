@@ -95,12 +95,12 @@ export async function TreatmentMedia({name,slug}:{name:string;slug:string}) {
    <div className="patient-section-heading">
     <span>TREATMENT IMAGE GALLERY</span>
     <h2>Explore {name.toLowerCase()}.</h2>
-    <p>Five selected dental photographs for this treatment. Real before-and-after clinic cases appear in this same gallery only after matching patient photos and publication consent are confirmed.</p>
+    <p>Illustrative dental stock photographs for general education. These are not photos of clinic patients or treatment outcomes. Real before-and-after cases will be published only after the clinic confirms written patient consent.</p>
    </div>
    <div className="media-grid">
     {photos.length===0?<Placeholder kind="image" title={name+" — image gallery"}/>:photos.map((item:any)=><figure className="treatment-media-item" key={item.id}>
      <img src={item.url} alt={item.alt_text||"Dental photograph related to "+name} loading="lazy" decoding="async"/>
-     {item.alt_text&&<figcaption>{item.alt_text}</figcaption>}
+     {(item.alt_text||item.is_illustrative)&&<figcaption>{item.alt_text||"Illustrative dental photograph · not a patient case"}</figcaption>}
     </figure>)}
     <TreatmentComparisons comparisons={comparisons} treatmentName={name}/>
     {videos.map((item:any)=><figure className="treatment-media-item treatment-video-item" key={item.id}>
