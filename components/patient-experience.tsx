@@ -32,30 +32,43 @@ function Stars({rating}:{rating:number}){return <span aria-label={rating+" out o
 const googleReviewSummaries = [
   {
     id: "google-review-1",
+    author: "Najeeb UrRehman",
+    rating: 5,
     date: "1 month ago",
-    text: "The reviewer describes receiving an extraction, root canal, implants and crowns, and praises the clinician's professionalism, gentle manner and clear explanations."
+    treatment: "Extraction · Root canal · Implants · Crowns",
+    text: "He describes treatment across extraction, root canal work, implants and crowns, and praises the clinician's professionalism, gentle manner, clear explanations and natural-looking results."
   },
   {
     id: "google-review-2",
+    author: "Ammar jutt",
+    rating: 5,
     date: "2 months ago",
-    text: "The reviewer says they felt nervous before an implant but found the procedure smooth and painless, and appreciated the post-treatment guidance."
+    treatment: "Dental implants",
+    text: "He says he was nervous before an implant but found the procedure smooth and painless, and appreciated the team's attention to detail and the post-treatment guidance."
   },
   {
     id: "google-review-3",
+    author: "Hina Mushtaq",
+    rating: 5,
     date: "2 months ago",
-    text: "The reviewer praises the clinic's hygiene and sterilisation standards and says the doctors explained the procedure clearly."
+    treatment: "Clinic experience",
+    text: "She praises the clinic's hygiene and sterilisation standards and says the doctors explained her procedure clearly, making the visit feel smooth and comfortable."
   }
 ];
 
 function GoogleReviewHighlights() {
- return <div className="google-review-highlights" aria-label="Recent Google patient feedback">
+ return <div className="google-review-highlights" aria-label="Recent Google patient reviews">
   {googleReviewSummaries.map((review) => <article className="google-review-card" key={review.id}>
    <div className="google-review-card-meta">
     <span>GOOGLE REVIEW</span>
     <time>{review.date}</time>
    </div>
+   <div className="google-review-author">
+    <b>{review.author}</b>
+    <Stars rating={review.rating}/>
+   </div>
    <p>{review.text}</p>
-   <small>Reviewer name and individual rating are not exposed in Google's public preview.</small>
+   <small>{review.treatment}</small>
   </article>)}
  </div>;
 }
@@ -108,13 +121,13 @@ export async function TreatmentReviews({name,slug}:{name:string;slug:string}) {
    <div className="patient-section-heading">
     <span>PUBLIC PATIENT FEEDBACK</span>
     <h2>What patients say about the clinic.</h2>
-    <p>These are clinic-wide Google reviews, not testimonials assigned to {name.toLowerCase()}. Google's public preview does not expose reviewer names or each review's individual star score.</p>
+    <p>These are clinic-wide Google reviews, not testimonials assigned to {name.toLowerCase()}. These are recent, publicly visible Google reviews, with the names, individual ratings and dates shown on the listing.</p>
    </div>
    <div className="review-panel review-panel-clinic-wide">
     <div className="clinic-google-copy">
      <span>CLINIC-WIDE GOOGLE RATING</span>
      <h2>A 5.0 rating from local patients.</h2>
-     <p>Advance Dental Concepts currently has a 5.0/5 overall rating from 31 Google reviews. The three summaries below reflect recent public feedback.</p>
+     <p>Advance Dental Concepts currently has a 5.0/5 overall rating from 31 Google reviews. The three cards below show recent patient feedback visible on Google.</p>
      <a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read all Google reviews <ArrowUpRight size={15}/></a>
     </div>
     <div className="review-rating clinic-google-rating">
@@ -147,7 +160,7 @@ export async function HomeReviewSection() {
    <div>
     <span>GOOGLE PATIENT FEEDBACK</span>
     <h2>Patient experiences<br/>at our clinic.</h2>
-    <p>Advance Dental Concepts currently has a 5.0/5 overall rating from 31 Google reviews. These are recent clinic-wide review summaries; Google does not expose reviewer names or individual scores in the public preview.</p>
+    <p>Advance Dental Concepts currently has a 5.0/5 overall rating from 31 Google reviews. These are recent clinic-wide review summaries; The cards show the reviewer name, individual score and date available on the live Google listing.</p>
     <a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read all Google reviews <ArrowUpRight size={15}/></a>
    </div>
    <div className="home-review-rating">
