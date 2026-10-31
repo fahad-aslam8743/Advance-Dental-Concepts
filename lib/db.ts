@@ -1,4 +1,6 @@
 import { neon } from "@neondatabase/serverless";
+import { services } from "@/data/services";
+import { buildSeedTreatmentMedia } from "@/data/treatment-media";
 
 const DEFAULT_SETTINGS = {
   clinicName: "Advance Dental Concepts",
@@ -25,6 +27,36 @@ export async function query<T = Record<string, unknown>>(text: string, params: u
   return await sql.query(text, params) as T[];
 }
 
+async function seedTreatmentMediaOnce() {
+  const seedRows = buildSeedTreatmentMedia(services);
+  if (!seedRows.length) return;
+
+  const values: unknown[] = [];
+  const tuples = seedRows.map((row, index) => {
+    const offset = index * 7;
+    values.push(row.treatment_slug, row.kind, row.url, row.pathname, row.alt_text, row.placement, row.pair_number);
+    return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${offset + 6}, $${offset + 7})`;
+  });
+
+  // The migration marker and initial media insert happen in one statement.
+  // A deleted starter image therefore stays deleted on later cold starts.
+  await query(
+    `WITH seed_guard AS (
+       INSERT INTO app_migrations (key) VALUES ('adc-treatment-media-gallery-and-comparisons-v1')
+       ON CONFLICT (key) DO NOTHING
+       RETURNING key
+     )
+     INSERT INTO treatment_media
+       (treatment_slug, kind, url, pathname, alt_text, placement, pair_number)
+     SELECT seed_data.*
+     FROM (VALUES ${tuples.join(",")}) AS seed_data
+       (treatment_slug, kind, url, pathname, alt_text, placement, pair_number)
+     CROSS JOIN seed_guard
+     ON CONFLICT DO NOTHING`,
+    values
+  );
+}
+
 export async function ensureSchema() {
   if (!schemaPromise) {
     schemaPromise = (async () => {
@@ -35,17 +67,24 @@ export async function ensureSchema() {
       await query("CREATE INDEX IF NOT EXISTS reviews_ip_created_idx ON reviews(ip_hash, created_at DESC)");
 
       await query("CREATE TABLE IF NOT EXISTS treatment_media (id BIGSERIAL PRIMARY KEY, treatment_slug TEXT NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('image','video')), url TEXT NOT NULL, pathname TEXT NOT NULL, alt_text TEXT NOT NULL DEFAULT '', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
-      await query("CREATE INDEX IF NOT EXISTS treatment_media_slug_idx ON treatment_media(treatment_slug, created_at DESC)");
+      await query("ALTER TABLE treatment_media ADD COLUMN IF NOT EXISTS placement TEXT NOT NULL DEFAULT 'gallery'");
+      await query("ALTER TABLE treatment_media ADD COLUMN IF NOT EXISTS pair_number SMALLINT");
+      await query("ALTER TABLE treatment_media ADD COLUMN IF NOT EXISTS sort_order INTEGER NOT NULL DEFAULT 100");
+      await query("CREATE INDEX IF NOT EXISTS treatment_media_slug_idx ON treatment_media(treatment_slug, placement, sort_order, created_at DESC)");
+      await query("CREATE UNIQUE INDEX IF NOT EXISTS treatment_media_asset_identity_idx ON treatment_media(treatment_slug, placement, COALESCE(pair_number, 0), url)");
+      await query("CREATE TABLE IF NOT EXISTS app_migrations (key TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
+
       await query("CREATE TABLE IF NOT EXISTS admin_login_attempts (id BIGSERIAL PRIMARY KEY, ip_hash TEXT NOT NULL, attempted_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
       await query("CREATE INDEX IF NOT EXISTS admin_login_attempts_ip_idx ON admin_login_attempts(ip_hash, attempted_at DESC)");
       await query("INSERT INTO site_settings (id, data) VALUES ('main', $1::jsonb) ON CONFLICT (id) DO NOTHING", [JSON.stringify(DEFAULT_SETTINGS)]);
+      await seedTreatmentMediaOnce();
+
       const admins = await query<{id:number}>("SELECT id FROM admin_users LIMIT 1");
       const email = process.env.ADMIN_EMAIL;
       const bootstrapHash = process.env.ADMIN_BOOTSTRAP_PASSWORD_HASH;
       if (admins.length === 0 && email && bootstrapHash) {
         await query("INSERT INTO admin_users (email, password_hash, must_change_password) VALUES ($1, $2, TRUE) ON CONFLICT (email) DO NOTHING", [email.toLowerCase(), bootstrapHash]);
       }
-
     })().catch((error) => {
       schemaPromise = null;
       throw error;
@@ -70,7 +109,7 @@ export async function getApprovedReviews(treatmentSlug?: string) {
     if (treatmentSlug) {
       return await query("SELECT id, display_name, rating, treatment_slug, review_text, created_at FROM reviews WHERE status = 'approved' AND treatment_slug = $1 ORDER BY created_at DESC LIMIT 12", [treatmentSlug]);
     }
-    return await query("SELECT id, display_name, rating, treatment_slug, review_text, created_at FROM reviews WHERE status = 'approved' ORDER BY created_at DESC LIMIT 8");
+    return await query("SELECT id, display_name, rating, treatment_slug, review_text, created_at FROM reviews WHERE status = 'approved' ORDER BY created_at DESC LIMIT 100");
   } catch {
     return [];
   }
@@ -79,7 +118,10 @@ export async function getApprovedReviews(treatmentSlug?: string) {
 export async function getTreatmentMedia(treatmentSlug: string) {
   try {
     await ensureSchema();
-    return await query("SELECT id, treatment_slug, kind, url, alt_text, created_at FROM treatment_media WHERE treatment_slug = $1 ORDER BY created_at DESC", [treatmentSlug]);
+    return await query(
+      "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, created_at FROM treatment_media WHERE treatment_slug = $1 ORDER BY CASE placement WHEN 'comparison_before' THEN 1 WHEN 'comparison_after' THEN 2 ELSE 0 END, pair_number NULLS FIRST, sort_order ASC, created_at ASC",
+      [treatmentSlug]
+    );
   } catch {
     return [];
   }
