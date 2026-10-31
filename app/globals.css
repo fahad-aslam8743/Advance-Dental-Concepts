@@ -368,3 +368,50 @@ body:has(.admin-app){background:#f3f7f7}
  .admin-app nav{width:100%;border-radius:16px!important}
  .admin-app nav button{flex:0 0 auto}
 }
+
+
+/* Treatment galleries and accessible educational comparison sliders */
+.clinical-comparisons{padding:76px 0 64px;background:#f0f6f3;border-top:1px solid #dce8e3;border-bottom:1px solid #dce8e3}
+.clinical-comparisons-heading{max-width:760px;margin:0 auto 30px;text-align:center}
+.clinical-comparisons-heading>span{font:800 10px var(--display);letter-spacing:.19em;color:#087f78}
+.clinical-comparisons-heading h2{font:600 clamp(32px,4vw,46px)/1.1 var(--display);letter-spacing:-.045em;color:#142f3c;margin:13px 0}
+.clinical-comparisons-heading p{font-size:13px;line-height:1.8;color:#63766f;max-width:630px;margin:0 auto}
+.clinical-comparisons-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.clinical-compare-card{min-width:0;background:#fff;border:1px solid #dce8e3;border-radius:20px;padding:16px;box-shadow:0 12px 30px rgba(19,59,53,.055)}
+.clinical-compare-card-heading{padding:5px 4px 13px}
+.clinical-compare-card-heading>span{font:800 8px var(--display);letter-spacing:.16em;color:#0b8179}
+.clinical-compare-card-heading h3{font:600 21px/1.25 var(--display);letter-spacing:-.025em;color:#193944;margin:7px 0 0}
+.clinical-compare-stage{position:relative;isolation:isolate;width:100%;aspect-ratio:1000/560;overflow:hidden;border-radius:14px;background:#e9f2ef}
+.clinical-compare-stage>img,.clinical-compare-before-layer,.clinical-compare-before-layer>img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.clinical-compare-stage>img,.clinical-compare-before-layer>img{object-fit:cover;user-select:none;-webkit-user-drag:none}
+.clinical-compare-before-layer{z-index:2;overflow:hidden}
+.clinical-compare-divider{position:absolute;z-index:4;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 0 1px rgba(17,57,54,.2);transform:translateX(-50%);pointer-events:none}
+.clinical-compare-divider span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#0b8179;font-size:22px;box-shadow:0 4px 15px rgba(0,0,0,.18)}
+.clinical-compare-labels{position:absolute;z-index:5;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-between;gap:10px;pointer-events:none}
+.clinical-compare-labels span{background:rgba(16,42,58,.86);color:#fff;border:1px solid rgba(255,255,255,.23);padding:7px 10px;border-radius:999px;font:800 8px var(--display);letter-spacing:.11em;backdrop-filter:blur(8px)}
+.clinical-compare-control{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:14px;margin:15px 2px 8px}
+.clinical-compare-control label{font:700 10px var(--display);color:#506b65;white-space:nowrap}
+.clinical-compare-control input{width:100%;accent-color:#087f78;cursor:ew-resize}
+.clinical-compare-caption{font-size:10px;line-height:1.65;color:#74827d;margin:8px 2px 0}
+.clinical-comparisons-disclaimer{max-width:900px;text-align:center;margin:22px auto 0;font-size:10px;line-height:1.7;color:#728079}
+.media-section .patient-section-heading{margin-bottom:25px}
+.media-grid .treatment-media-item{min-width:0}
+.treatment-media-item figcaption{line-height:1.6}
+.home-review-rating>.home-approved-review-list{display:grid;align-items:stretch;width:100%;gap:12px;margin-top:18px}
+.home-review-rating .home-approved-review{margin-top:0;width:100%}
+.home-approved-review>div{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.home-approved-review>div small{font:800 8px var(--display);letter-spacing:.09em;text-transform:uppercase;color:#087f78}
+.home-approved-review p{margin:10px 0;font-size:12px}
+.home-approved-review>small{font-size:10px;color:#718079}
+@media(max-width:760px){
+ .clinical-comparisons{padding:54px 0 46px}
+ .clinical-comparisons-grid{grid-template-columns:1fr;gap:14px}
+ .clinical-compare-card{padding:12px;border-radius:16px}
+ .clinical-compare-card-heading h3{font-size:19px}
+ .clinical-compare-control{grid-template-columns:1fr;gap:5px}
+ .clinical-compare-labels{left:7px;right:7px;bottom:7px}
+ .clinical-compare-labels span{font-size:7px;padding:6px 8px}
+ .media-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .home-review-inner{grid-template-columns:1fr}
+ .home-review-rating>.home-approved-review-list{max-height:none}
+}
