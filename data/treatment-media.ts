@@ -20,6 +20,24 @@ export const comparisonScenarios: Record<string, [ComparisonScenario, Comparison
 };
 
 // Educational before-and-after examples are generated as fixed illustrations.
+
+export function buildEducationalComparisonMedia(treatmentSlug: string) {
+  const slugIndex=Math.max(0,Object.keys(comparisonScenarios).indexOf(treatmentSlug));
+  return [1,2].flatMap(pairNumber=>(["before","after"] as const).map(phase=>({
+    id:-(slugIndex*10+pairNumber*2+(phase==="before"?1:2)),
+    treatment_slug:treatmentSlug,
+    kind:"image" as const,
+    url:"/api/illustrations/"+treatmentSlug+"/"+phase+"?pair="+pairNumber,
+    alt_text:treatmentSlug.replace(/-/g," ")+" educational "+phase+" illustration, example "+pairNumber,
+    placement:(phase==="before"?"comparison_before":"comparison_after") as "comparison_before"|"comparison_after",
+    pair_number:pairNumber,
+    sort_order:pairNumber,
+    is_illustrative:true,
+    patient_consent_verified:false,
+    created_at:"1970-01-01T00:00:00.000Z"
+  })));
+}
+
 export type GalleryPhoto = { id: number; caption: string };
 
 const gallerySets: Record<string, [GalleryPhoto, GalleryPhoto, GalleryPhoto, GalleryPhoto, GalleryPhoto]> = {
