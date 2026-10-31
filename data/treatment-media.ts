@@ -148,7 +148,7 @@ export function buildSeedTreatmentMedia(services: Service[]) {
         kind: "image",
         url,
         pathname: "seed/treatment-gallery-v3/" + service.slug + "/" + (index + 1),
-        alt_text: photo.caption,
+        alt_text: "",
         placement: "gallery",
         pair_number: null,
         sort_order: index + 1,

@@ -444,3 +444,23 @@ body:has(.admin-app){background:#f3f7f7}
  .google-review-highlights{grid-template-columns:1fr}
  .media-grid .clinical-compare-card,.media-grid .treatment-video-item{grid-column:span 1}
 }
+
+/* Review cards: actual public Google feedback, kept distinct from treatment submissions */
+.google-review-highlights{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch}
+.google-review-card{display:flex;flex-direction:column;gap:12px;min-width:0;background:#fff;border:1px solid #dfe7e2;border-radius:14px;padding:19px}
+.google-review-card-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.google-review-card-meta span{font:800 8px var(--display);letter-spacing:.15em;color:#087f78}
+.google-review-card-meta time{font:600 10px var(--sans);color:#87938d}
+.google-review-card p{font:500 14px/1.6 var(--serif);color:#294c46;margin:0}
+.google-review-card small{font:400 9px/1.5 var(--sans);color:#85918a;margin-top:auto}
+.review-panel-clinic-wide{grid-template-columns:minmax(0,1fr) minmax(180px,.48fr);align-items:start}
+.review-panel .google-review-highlights{grid-column:1/-1}
+.home-review-rating .google-review-highlights{grid-template-columns:1fr;gap:10px;margin-top:17px}
+.home-review-rating .google-review-card{padding:15px}
+.home-review-rating .google-review-card p{font-size:13px}
+.treatment-approved-reviews h3{grid-column:1/-1;font:700 12px var(--display);color:#244f46;margin:4px 0}
+@media(max-width:760px){
+ .google-review-highlights{grid-template-columns:1fr}
+ .review-panel-clinic-wide{grid-template-columns:1fr}
+ .clinic-google-rating{border-left:0;border-top:1px solid #d6ded5;padding:20px 0 0}
+}

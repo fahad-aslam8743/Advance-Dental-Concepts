@@ -28,50 +28,68 @@ export async function query<T = Record<string, unknown>>(text: string, params: u
 }
 
 async function seedTreatmentMediaOnce() {
+  const migrationKey = "adc-treatment-gallery-photo-refresh-v4";
+  const applied = await query("SELECT key FROM app_migrations WHERE key = $1 LIMIT 1", [migrationKey]);
+  if (applied.length) return;
+
   const seedRows = buildSeedTreatmentMedia(services);
-  if (!seedRows.length) return;
+  const expected = services.length * 5;
+  if (seedRows.length !== expected) {
+    throw new Error("Treatment gallery seed expected " + expected + " images but received " + seedRows.length + ".");
+  }
 
-  const values: unknown[] = [];
-  const tuples = seedRows.map((row, index) => {
-    const offset = index * 10;
-    values.push(row.treatment_slug, row.kind, row.url, row.pathname, row.alt_text, row.placement, row.pair_number, row.sort_order, row.is_illustrative, row.patient_consent_verified);
-    const placeholders = Array.from({length:10}, (_, placeholderIndex) => {
-      const placeholder = "$" + (offset + placeholderIndex + 1);
-      if (placeholderIndex === 6) return placeholder + "::smallint";
-      if (placeholderIndex === 7) return placeholder + "::integer";
-      if (placeholderIndex === 8 || placeholderIndex === 9) return placeholder + "::boolean";
-      return placeholder;
-    });
-    return "(" + placeholders.join(", ") + ")";
-  });
-
-  // Replace v1 and v2 seed media with five unique, treatment-selected stock photos per page.
-  // Admin-uploaded clinic media is preserved.
-  await query(
-    `WITH seed_guard AS (
-       INSERT INTO app_migrations (key) VALUES ('adc-treatment-gallery-photo-refresh-v3')
-       ON CONFLICT (key) DO NOTHING
-       RETURNING key
-     ),
-     deleted_seed_media AS (
-       DELETE FROM treatment_media
-       WHERE (
-         pathname LIKE 'seed/gallery/%'
-         OR pathname LIKE 'seed/comparison/%'
-         OR pathname LIKE 'seed/treatment-gallery-v2/%'
-       )
-       AND EXISTS (SELECT 1 FROM seed_guard)
-       RETURNING id
+  // A single JSONB parameter keeps the Neon request small and avoids the
+  // oversized 700-parameter VALUES query used by the earlier gallery seed.
+  const payload = JSON.stringify(seedRows);
+  const inserted = await query<{id:number}>(
+    `INSERT INTO treatment_media
+       (treatment_slug, kind, url, pathname, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified)
+     SELECT
+       seed_data.treatment_slug,
+       seed_data.kind,
+       seed_data.url,
+       seed_data.pathname,
+       seed_data.alt_text,
+       seed_data.placement,
+       seed_data.pair_number,
+       seed_data.sort_order,
+       seed_data.is_illustrative,
+       seed_data.patient_consent_verified
+     FROM jsonb_to_recordset($1::jsonb) AS seed_data(
+       treatment_slug text,
+       kind text,
+       url text,
+       pathname text,
+       alt_text text,
+       placement text,
+       pair_number smallint,
+       sort_order integer,
+       is_illustrative boolean,
+       patient_consent_verified boolean
      )
-     INSERT INTO treatment_media
-       (treatment_slug, kind, url, pathname, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified)
-     SELECT seed_data.*
-     FROM (VALUES ${tuples.join(",")}) AS seed_data
-       (treatment_slug, kind, url, pathname, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified)
-     CROSS JOIN seed_guard
-     ON CONFLICT DO NOTHING`,
-    values
+     ON CONFLICT (treatment_slug, placement, (COALESCE(pair_number, 0)), url)
+     DO UPDATE SET
+       pathname = EXCLUDED.pathname,
+       alt_text = EXCLUDED.alt_text,
+       sort_order = EXCLUDED.sort_order,
+       is_illustrative = EXCLUDED.is_illustrative,
+       patient_consent_verified = EXCLUDED.patient_consent_verified
+     RETURNING id`,
+    [payload]
   );
+
+  if (inserted.length !== expected) {
+    console.error("ADC gallery seed count mismatch", { expected, inserted: inserted.length });
+    throw new Error("Treatment gallery seed did not insert all " + expected + " images.");
+  }
+
+  // Remove older seed versions, including the cartoon comparison assets.
+  // Uploaded Vercel Blob media uses its own blob pathname and is preserved.
+  await query(
+    "DELETE FROM treatment_media WHERE pathname LIKE 'seed/%' AND pathname NOT LIKE 'seed/treatment-gallery-v4/%'"
+  );
+  await query("INSERT INTO app_migrations (key) VALUES ($1) ON CONFLICT (key) DO NOTHING", [migrationKey]);
+  console.info("ADC treatment gallery v4 seeded", { services: services.length, images: inserted.length });
 }
 
 export async function ensureSchema() {

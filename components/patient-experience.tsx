@@ -5,7 +5,7 @@ import {services} from "@/data/services";
 import {comparisonScenarios} from "@/data/treatment-media";
 import TreatmentComparisons, {type TreatmentComparison} from "@/components/treatment-comparisons";
 import type {Service} from "@/data/services";
-const googleReviews="https://www.google.com/maps/search/?api=1&query=Advance+Dental+Concepts+44F1+Johar+Town+Lahore";
+const googleReviews="https://www.google.com/maps/place/?q=place_id:ChIJ3WMDzdQBGTkRwcFbl76bFc4";
 const patientNotes:Record<string,{simple:string;goodToKnow:string[];steps:string[];priceFactors:string[];aftercare:string[]}>={
 "teeth-whitening":{simple:"A dentist checks your teeth first, then uses a professional whitening method to make suitable natural teeth look lighter. It will not change the colour of fillings, crowns or veneers.",goodToKnow:["Whitening works best on some types of yellow or surface stains. Not every stain responds in the same way.","You may feel temporary sensitivity during or after treatment.","Your dentist should check for cavities, gum problems and existing dental work first."],steps:["Talk about the shade you would like and what is realistic.","Have your teeth and gums checked.","The dentist chooses a suitable whitening method and protects your gums.","Follow the aftercare advice and ask when a review is needed."],priceFactors:["The whitening method used","Your starting tooth shade and type of stains","Whether any dental problems need treatment first"],aftercare:["Follow the dentist's instructions about food and drinks after whitening.","Use only products recommended by your dentist.","Ask about safe ways to manage sensitivity."]},
 "clear-aligners":{simple:"Clear aligners are see-through trays made to fit your teeth. You change trays as advised, and they gently move your teeth little by little. They can help with selected spacing, crowding and bite problems.",goodToKnow:["Not every smile can be treated with clear trays; some cases need braces or another plan.","You usually need to wear them for most of the day and remove them to eat.","You will need check-ups and retainers after treatment to help keep your teeth in place."],steps:["The dentist or orthodontist checks your teeth and bite.","Photos, scans or X-rays may be taken if needed.","You receive a plan and a series of custom trays.","You wear the trays as instructed and attend progress visits."],priceFactors:["How much tooth movement is needed","How many stages or refinements are included","Whether extra attachments or other treatment are needed"],aftercare:["Wear the trays for the hours your orthodontist advises.","Clean the trays and your teeth every day.","Wear retainers after treatment as instructed."]},
@@ -29,16 +29,33 @@ export function PatientDetails({service}:{service:Service}) {
 
 function Placeholder({kind,title}:{kind:string;title:string}){return <div className="media-placeholder"><div className="media-placeholder-icon">{kind==="video"?<PlayCircle/>:<Images/>}</div><b>{title}</b><span>{kind==="video"?"A clinic-approved explainer video will be added here.":"Clinic-approved photos will appear here."}</span><small>NO MEDIA UPLOADED YET</small></div>}
 function Stars({rating}:{rating:number}){return <span aria-label={rating+" out of 5 stars"} style={{color:"#b28b45",letterSpacing:".12em"}}>{"★".repeat(rating)}{"☆".repeat(5-rating)}</span>}
+const googleReviewSummaries = [
+  {
+    id: "google-review-1",
+    date: "1 month ago",
+    text: "The reviewer describes receiving an extraction, root canal, implants and crowns, and praises the clinician's professionalism, gentle manner and clear explanations."
+  },
+  {
+    id: "google-review-2",
+    date: "2 months ago",
+    text: "The reviewer says they felt nervous before an implant but found the procedure smooth and painless, and appreciated the post-treatment guidance."
+  },
+  {
+    id: "google-review-3",
+    date: "2 months ago",
+    text: "The reviewer praises the clinic's hygiene and sterilisation standards and says the doctors explained the procedure clearly."
+  }
+];
+
 function GoogleReviewHighlights() {
- const highlights = [
-  "professional competence and ethics",
-  "caring, friendly and systematic",
-  "affordable, caring and hygienic treatment"
- ];
- return <div className="google-review-highlights" aria-label="Selected excerpts from public Google reviews">
-  {highlights.map((quote) => <article key={quote}>
-   <span>GOOGLE REVIEW EXCERPT</span>
-   <p>“{quote}”</p>
+ return <div className="google-review-highlights" aria-label="Recent Google patient feedback">
+  {googleReviewSummaries.map((review) => <article className="google-review-card" key={review.id}>
+   <div className="google-review-card-meta">
+    <span>GOOGLE REVIEW</span>
+    <time>{review.date}</time>
+   </div>
+   <p>{review.text}</p>
+   <small>Reviewer name and individual rating are not exposed in Google's public preview.</small>
   </article>)}
  </div>;
 }
@@ -65,7 +82,7 @@ export async function TreatmentMedia({name,slug}:{name:string;slug:string}) {
    <div className="patient-section-heading">
     <span>TREATMENT IMAGE GALLERY</span>
     <h2>Explore {name.toLowerCase()}.</h2>
-    <p>Five treatment-related stock photographs showing relevant procedures, equipment and clinical settings. Consent-confirmed clinic before-and-after cases, when available, are placed in this same gallery.</p>
+    <p>Five selected dental photographs for this treatment. Real before-and-after clinic cases appear in this same gallery only after matching patient photos and publication consent are confirmed.</p>
    </div>
    <div className="media-grid">
     {photos.length===0?<Placeholder kind="image" title={name+" — image gallery"}/>:photos.map((item:any)=><figure className="treatment-media-item" key={item.id}>
@@ -91,23 +108,24 @@ export async function TreatmentReviews({name,slug}:{name:string;slug:string}) {
    <div className="patient-section-heading">
     <span>PUBLIC PATIENT FEEDBACK</span>
     <h2>What patients say about the clinic.</h2>
-    <p>The public Google rating is clinic-wide, not a rating for {name.toLowerCase()} specifically. Treatment-specific website reviews appear separately after clinic approval.</p>
+    <p>These are clinic-wide Google reviews, not testimonials assigned to {name.toLowerCase()}. Google's public preview does not expose reviewer names or each review's individual star score.</p>
    </div>
    <div className="review-panel review-panel-clinic-wide">
     <div className="clinic-google-copy">
-     <span>CLINIC-WIDE GOOGLE FEEDBACK</span>
+     <span>CLINIC-WIDE GOOGLE RATING</span>
      <h2>A 5.0 rating from local patients.</h2>
-     <p>Google currently lists a 5.0/5 rating across 32 clinic reviews. The short excerpts are general clinic feedback and are not assigned to an individual treatment.</p>
-     <a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read all 32 Google reviews <ArrowUpRight size={15}/></a>
+     <p>Advance Dental Concepts currently has a 5.0/5 overall rating from 31 Google reviews. The three summaries below reflect recent public feedback.</p>
+     <a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read all Google reviews <ArrowUpRight size={15}/></a>
     </div>
     <div className="review-rating clinic-google-rating">
      <strong>5.0</strong>
      <Stars rating={5}/>
-     <b>32 Google reviews</b>
+     <b>31 Google reviews</b>
      <small>Overall clinic rating</small>
     </div>
     <GoogleReviewHighlights/>
     {reviews.length>0&&<div className="approved-review-list treatment-approved-reviews">
+     <h3>Approved website reviews for {name}</h3>
      {reviews.map((review:any)=><article key={review.id}>
       <div><b>{review.display_name}</b><Stars rating={Number(review.rating)}/></div>
       <p>{review.review_text}</p>
@@ -127,14 +145,14 @@ export async function HomeReviewSection() {
  return <section className="home-review-section" id="reviews">
   <div className="wrap home-review-inner">
    <div>
-    <span>PUBLIC GOOGLE FEEDBACK</span>
+    <span>GOOGLE PATIENT FEEDBACK</span>
     <h2>Patient experiences<br/>at our clinic.</h2>
-    <p>Google currently lists a 5.0/5 clinic rating from 32 reviews. The review excerpts are clinic-wide and are not labelled as feedback for a specific procedure.</p>
-    <a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read all 32 Google reviews <ArrowUpRight size={15}/></a>
+    <p>Advance Dental Concepts currently has a 5.0/5 overall rating from 31 Google reviews. These are recent clinic-wide review summaries; Google does not expose reviewer names or individual scores in the public preview.</p>
+    <a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read all Google reviews <ArrowUpRight size={15}/></a>
    </div>
    <div className="home-review-rating">
     <div className="google-rating-top"><strong>5.0</strong><span>★★★★★</span></div>
-    <b>32 Google reviews</b>
+    <b>31 Google reviews</b>
     <small>Overall clinic rating · all services</small>
     <GoogleReviewHighlights/>
     {reviews.length>0&&<div className="home-approved-review-list">

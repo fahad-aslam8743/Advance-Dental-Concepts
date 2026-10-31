@@ -148,7 +148,7 @@ export default function AdminPage() {
     const file=event.target.files?.[0]; if(!file)return;
     setBusy(true); setError(""); setMessage("");
     try {
-      if(mediaPlacement!=="gallery"&&!mediaConsentVerified) throw new Error("Real before/after patient photos require written patient consent. Keep the educational illustrations until consent is confirmed.");
+      if(mediaPlacement!=="gallery"&&!mediaConsentVerified) throw new Error("Real before/after patient photos require written patient consent before publication.");
       const result=await upload(file.name,file,{
         access:"public", handleUploadUrl:"/api/admin/media/upload",
         clientPayload:JSON.stringify({
@@ -275,7 +275,7 @@ export default function AdminPage() {
           <label style={labelStyle}>Media type<select style={inputStyle} value={mediaKind} onChange={e=>{setMediaKind(e.target.value);if(e.target.value==="video")setMediaPlacement("gallery");}}><option value="image">Photo</option><option value="video">Video</option></select></label>
           <label style={labelStyle}>Display location<select style={inputStyle} value={mediaPlacement} onChange={e=>setMediaPlacement(e.target.value)} disabled={mediaKind==="video"}><option value="gallery">Gallery image</option><option value="comparison_before">Comparison — condition / before</option><option value="comparison_after">Comparison — care concept / after</option></select></label>
           {mediaPlacement!=="gallery"&&<label style={labelStyle}>Comparison pair<select style={inputStyle} value={mediaPairNumber} onChange={e=>setMediaPairNumber(e.target.value)}><option value="1">Pair 1</option><option value="2">Pair 2</option></select></label>}
-          <label style={labelStyle}>Caption / alt text<input style={inputStyle} value={mediaAlt} onChange={e=>setMediaAlt(e.target.value)} placeholder="Describe this media"/></label>
+          <label style={labelStyle}>Photo caption (optional)<input style={inputStyle} value={mediaAlt} onChange={e=>setMediaAlt(e.target.value)} placeholder="Leave blank to hide the caption"/></label><small style={{fontSize:11,color:"#829087",lineHeight:1.5}}>This caption appears beneath the image only when filled in. It is editable here.</small>
           <label style={labelStyle}>Choose file<input style={inputStyle} type="file" accept={mediaKind==="video"?"video/mp4,video/webm,video/quicktime":"image/jpeg,image/png,image/webp,image/avif"} onChange={uploadMedia} disabled={busy}/></label>
         </div>
         {mediaPlacement!=="gallery"&&<label style={{display:"flex",alignItems:"flex-start",gap:9,fontSize:12,color:"#52645c",lineHeight:1.6,marginTop:12}}><input type="checkbox" checked={mediaConsentVerified} onChange={e=>setMediaConsentVerified(e.target.checked)} style={{marginTop:3}}/>I confirm this is the correct matching before/after patient photograph and the clinic holds written consent specifically covering publication of these images.</label>}
