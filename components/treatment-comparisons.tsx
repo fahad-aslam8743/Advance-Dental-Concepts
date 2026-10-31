@@ -7,6 +7,7 @@ export type TreatmentComparison = ComparisonScenario & {
   pairNumber: number;
   beforeUrl: string;
   afterUrl: string;
+  sourceType: "illustration" | "consented-patient-case";
 };
 
 function ComparisonCard({ comparison }: { comparison: TreatmentComparison }) {
@@ -14,7 +15,7 @@ function ComparisonCard({ comparison }: { comparison: TreatmentComparison }) {
   return (
     <article className="clinical-compare-card">
       <div className="clinical-compare-card-heading">
-        <span>EDUCATIONAL COMPARISON · 0{comparison.pairNumber}</span>
+        <span>{comparison.sourceType === "consented-patient-case" ? "CLINIC PATIENT CASE · CONSENT CONFIRMED" : "EDUCATIONAL ILLUSTRATION"} · 0{comparison.pairNumber}</span>
         <h3>{comparison.title}</h3>
       </div>
       <div className="clinical-compare-stage">
@@ -59,7 +60,7 @@ export default function TreatmentComparisons({ comparisons, treatmentName }: { c
       <div className="clinical-comparisons-grid">
         {comparisons.map((comparison) => <ComparisonCard key={comparison.pairNumber} comparison={comparison} />)}
       </div>
-      <p className="clinical-comparisons-disclaimer">These are computer-generated educational illustrations, not real patient photographs, documented treatment results or a promise of outcome. Actual suitability and results vary. A dentist must assess each patient and discuss realistic options.</p>
+      <p className="clinical-comparisons-disclaimer">Illustrations are educational concepts, not predicted results. Patient photographs are shown only when the clinic records written consent for publication. Individual suitability and outcomes vary; a dentist must assess each patient and discuss realistic options.</p>
     </section>
   );
 }
