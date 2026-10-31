@@ -40,6 +40,9 @@ export default function AdminPage() {
   const [manualVerified,setManualVerified] = useState(false);
   const [mediaTreatment,setMediaTreatment] = useState(services[0].slug);
   const [mediaKind,setMediaKind] = useState("image");
+  const [comparisonPair,setComparisonPair] = useState("1");
+  const [patientConsentVerified,setPatientConsentVerified] = useState(false);
+  const [lastUpdated,setLastUpdated] = useState<Date|null>(null);
   const [editingMedia,setEditingMedia] = useState<Media|null>(null);
   const [mediaEditDraft,setMediaEditDraft] = useState({altText:"",sortOrder:"100"});
   const [message,setMessage] = useState("");
@@ -52,13 +55,17 @@ export default function AdminPage() {
       api("/api/admin/dashboard"), api("/api/admin/settings"),
       api("/api/admin/reviews?status="+reviewStatus), api("/api/admin/media")
     ]);
-    setDashboard(d); setSettings(s); setReviews(r); setMedia(m);
+    setDashboard(d); setSettings(s); setReviews(r); setMedia(m); setLastUpdated(new Date());
   }
 
   useEffect(() => {
     api("/api/admin/dashboard").then(async()=>{setAuthenticated(true); await refresh();}).catch(()=>{});
   }, []);
-  useEffect(() => { if(authenticated && !mustChange) refresh().catch(e=>setError(e.message)); }, [reviewStatus,authenticated,mustChange]);
+  useEffect(() => {
+    if(!authenticated || mustChange) return;
+    const timer=window.setInterval(()=>refresh().catch(e=>setError(e.message)),30000);
+    return ()=>window.clearInterval(timer);
+  }, [reviewStatus,authenticated,mustChange]);
 
   async function login(event:React.FormEvent) {
     event.preventDefault(); setBusy(true); setError("");
@@ -160,6 +167,24 @@ export default function AdminPage() {
     finally { setBusy(false); event.target.value=""; }
   }
 
+  async function uploadComparison(event:React.ChangeEvent<HTMLInputElement>,placement:"comparison_before"|"comparison_after") {
+    const file=event.target.files?.[0]; if(!file)return;
+    if(!patientConsentVerified){setError("Confirm written patient consent before uploading clinical before-and-after photographs.");event.target.value="";return;}
+    setBusy(true); setError(""); setMessage("");
+    try {
+      const result=await upload(file.name,file,{
+        access:"public",handleUploadUrl:"/api/admin/media/upload",
+        clientPayload:JSON.stringify({
+          treatmentSlug:mediaTreatment,kind:"image",altText:"",
+          placement,pairNumber:Number(comparisonPair),patientConsentVerified:true
+        })
+      });
+      await refresh();
+      setMessage((placement==="comparison_before"?"Before":"After")+" image uploaded for "+treatmentName(mediaTreatment)+", comparison pair "+comparisonPair+".");
+    } catch(e) { setError(e instanceof Error ? e.message : "Comparison image upload failed"); }
+    finally { setBusy(false); event.target.value=""; }
+  }
+
   function editMedia(item:Media) {
     setEditingMedia(item);
     setMediaEditDraft({
@@ -194,6 +219,7 @@ export default function AdminPage() {
   const maxTrend = useMemo(()=>Math.max(1,...(dashboard?.trend || []).map(x=>Number(x.count))),[dashboard]);
   const treatmentName = (slug:string)=>services.find(s=>s.slug===slug)?.name || slug;
   const mediaForTreatment = media.filter(item=>item.treatment_slug===mediaTreatment && item.placement==="gallery");
+  const comparisonsForTreatment = media.filter(item=>item.treatment_slug===mediaTreatment && item.placement!=="gallery");
 
   if(!authenticated) return <main className="admin-app" style={{minHeight:"100vh",background:"#edf2ed",display:"grid",placeItems:"center",padding:20,fontFamily:"Arial,sans-serif"}}>
     <form onSubmit={login} style={{...cardStyle,width:"min(430px,100%)",padding:32}}>
@@ -234,7 +260,7 @@ export default function AdminPage() {
       {message&&<div style={{...cardStyle,color:"#256344",marginBottom:15}}>{message}</div>}
 
       {tab==="overview"&&<section style={{display:"grid",gap:18}}>
-        <div><h1 style={{fontSize:30,margin:"0 0 5px"}}>Good day</h1><p style={{color:"#728078",margin:0}}>These numbers come directly from your website database.</p></div>
+        <div><h1 style={{fontSize:30,margin:"0 0 5px"}}>Good day</h1><p style={{color:"#728078",margin:0}}>These numbers come directly from your website database and refresh automatically every 30 seconds.</p><small style={{color:"#829087"}}>Last refreshed: {lastUpdated?lastUpdated.toLocaleTimeString():"Loading…"}</small><button onClick={()=>refresh().catch(e=>setError(e.message))} style={{...buttonStyle,marginTop:10}}>Refresh overview</button></div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:14}}>
           {[["Total reviews",dashboard?.reviews.total ?? 0],["Awaiting approval",dashboard?.reviews.pending ?? 0],["Published reviews",dashboard?.reviews.approved ?? 0],["Average approved rating",dashboard?.reviews.average_rating ?? "—"],["Treatment media files",dashboard?.media.total ?? 0]].map(([label,value])=><div key={String(label)} style={cardStyle}><div style={{fontSize:11,color:"#718078",fontWeight:700}}>{label}</div><div style={{fontSize:32,fontWeight:800,marginTop:10}}>{value}</div></div>)}
         </div>
@@ -262,14 +288,26 @@ export default function AdminPage() {
       </section>}
 
       {tab==="media"&&<section style={{display:"grid",gap:18}}>
-        <div><h1 style={{fontSize:28,margin:"0 0 5px"}}>Treatment gallery photos & videos</h1><p style={{color:"#728078",margin:0,fontSize:13}}>Edit or delete the five starter gallery photos, and upload as many additional gallery images or videos as you need. The two before-and-after sliders on each service page are fixed and are not managed here.</p></div>
+        <div><h1 style={{fontSize:28,margin:"0 0 5px"}}>Treatment gallery photos & videos</h1><p style={{color:"#728078",margin:0,fontSize:13}}>Edit or delete the five starter gallery photos, and upload as many additional gallery images or videos as you need. Manage gallery photos, videos and consent-verified before-and-after comparisons for each treatment.</p></div>
         <div style={cardStyle}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,alignItems:"end"}}>
           <label style={labelStyle}>Treatment<select style={inputStyle} value={mediaTreatment} onChange={e=>setMediaTreatment(e.target.value)}>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
           <label style={labelStyle}>Media type<select style={inputStyle} value={mediaKind} onChange={e=>setMediaKind(e.target.value)}><option value="image">Photo</option><option value="video">Video</option></select></label>
           <label style={labelStyle}>Choose file<input style={inputStyle} type="file" accept={mediaKind==="video"?"video/mp4,video/webm,video/quicktime":"image/jpeg,image/png,image/webp,image/avif"} onChange={uploadMedia} disabled={busy}/></label>
         </div>
         <p style={{fontSize:11,color:"#829087",lineHeight:1.6,marginBottom:0}}>Images: up to 15 MB. Videos: up to 100 MB. New uploads are added to the gallery; they do not replace existing photos.</p></div>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}><b>{treatmentName(mediaTreatment)} · {mediaForTreatment.length} media items</b><span style={{fontSize:11,color:"#829087"}}>Changes appear on the matching treatment page.</span></div>
+        <div style={cardStyle}>
+          <h2 style={{fontSize:17,margin:"0 0 6px"}}>Before &amp; after comparison images</h2>
+          <p style={{fontSize:12,color:"#728078",lineHeight:1.7,marginTop:0}}>Choose the treatment and comparison pair, then upload the BEFORE and AFTER photographs separately. Uploading a new image replaces only that side of the selected pair. Only use real patient photographs when written consent for website publication is confirmed.</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,alignItems:"end"}}>
+            <label style={labelStyle}>Service page<select style={inputStyle} value={mediaTreatment} onChange={e=>setMediaTreatment(e.target.value)}>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
+            <label style={labelStyle}>Comparison pair<select style={inputStyle} value={comparisonPair} onChange={e=>setComparisonPair(e.target.value)}><option value="1">Comparison 1</option><option value="2">Comparison 2</option></select></label>
+            <label style={labelStyle}>Upload BEFORE image<input style={inputStyle} type="file" accept="image/jpeg,image/png,image/webp,image/avif" disabled={busy||!patientConsentVerified} onChange={e=>uploadComparison(e,"comparison_before")}/></label>
+            <label style={labelStyle}>Upload AFTER image<input style={inputStyle} type="file" accept="image/jpeg,image/png,image/webp,image/avif" disabled={busy||!patientConsentVerified} onChange={e=>uploadComparison(e,"comparison_after")}/></label>
+          </div>
+          <label style={{display:"flex",alignItems:"flex-start",gap:9,fontSize:12,color:"#52645c",lineHeight:1.6,marginTop:14}}><input type="checkbox" checked={patientConsentVerified} onChange={e=>setPatientConsentVerified(e.target.checked)} style={{marginTop:3}}/>I confirm the clinic has obtained the patient's written permission to publish these photographs as a before-and-after comparison.</label>
+          <p style={{fontSize:11,color:"#829087",marginBottom:0}}>Comparison images are stored as a matched pair by treatment and pair number. Images are not uploaded until consent is confirmed.</p>
+        </div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}><b>{treatmentName(mediaTreatment)} · {mediaForTreatment.length} gallery items · {comparisonsForTreatment.length} comparison images</b><span style={{fontSize:11,color:"#829087"}}>Changes appear on the matching treatment page.</span></div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:14}}>{mediaForTreatment.length===0?<div style={cardStyle}>No media found for this treatment.</div>:mediaForTreatment.map(item=><article key={item.id} style={cardStyle}>
           <div style={{height:155,background:"#edf2ed",borderRadius:10,overflow:"hidden",display:"grid",placeItems:"center"}}>{item.kind==="video"?<video src={item.url} controls style={{width:"100%",height:"100%",objectFit:"contain"}}/>:<img src={item.url} alt={item.alt_text} style={{width:"100%",height:"100%",objectFit:"cover"}}/>}</div>
           <b style={{display:"block",marginTop:12}}>{treatmentName(item.treatment_slug)}</b>
@@ -277,13 +315,22 @@ export default function AdminPage() {
           <small style={{display:"block",color:"#829087",marginTop:5}}>{item.kind} · {item.is_illustrative?"Educational illustration":item.patient_consent_verified?"Consent confirmed":"Stock / clinic media"} · {item.alt_text}</small>
           <div style={{display:"flex",gap:8,marginTop:12,flexWrap:"wrap"}}><button onClick={()=>editMedia(item)} style={buttonStyle}>Edit details</button><button onClick={()=>deleteMedia(item.id)} style={{...buttonStyle,background:"#8e4545"}}>Delete</button></div>
         </article>)}</div>
+        <div style={cardStyle}>
+          <h2 style={{fontSize:17,marginTop:0}}>Before &amp; after images for {treatmentName(mediaTreatment)}</h2>
+          {comparisonsForTreatment.length===0?<p style={{fontSize:12,color:"#829087"}}>No comparison images have been uploaded for this service yet.</p>:<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:12}}>{comparisonsForTreatment.map(item=><article key={item.id} style={{border:"1px solid #e2e9e2",borderRadius:12,padding:12}}>
+            <img src={item.url} alt={item.alt_text||"Treatment comparison"} style={{width:"100%",height:150,objectFit:"cover",borderRadius:8,background:"#edf2ed"}}/>
+            <b style={{display:"block",marginTop:8}}>{item.placement==="comparison_before"?"BEFORE":"AFTER"} · Pair {item.pair_number}</b>
+            <small style={{color:"#829087"}}>{item.patient_consent_verified?"Written consent confirmed":"Consent not confirmed"}</small>
+            <button onClick={()=>deleteMedia(item.id)} style={{...buttonStyle,background:"#8e4545",marginTop:10}}>Delete image</button>
+          </article>)}</div>}
+        </div>
       </section>}
 
       {tab==="settings"&&<section style={{display:"grid",gap:18}}>
         <div><h1 style={{fontSize:28,margin:"0 0 5px"}}>Clinic settings</h1><p style={{color:"#728078",margin:0,fontSize:13}}>These settings are shared by the website header, footer and contact details.</p></div>
         <form onSubmit={saveSettings} style={cardStyle}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:16}}>
           {([["clinicName","Clinic / website name"],["phone","Phone number"],["addressLine","Street address"],["city","City / location"],["openingHours","Opening hours"],["logoUrl","Logo image URL"],["googleReviewsUrl","Google reviews link"],["mapUrl","Google Maps / directions link"]] as [keyof Settings,string][]).map(([key,label])=><label key={key} style={labelStyle}>{label}<input style={inputStyle} value={settings[key]} onChange={e=>setSettings({...settings,[key]:e.target.value})}/></label>)}
-        </div><label style={{...labelStyle,marginTop:18,maxWidth:420}}>Upload clinic logo (PNG, JPG, WebP · max 5 MB)<input style={inputStyle} type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={uploadLogo} disabled={busy}/></label>{settings.logoUrl&&<img src={settings.logoUrl} alt="Current clinic logo" style={{width:90,height:90,objectFit:"contain",marginTop:12,background:"#f2f4f0",borderRadius:10,padding:8}}/>}<button style={{...buttonStyle,marginTop:20}} disabled={busy}>{busy?"Saving...":"Save clinic settings"}</button></form>
+        </div><label style={{...labelStyle,marginTop:18,maxWidth:420}}>Upload clinic logo (PNG, JPG, WebP · max 5 MB)<input style={inputStyle} type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={uploadLogo} disabled={busy}/></label>{settings.logoUrl&&<><img src={settings.logoUrl} alt="Current clinic logo" style={{width:180,height:72,objectFit:"contain",marginTop:12,background:"#fff",borderRadius:10,padding:8}}/><button type="button" onClick={()=>setSettings({...settings,logoUrl:""})} style={{...buttonStyle,background:"#8e4545",marginTop:10}}>Remove current logo</button></>}<button style={{...buttonStyle,marginTop:20}} disabled={busy}>{busy?"Saving...":"Save clinic settings"}</button></form>
         <form onSubmit={updateAccountPassword} style={{...cardStyle,display:"grid",gap:14}}>
           <div><h2 style={{fontSize:18,margin:"0 0 5px"}}>Admin account security</h2><p style={{fontSize:12,color:"#728078",margin:0}}>Change your password whenever you need to. Use at least 10 characters with letters and numbers.</p></div>
           <label style={{...labelStyle,maxWidth:440}}>New password<input style={inputStyle} type="password" minLength={10} value={accountPassword} onChange={e=>setAccountPassword(e.target.value)} autoComplete="new-password" required/></label>
