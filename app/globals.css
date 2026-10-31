@@ -704,3 +704,48 @@ img,video,iframe,svg{max-width:100%}
  .treatment-page .treatment-jump{width:calc(100% - 36px)!important}
  .treatment-page .treatment-jump a{font-size:9px!important}
 }
+
+/* Refined centered two-tab row and expanded clinic profile */
+.experience-highlight{display:flex;align-items:center;gap:14px;margin:22px 0 8px;padding:15px 18px;background:#f5f8f5;border:1px solid #dce6df;border-radius:12px}
+.experience-highlight>strong{font:600 42px/1 var(--display);letter-spacing:-.06em;color:var(--teal)}
+.experience-highlight>strong span{font-size:25px}
+.experience-highlight>div{display:flex;flex-direction:column;gap:4px}
+.experience-highlight>div b{font:700 12px var(--display);color:var(--ink)}
+.experience-highlight>div small{font:500 9px var(--sans);color:var(--muted)}
+.clinic-approach-section{background:#f1f6f2;padding-block:clamp(58px,8vw,100px)}
+.clinic-approach-heading{display:grid;grid-template-columns:1fr minmax(230px,.62fr);gap:50px;align-items:end;margin-bottom:36px}
+.clinic-approach-heading h2{font:600 clamp(36px,4.5vw,58px)/1.08 var(--display);letter-spacing:-.06em;margin:16px 0 0;color:var(--ink)}
+.clinic-approach-heading h2 em{font:500 1em var(--serif);color:var(--teal);letter-spacing:-.04em}
+.clinic-approach-heading>p{font:400 12px/1.9 var(--sans);color:var(--muted);margin:0 0 4px}
+.clinic-approach-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.approach-card{position:relative;min-width:0;padding:25px 22px 27px;background:#fff;border:1px solid #dce7df;border-radius:15px;overflow:hidden}
+.approach-number{position:absolute;right:18px;top:17px;font:700 10px var(--display);letter-spacing:.12em;color:#a8b9ad}
+.approach-icon{width:42px;height:42px;border-radius:12px;background:#e6f2ec;color:var(--teal);display:grid;place-items:center;margin-bottom:24px}
+.approach-icon svg{width:20px;height:20px}
+.approach-card h3{font:700 17px var(--display);color:var(--ink);margin:0 0 10px}
+.approach-card p{font:400 11px/1.85 var(--sans);color:var(--muted);margin:0}
+.clinic-approach-foot{display:flex;align-items:center;gap:18px;margin-top:22px;padding:18px 0;border-top:1px solid #d1ddd4}
+.clinic-approach-foot>span{font:800 8px var(--display);letter-spacing:.16em;color:var(--teal);white-space:nowrap}
+.clinic-approach-foot>p{flex:1;font:500 11px var(--sans);color:var(--ink);margin:0}
+.clinic-approach-foot>a{display:inline-flex;align-items:center;gap:7px;font:700 10px var(--display);color:var(--teal);text-decoration:none;white-space:nowrap}
+.doctor-about-photo{background:#0d1038;border-radius:18px}
+.doctor-about-photo>img{object-position:center 15%;border-radius:18px}
+@media(max-width:760px){
+ .treatment-page .treatment-jump{grid-template-columns:repeat(6,minmax(0,1fr))!important;column-gap:14px!important;row-gap:12px!important}
+ .treatment-page .treatment-jump a:nth-child(4):nth-last-child(2){grid-column:1/span 2!important}
+ .treatment-page .treatment-jump a:nth-child(5):last-child{grid-column:5/span 2!important}
+ .treatment-page .treatment-jump a:nth-child(4):last-child{grid-column:3/span 2!important}
+ .clinic-approach-heading{grid-template-columns:minmax(0,1fr);gap:14px;margin-bottom:23px}
+ .clinic-approach-heading h2{font-size:clamp(34px,8vw,44px)}
+ .clinic-approach-grid{grid-template-columns:minmax(0,1fr);gap:10px}
+ .approach-card{padding:20px}
+ .approach-icon{margin-bottom:17px}
+ .clinic-approach-foot{align-items:flex-start;flex-direction:column;gap:9px}
+ .experience-highlight{margin-block:18px}
+ .doctor-about-photo,.doctor-about-photo>img{border-radius:14px}
+}
+@media(max-width:380px){
+ .treatment-page .treatment-jump{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+ .treatment-page .treatment-jump a:nth-child(4):nth-last-child(2){grid-column:1/span 2!important}
+ .treatment-page .treatment-jump a:nth-child(5):last-child{grid-column:5/span 2!important}
+}
