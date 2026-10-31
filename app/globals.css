@@ -1165,3 +1165,134 @@ body{font-size:17px;line-height:1.75;color:#163633}
  .service-card p{font-size:11px}
  .treatment-page .treatment-hero h1{font-size:41px!important}
 }
+
+
+/* =========================================================
+   SECOND DESIGN PASS — MORE AIR, MOTION & POLISHED RHYTHM
+   Public-site presentation only; no content or behavior changes.
+   ========================================================= */
+:root{--section-space:clamp(92px,11vw,156px)}
+.section{padding-block:var(--section-space)}
+.section-heading{margin-bottom:clamp(42px,6vw,76px)}
+.section-heading h2,.statement-copy h2,.guide-top h2,.pricing-inner h2,
+.faq-layout h2,.contact-copy h2,.treatment-intro h2,
+.treatment-options h2,.treatment-faq h2,.related-heading h2{
+  max-width:15ch;
+}
+.section-heading>p,.heading-aside p,.statement-copy>p,
+.guide-top>p,.faq-intro,.contact-copy>p{
+  max-width:62ch;
+}
+.service-grid{gap:clamp(22px,3vw,38px) clamp(18px,2.3vw,30px)}
+.service-card{border-radius:16px}
+.service-card-copy{padding:clamp(22px,2.4vw,32px)}
+.service-card h3{margin:14px 0 13px}
+.service-card p{line-height:1.9}
+.statement-grid{gap:clamp(58px,9vw,130px)}
+.statement-visual{border-radius:18px}
+.statement-copy .large-copy{max-width:32ch;margin-bottom:25px}
+.value-list{gap:24px;margin-block:38px}
+.guide-grid{gap:clamp(18px,2.5vw,30px)}
+.guide-card{padding:clamp(30px,3.6vw,48px);border-radius:16px}
+.guide-card h3{max-width:15ch;line-height:1.18}
+.guide-card p{max-width:44ch;line-height:1.95}
+.pricing-inner{gap:clamp(60px,9vw,130px)}
+.pricing-inner>div:first-child>p{max-width:58ch;line-height:2}
+.pricing-side{gap:30px}
+.faq-layout,.contact-grid{gap:clamp(60px,9vw,130px)}
+.faq-item{padding-block:5px}
+.faq-item>button{line-height:1.55}
+.doctor-about-grid{gap:clamp(58px,9vw,130px)}
+.doctor-about-copy>p{max-width:62ch}
+.doctor-credentials{margin-block:34px;padding-block:23px;gap:22px}
+.clinic-approach-section{padding-block:var(--section-space)}
+.clinic-approach-heading{gap:clamp(40px,7vw,100px);margin-bottom:clamp(36px,5vw,60px)}
+.clinic-approach-grid{gap:clamp(16px,2vw,24px)}
+.approach-card{padding:clamp(27px,3vw,40px);border-radius:16px}
+.approach-card p{line-height:1.95}
+.clinic-approach-foot{margin-top:32px;padding-top:25px}
+.review-submit-section{padding-block:var(--section-space)}
+.shared-review-list{column-gap:22px}
+.shared-review-list>.shared-review-card{margin-bottom:22px!important}
+.footer{padding-top:clamp(64px,8vw,100px)}
+.footer-main{gap:clamp(30px,5vw,72px)}
+.treatment-page .treatment-intro-grid,.treatment-page .treatment-faq-grid{gap:clamp(42px,7vw,92px)}
+.treatment-page .treatment-jump{gap:12px;padding-block:22px}
+.treatment-page .treatment-jump a{padding-inline:18px!important}
+.treatment-page .content-block{padding:clamp(28px,4vw,48px);border-radius:16px}
+.treatment-page .related-grid{gap:24px}
+.treatment-page .related-card{border-radius:16px}
+
+/* Consistent, tactile transitions */
+a,button,.button,.nav-cta,.card-arrow,.treatment-jump a,
+.approach-card,.guide-card,.service-card,.related-card,
+.option-card,.shared-review-card,.value-list>div{
+  transition:color .25s ease,background-color .25s ease,border-color .25s ease,
+  box-shadow .35s cubic-bezier(.2,.75,.25,1),
+  transform .35s cubic-bezier(.2,.75,.25,1);
+}
+.approach-card:hover,.guide-card:hover,.option-card:hover,
+.related-card:hover,.shared-review-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 22px 50px rgba(15,57,49,.10);
+}
+.approach-card:hover .approach-icon{transform:translateY(-3px);background:#d9eee4}
+.approach-icon{transition:transform .3s ease,background .3s ease}
+.button:hover,.nav-cta:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(6,92,81,.2)}
+a:focus-visible,button:focus-visible{outline:3px solid rgba(11,147,133,.45);outline-offset:4px}
+
+/* Scroll-triggered reveals in browsers with native view timelines.
+   Content remains visible if the feature is unsupported. */
+@supports (animation-timeline:view()){
+ @keyframes adc-reveal{
+  from{opacity:0;transform:translateY(34px)}
+  to{opacity:1;transform:translateY(0)}
+ }
+ .section-heading,.service-grid,.statement-grid,.guide-top,.guide-grid,
+ .pricing-inner,.faq-layout,.contact-grid,.doctor-about-grid,
+ .clinic-approach-heading,.clinic-approach-grid,.clinic-approach-foot,
+ .review-submit-section .patient-section-heading,
+ .treatment-page .treatment-intro-grid,
+ .treatment-page .treatment-faq-grid,
+ .treatment-page .related-grid{
+  animation:adc-reveal .85s cubic-bezier(.2,.75,.25,1) both;
+  animation-timeline:view();
+  animation-range:entry 0% entry 32%;
+ }
+ .service-card,.guide-card,.approach-card,.related-card{
+  animation:adc-reveal .7s cubic-bezier(.2,.75,.25,1) both;
+  animation-timeline:view();
+  animation-range:entry 0% entry 22%;
+ }
+}
+@media(max-width:760px){
+ :root{--section-space:76px}
+ .section-heading{margin-bottom:34px}
+ .service-grid{gap:18px 13px}
+ .service-card-copy{padding:19px 15px 20px}
+ .service-card h3{margin:10px 0}
+ .statement-grid,.doctor-about-grid{gap:38px}
+ .statement-copy .large-copy{margin-bottom:19px}
+ .value-list{gap:18px;margin-block:27px}
+ .guide-grid{gap:14px}
+ .guide-card{padding:27px}
+ .pricing-inner{gap:35px}
+ .faq-layout,.contact-grid{gap:35px}
+ .doctor-credentials{margin-block:25px;padding-block:19px;gap:14px}
+ .clinic-approach-heading{margin-bottom:28px}
+ .clinic-approach-grid{gap:13px}
+ .approach-card{padding:25px}
+ .clinic-approach-foot{margin-top:24px;padding-top:20px}
+ .shared-review-list{column-gap:12px}
+ .shared-review-list>.shared-review-card{margin-bottom:13px!important}
+ .treatment-page .treatment-jump{padding-block:14px}
+ .treatment-page .content-block{padding:24px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{
+  animation:none!important;
+  transition:none!important;
+  scroll-behavior:auto!important;
+  transform:none!important;
+ }
+}
