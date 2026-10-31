@@ -35,7 +35,7 @@ export default function AdminPage() {
   const [settings,setSettings] = useState<Settings>(defaultSettings);
   const [reviews,setReviews] = useState<Review[]>([]);
   const [media,setMedia] = useState<Media[]>([]);
-  const [reviewStatus,setReviewStatus] = useState("pending");
+  const [reviewStatus,setReviewStatus] = useState("all");
   const [manual,setManual] = useState({displayName:"",rating:"5",reviewText:""});
   const [manualVerified,setManualVerified] = useState(false);
   const [mediaTreatment,setMediaTreatment] = useState(services[0].slug);
