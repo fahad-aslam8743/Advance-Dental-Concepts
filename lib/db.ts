@@ -132,6 +132,9 @@ export async function ensureSchema() {
       await query("CREATE TABLE IF NOT EXISTS app_migrations (key TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
 
       await query("CREATE TABLE IF NOT EXISTS admin_login_attempts (id BIGSERIAL PRIMARY KEY, ip_hash TEXT NOT NULL, attempted_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
+      await query("CREATE TABLE IF NOT EXISTS site_visits (id BIGSERIAL PRIMARY KEY, session_id TEXT NOT NULL, path TEXT NOT NULL, visited_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
+      await query("CREATE INDEX IF NOT EXISTS site_visits_time_idx ON site_visits(visited_at DESC)");
+      await query("CREATE INDEX IF NOT EXISTS site_visits_session_time_idx ON site_visits(session_id, visited_at DESC)");
       await query("CREATE INDEX IF NOT EXISTS admin_login_attempts_ip_idx ON admin_login_attempts(ip_hash, attempted_at DESC)");
       await query("INSERT INTO site_settings (id, data) VALUES ('main', $1::jsonb) ON CONFLICT (id) DO NOTHING", [JSON.stringify(DEFAULT_SETTINGS)]);
       const logoMigration = "adc-default-clinic-logo-v1";
