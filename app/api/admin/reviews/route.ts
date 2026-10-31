@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
-import { ensureSchema, query, treatmentSlugs } from "@/lib/db";
+import { ensureSchema, query } from "@/lib/db";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   await ensureSchema();
   const status = request.nextUrl.searchParams.get("status") || "pending";
   const rows = status === "all"
-    ? await query("SELECT id, display_name, rating, treatment_slug, review_text, status, source, created_at FROM reviews ORDER BY created_at DESC LIMIT 200")
+    ? await query("SELECT id, display_name, rating, treatment_slug, review_text, status, source, created_at FROM reviews ORDER BY created_at DESC LIMIT 1000")
     : await query("SELECT id, display_name, rating, treatment_slug, review_text, status, source, created_at FROM reviews WHERE status = $1 ORDER BY created_at DESC LIMIT 200", [status]);
   return NextResponse.json(rows);
 }
@@ -25,15 +25,14 @@ export async function POST(request: NextRequest) {
     const displayName = String(body.displayName || "").trim().slice(0, 80);
     const reviewText = String(body.reviewText || "").trim().slice(0, 1500);
     const rating = Number(body.rating);
-    const slug = String(body.treatmentSlug || "");
-    if (!displayName || reviewText.length < 10 || !Number.isInteger(rating) || rating < 1 || rating > 5 || !treatmentSlugs.includes(slug)) {
+    if (!displayName || reviewText.length < 10 || !Number.isInteger(rating) || rating < 1 || rating > 5) {
       return NextResponse.json({ error: "Enter a name, a review of at least 10 characters, a 1–5 rating and a valid treatment." }, { status: 400 });
     }
     if (body.verified !== true) {
       return NextResponse.json({ error: "Confirm that this is a genuine patient review and that you have permission to publish it." }, { status: 400 });
     }
     // Manual entries join the pending queue. They are never auto-published by this endpoint.
-    const rows = await query("INSERT INTO reviews (display_name, rating, treatment_slug, review_text, status, source) VALUES ($1,$2,$3,$4,'pending','manual') RETURNING id", [displayName, rating, slug, reviewText]);
+    const rows = await query("INSERT INTO reviews (display_name, rating, treatment_slug, review_text, status, source) VALUES ($1,$2,$3,$4,'pending','manual') RETURNING id", [displayName, rating, "clinic-wide", reviewText]);
     return NextResponse.json({ ok: true, id: rows[0]?.id, status: "pending" });
   } catch (error) {
     console.error("Manual review error", error);
@@ -55,9 +54,8 @@ export async function PATCH(request: NextRequest) {
       const name = String(body.displayName || "").trim().slice(0, 80);
       const text = String(body.reviewText || "").trim().slice(0, 1500);
       const rating = Number(body.rating);
-      const slug = String(body.treatmentSlug || "");
       if (!name || text.length < 10 || !Number.isInteger(rating) || rating < 1 || rating > 5 || !treatmentSlugs.includes(slug)) return NextResponse.json({ error: "Review details are invalid." }, { status: 400 });
-      await query("UPDATE reviews SET display_name=$1, rating=$2, review_text=$3, treatment_slug=$4, updated_at=NOW() WHERE id=$5", [name,rating,text,slug,id]);
+      await query("UPDATE reviews SET display_name=$1, rating=$2, review_text=$3, updated_at=NOW() WHERE id=$4", [name,rating,text,id]);
     } else {
       return NextResponse.json({ error: "Unknown action." }, { status: 400 });
     }
