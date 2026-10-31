@@ -24,7 +24,7 @@ export default function ReviewList({ reviews, variant = "home" }: { reviews: Rev
  if(!ordered.length)return <div className="shared-review-empty"><p>There are no approved reviews published yet.</p></div>;
  return <div className="shared-review-list-wrap">
   <div className="shared-review-list" style={{maxHeight:(visibleCount>=ordered.length?Math.max(1,Math.ceil(ordered.length/(isMobile?1:2))):Math.ceil(visibleCount/(isMobile?1:2)))*520+"px"}} aria-live="polite">
-   {ordered.map(review=><article className="shared-review-card" key={review.id}>
+   {ordered.slice(0,visibleCount).map(review=><article className="shared-review-card" key={review.id}>
     <div className="shared-review-card-top"><span className="shared-review-stars" aria-label={review.rating+" out of 5 stars"}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</span><small>{review.source==="google"?"GOOGLE REVIEW":"PATIENT REVIEW"}</small></div>
     <p>{review.review_text}</p>
     <div className="shared-review-author"><b>{review.display_name}</b>{review.created_at&&<time>{new Date(review.created_at).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"})}</time>}</div>
