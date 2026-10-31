@@ -6,7 +6,6 @@ import {comparisonScenarios} from "@/data/treatment-media";
 import TreatmentComparisons, {type TreatmentComparison} from "@/components/treatment-comparisons";
 import ReviewList from "@/components/review-list";
 import type {Service} from "@/data/services";
-const googleReviews="https://www.google.com/maps/place/?q=place_id:ChIJ3WMDzdQBGTkRwcFbl76bFc4";
 const patientNotes:Record<string,{simple:string;goodToKnow:string[];steps:string[];priceFactors:string[];aftercare:string[]}>={
 "teeth-whitening":{simple:"A dentist checks your teeth first, then uses a professional whitening method to make suitable natural teeth look lighter. It will not change the colour of fillings, crowns or veneers.",goodToKnow:["Whitening works best on some types of yellow or surface stains. Not every stain responds in the same way.","You may feel temporary sensitivity during or after treatment.","Your dentist should check for cavities, gum problems and existing dental work first."],steps:["Talk about the shade you would like and what is realistic.","Have your teeth and gums checked.","The dentist chooses a suitable whitening method and protects your gums.","Follow the aftercare advice and ask when a review is needed."],priceFactors:["The whitening method used","Your starting tooth shade and type of stains","Whether any dental problems need treatment first"],aftercare:["Follow the dentist's instructions about food and drinks after whitening.","Use only products recommended by your dentist.","Ask about safe ways to manage sensitivity."]},
 "clear-aligners":{simple:"Clear aligners are see-through trays made to fit your teeth. You change trays as advised, and they gently move your teeth little by little. They can help with selected spacing, crowding and bite problems.",goodToKnow:["Not every smile can be treated with clear trays; some cases need braces or another plan.","You usually need to wear them for most of the day and remove them to eat.","You will need check-ups and retainers after treatment to help keep your teeth in place."],steps:["The dentist or orthodontist checks your teeth and bite.","Photos, scans or X-rays may be taken if needed.","You receive a plan and a series of custom trays.","You wear the trays as instructed and attend progress visits."],priceFactors:["How much tooth movement is needed","How many stages or refinements are included","Whether extra attachments or other treatment are needed"],aftercare:["Wear the trays for the hours your orthodontist advises.","Clean the trays and your teeth every day.","Wear retainers after treatment as instructed."]},
@@ -71,24 +70,16 @@ export async function TreatmentMedia({name,slug}:{name:string;slug:string}) {
 
 export async function TreatmentReviews({name,slug}:{name:string;slug:string}) {
  const reviews=await getApprovedReviews();
- const settings=await getSiteSettings();
- const googleUrl=settings.googleReviewsUrl||googleReviews;
  return <section className="patient-reviews"><div className="wrap">
-  <div className="patient-section-heading"><span>PUBLIC PATIENT FEEDBACK</span><h2>What patients say about the clinic.</h2><p>Every approved clinic review is shown here. Reviews are not assigned to individual treatments.</p></div>
-  <div className="review-panel review-panel-clinic-wide">
-   <div className="clinic-google-copy"><span>CLINIC-WIDE GOOGLE RATING</span><h2>A 5.0 rating from local patients.</h2><p>Read patient feedback about their experience at Advance Dental Concepts.</p><a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read Google reviews <ArrowUpRight size={15}/></a></div>
-   <div className="review-rating clinic-google-rating"><strong>5.0</strong><Stars rating={5}/><b>Google rating</b><small>Overall clinic feedback</small></div>
-   <ReviewList reviews={reviews as any[]} variant={slug}/>
-  </div>
+  <div className="patient-section-heading"><span>PATIENT FEEDBACK</span><h2>What patients say about the clinic.</h2><p>Reviews from people who have visited Advance Dental Concepts.</p></div>
+  <div className="review-panel review-panel-clinic-wide"><ReviewList reviews={reviews as any[]} variant={slug}/></div>
  </div></section>;
 }
 
 export async function HomeReviewSection() {
  const reviews=await getApprovedReviews();
- const settings=await getSiteSettings();
- const googleUrl=settings.googleReviewsUrl||googleReviews;
  return <section className="home-review-section" id="reviews"><div className="wrap home-review-inner">
-  <div><span>PATIENT FEEDBACK</span><h2>Patient experiences<br/>at our clinic.</h2><p>Read approved reviews shared by patients of Advance Dental Concepts.</p><a className="learn-link" href={googleUrl} target="_blank" rel="noreferrer">Read Google reviews <ArrowUpRight size={15}/></a></div>
+  <div><span>PATIENT FEEDBACK</span><h2>Patient experiences<br/>at our clinic.</h2><p>What people say about their visits to Advance Dental Concepts.</p></div>
   <div className="home-review-rating"><ReviewList reviews={reviews as any[]} variant="home"/></div>
  </div></section>;
 }
