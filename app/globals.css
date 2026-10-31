@@ -482,3 +482,7 @@ body:has(.admin-app){background:#f3f7f7}
 .shared-review-empty{grid-column:1/-1;padding:30px;background:#f0f2ed;border:1px solid #e0e7df;color:#64736b;font-size:12px}
 .shared-review-empty p{margin:0}
 @media(max-width:767px){.shared-review-list{grid-template-columns:1fr;gap:11px}.shared-review-card{padding:18px}.shared-review-card>p{font-size:13px}.shared-review-actions{padding-top:18px}}
+
+.shared-review-list{display:block;overflow:visible;max-height:none;transition:none}
+.shared-review-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;overflow:hidden;transition:max-height .48s cubic-bezier(.2,.7,.2,1),opacity .3s ease,margin-bottom .48s cubic-bezier(.2,.7,.2,1)}
+@media(max-width:767px){.shared-review-row{grid-template-columns:1fr;gap:11px}}
