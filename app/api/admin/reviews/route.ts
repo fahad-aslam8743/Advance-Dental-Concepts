@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   await ensureSchema();
   const status = request.nextUrl.searchParams.get("status") || "pending";
   const rows = status === "all"
-    ? await query("SELECT id, display_name, rating, treatment_slug, review_text, status, source, created_at FROM reviews ORDER BY created_at DESC LIMIT 1000")
+    ? await query("SELECT id, display_name, rating, treatment_slug, review_text, status, source, date_label, created_at FROM reviews ORDER BY created_at DESC LIMIT 1000")
     : await query("SELECT id, display_name, rating, treatment_slug, review_text, status, source, created_at FROM reviews WHERE status = $1 ORDER BY created_at DESC LIMIT 200", [status]);
   return NextResponse.json(rows);
 }
