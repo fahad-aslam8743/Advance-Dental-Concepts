@@ -23,9 +23,9 @@ export async function POST(request: NextRequest) {
         const isLogo = payload.kind === "logo";
         if (!isLogo && !treatmentSlugs.includes(String(payload.treatmentSlug || ""))) throw new Error("Choose a valid treatment.");
         const kind = isLogo ? "logo" : payload.kind === "video" ? "video" : "image";
-        const placement = kind === "image" && allowedPlacements.includes(String(payload.placement || "gallery") as typeof allowedPlacements[number])
-          ? String(payload.placement || "gallery")
-          : "gallery";
+        const requestedPlacement = String(payload.placement || "gallery");
+        if (requestedPlacement !== "gallery") throw new Error("Comparison artwork is fixed. Upload additional images to the gallery instead.");
+        const placement = "gallery";
         const pairNumber = Number(payload.pairNumber);
         if (placement !== "gallery" && pairNumber !== 1 && pairNumber !== 2) throw new Error("Comparison media must be assigned to pair 1 or pair 2.");
         if (placement !== "gallery" && payload.patientConsentVerified !== true) {
