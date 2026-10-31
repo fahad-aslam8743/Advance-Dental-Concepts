@@ -1,6 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { services } from "@/data/services";
-import { buildSeedTreatmentMedia } from "@/data/treatment-media";
+import { buildSeedTreatmentMedia, buildEducationalComparisonMedia } from "@/data/treatment-media";
 
 const DEFAULT_SETTINGS = {
   clinicName: "Advance Dental Concepts",
@@ -153,10 +153,12 @@ export async function getApprovedReviews(_treatmentSlug?: string) {
 export async function getTreatmentMedia(treatmentSlug: string) {
   try {
     await ensureSchema();
-    return await query(
-      "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified, created_at FROM treatment_media WHERE treatment_slug = $1 ORDER BY CASE placement WHEN 'comparison_before' THEN 1 WHEN 'comparison_after' THEN 2 ELSE 0 END, pair_number NULLS FIRST, sort_order ASC, created_at ASC",
+    const rows = await query(
+      "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified, created_at FROM treatment_media WHERE treatment_slug = $1 AND (placement = 'gallery' OR kind = 'video') ORDER BY sort_order ASC, created_at ASC",
       [treatmentSlug]
     );
+    // Fixed local SVG previews are educational artwork, not editable gallery media.
+    return [...rows, ...buildEducationalComparisonMedia(treatmentSlug)];
   } catch (error) {
     console.error("ADC treatment-media read failed", error);
     return [];
