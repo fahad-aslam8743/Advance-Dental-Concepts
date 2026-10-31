@@ -1,6 +1,7 @@
 import { neon } from "@neondatabase/serverless";
 import { services } from "@/data/services";
 import { buildSeedTreatmentMedia, buildEducationalComparisonMedia } from "@/data/treatment-media";
+import { seedClinicReviews } from "@/data/clinic-reviews";
 
 const DEFAULT_SETTINGS = {
   clinicName: "Advance Dental Concepts",
@@ -25,6 +26,23 @@ export function getSql() {
 export async function query<T = Record<string, unknown>>(text: string, params: unknown[] = []): Promise<T[]> {
   const sql = getSql();
   return await sql.query(text, params) as T[];
+}
+
+async function seedClinicReviewsOnce() {
+  const migrationKey = "adc-clinic-reviews-import-v1";
+  const applied = await query("SELECT key FROM app_migrations WHERE key = $1 LIMIT 1", [migrationKey]);
+  if (applied.length) return;
+  const payload = JSON.stringify(seedClinicReviews);
+  const inserted = await query<{id:number}>(
+    `INSERT INTO reviews (display_name, rating, treatment_slug, review_text, status, source, created_at)
+     SELECT seed_data.display_name, seed_data.rating, 'clinic-wide', seed_data.review_text, 'approved', 'clinic', NOW() - (seed_data.age_days::int * INTERVAL '1 day')
+     FROM jsonb_to_recordset($1::jsonb) AS seed_data(display_name text, rating integer, review_text text, age_days integer)
+     RETURNING id`,
+    [payload]
+  );
+  if (inserted.length !== seedClinicReviews.length) throw new Error("Clinic review import count mismatch.");
+  await query("INSERT INTO app_migrations (key) VALUES ($1) ON CONFLICT (key) DO NOTHING", [migrationKey]);
+  console.info("ADC clinic reviews imported", { count: inserted.length });
 }
 
 async function seedTreatmentMediaOnce() {
@@ -115,6 +133,7 @@ export async function ensureSchema() {
       await query("CREATE INDEX IF NOT EXISTS admin_login_attempts_ip_idx ON admin_login_attempts(ip_hash, attempted_at DESC)");
       await query("INSERT INTO site_settings (id, data) VALUES ('main', $1::jsonb) ON CONFLICT (id) DO NOTHING", [JSON.stringify(DEFAULT_SETTINGS)]);
       await seedTreatmentMediaOnce();
+      await seedClinicReviewsOnce();
 
       const admins = await query<{id:number}>("SELECT id FROM admin_users LIMIT 1");
       const email = process.env.ADMIN_EMAIL;
