@@ -89,6 +89,7 @@ export async function ensureSchema() {
         await query("INSERT INTO admin_users (email, password_hash, must_change_password) VALUES ($1, $2, TRUE) ON CONFLICT (email) DO NOTHING", [email.toLowerCase(), bootstrapHash]);
       }
     })().catch((error) => {
+      console.error("ADC schema or treatment-media seed failed", error);
       schemaPromise = null;
       throw error;
     });
@@ -125,7 +126,8 @@ export async function getTreatmentMedia(treatmentSlug: string) {
       "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified, created_at FROM treatment_media WHERE treatment_slug = $1 ORDER BY CASE placement WHEN 'comparison_before' THEN 1 WHEN 'comparison_after' THEN 2 ELSE 0 END, pair_number NULLS FIRST, sort_order ASC, created_at ASC",
       [treatmentSlug]
     );
-  } catch {
+  } catch (error) {
+    console.error("ADC treatment-media read failed", error);
     return [];
   }
 }
