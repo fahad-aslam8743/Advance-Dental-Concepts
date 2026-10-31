@@ -5,9 +5,10 @@ export default function ReviewList({ reviews, variant = "home" }: { reviews: Rev
  const [initialCount,setInitialCount]=useState(3);
  const [visibleCount,setVisibleCount]=useState(3);
  const [expanded,setExpanded]=useState(false);
+ const [isMobile,setIsMobile]=useState(true);
  useEffect(()=>{
   const media=window.matchMedia("(min-width: 768px)");
-  const update=()=>{const count=media.matches?6:3;setInitialCount(count);setVisibleCount(current=>expanded?current:count);};
+  const update=()=>{const mobile=!media.matches;const count=mobile?3:6;setIsMobile(mobile);setInitialCount(count);setVisibleCount(current=>expanded?current:count);};
   update();media.addEventListener?.("change",update);return()=>media.removeEventListener?.("change",update);
  },[expanded]);
  const ordered=useMemo(()=>{
@@ -22,7 +23,7 @@ export default function ReviewList({ reviews, variant = "home" }: { reviews: Rev
  function showLess(){setVisibleCount(initialCount);setExpanded(false);}
  if(!ordered.length)return <div className="shared-review-empty"><p>There are no approved reviews published yet.</p></div>;
  return <div className="shared-review-list-wrap">
-  <div className="shared-review-list" style={{maxHeight:(visibleCount>=ordered.length?Math.max(1,ordered.length):visibleCount)*520+"px"}} aria-live="polite">
+  <div className="shared-review-list" style={{maxHeight:(visibleCount>=ordered.length?Math.max(1,Math.ceil(ordered.length/(isMobile?1:2))):Math.ceil(visibleCount/(isMobile?1:2)))*520+"px"}} aria-live="polite">
    {ordered.map(review=><article className="shared-review-card" key={review.id}>
     <div className="shared-review-card-top"><span className="shared-review-stars" aria-label={review.rating+" out of 5 stars"}>{"★".repeat(review.rating)}{"☆".repeat(5-review.rating)}</span><small>{review.source==="google"?"GOOGLE REVIEW":"PATIENT REVIEW"}</small></div>
     <p>{review.review_text}</p>
