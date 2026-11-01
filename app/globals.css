@@ -1416,3 +1416,327 @@ a:focus-visible,button:focus-visible{outline:3px solid rgba(11,147,133,.45);outl
   .treatment-page .treatment-jump>a:nth-child(4):nth-last-child(2){grid-column:2/span 2!important}
   .treatment-page .treatment-jump>a:nth-child(5):last-child{grid-column:4/span 2!important}
 }
+
+
+/* =========================================================
+   ADVANCE DENTAL CONCEPTS — COMPLETE SOFT APPLE-INSPIRED THEME
+   A unified visual system for the public website and treatment pages.
+   ========================================================= */
+:root{
+  --ink:#172f2d;
+  --muted:#667a76;
+  --paper:#fbfcfa;
+  --cream:#f3f7f4;
+  --teal:#246b63;
+  --teal2:#39877d;
+  --line:#e0e9e4;
+  --gold:#d1a78f;
+  --soft-shadow:0 18px 55px rgba(25,61,53,.075);
+  --lift-shadow:0 26px 70px rgba(25,61,53,.13);
+}
+html{scroll-behavior:smooth;scroll-padding-top:112px}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans),-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:18px;
+  line-height:1.78;
+  letter-spacing:-.012em;
+}
+::selection{background:#cfe7dd;color:#173d37}
+.wrap{width:min(1320px,calc(100% - 80px))}
+.site-header{
+  background:rgba(251,252,250,.82);
+  border-bottom:1px solid rgba(28,68,59,.07);
+  box-shadow:0 8px 35px rgba(23,57,49,.035);
+  backdrop-filter:saturate(180%) blur(24px);
+  -webkit-backdrop-filter:saturate(180%) blur(24px);
+}
+.topline{background:#193d39;color:#e0ebe5;font-size:11px;letter-spacing:.055em}
+.nav-wrap{height:94px}
+.brand-mark{font-size:38px}
+.main-nav{gap:clamp(18px,2.2vw,34px)}
+.main-nav>a:not(.nav-cta){font-size:14px!important;font-weight:700;color:#49645e}
+.main-nav>a:not(.nav-cta):hover{color:#1b786d}
+.nav-cta,.button,.button-dark,.button-light{
+  border-radius:999px;
+  padding:17px 26px!important;
+  font-size:14px!important;
+  font-weight:800;
+  letter-spacing:-.01em;
+  box-shadow:0 5px 16px rgba(20,79,68,.08);
+}
+.nav-cta{background:#246b63}
+.hero{min-height:740px;border-radius:0 0 34px 34px}
+.hero-shade{
+  background:linear-gradient(90deg,rgba(12,39,36,.88),rgba(17,54,49,.62) 52%,rgba(17,54,49,.16)),
+  linear-gradient(0deg,rgba(12,39,36,.38),transparent 60%);
+}
+.hero h1,.treatment-hero h1{
+  font-weight:800;
+  font-size:clamp(60px,7.2vw,108px);
+  line-height:1.02;
+  letter-spacing:-.075em;
+  max-width:980px;
+}
+.hero h1 em,.treatment-hero h1 em{
+  color:#e4c6b3;
+  font-weight:600;
+}
+.hero-lede{font-size:20px;line-height:1.8;max-width:650px;color:#f0f5f2}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em}
+.hero-note{font-size:13px}
+.trust-strip{background:#f0f5f1;border-color:#e7eee9}
+.trust-grid{padding-block:32px}
+.trust-icon{border-radius:16px;background:#fff;border-color:#e2ece6;width:50px;height:50px}
+.trust-grid b{font-size:14px;font-weight:800}
+.trust-grid small{font-size:12px;color:#71827d}
+.section{padding-block:clamp(100px,10vw,154px)}
+.section-heading h2,.statement-copy h2,.guide-top h2,.pricing-inner h2,
+.faq-layout h2,.contact-copy h2,.treatment-intro h2,.treatment-options h2,
+.treatment-faq h2,.related-heading h2,.doctor-about-copy h2,
+.clinic-approach-heading h2{
+  font-family:var(--display),-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:clamp(48px,5.7vw,78px);
+  font-weight:800;
+  line-height:1.04;
+  letter-spacing:-.075em;
+}
+.section-heading h2 em,.guide-top h2 em,.faq-layout h2 em,
+.statement-copy h2 em,.treatment-intro h2 em,.treatment-options h2 em,
+.treatment-faq h2 em,.related-heading h2 em{
+  color:#397a70;
+  font-weight:600;
+}
+.section-heading{margin-bottom:clamp(48px,6vw,78px)}
+.heading-aside p,.guide-top>p,.statement-copy>p:not(.large-copy),
+.faq-intro,.contact-copy>p{font-size:16px;line-height:1.9;color:#667b75}
+.service-grid{gap:28px 24px}
+.service-card{
+  background:#fff;
+  border:1px solid #e8efea;
+  border-radius:22px;
+  box-shadow:0 7px 25px rgba(23,62,52,.045);
+  overflow:hidden;
+}
+.service-card:hover{transform:translateY(-8px);box-shadow:var(--lift-shadow)}
+.service-photo{height:250px}
+.service-photo img{transition:transform .9s cubic-bezier(.2,.75,.25,1),filter .8s}
+.service-card-copy{padding:27px 25px 29px}
+.service-card-copy>small,.related-card small{font-size:10px;letter-spacing:.18em}
+.service-card h3{font-size:23px;font-weight:800;line-height:1.2;letter-spacing:-.045em}
+.service-card p{font-size:15px;line-height:1.8;color:#6b7e78;min-height:82px}
+.learn-link{font-size:13px;font-weight:800}
+.card-arrow{border-radius:50%;width:44px;height:44px}
+.statement-section{background:linear-gradient(145deg,#eef5f0,#f5f7f3);padding-block:clamp(100px,10vw,145px)}
+.statement-grid{gap:clamp(60px,9vw,130px)}
+.statement-visual{border-radius:26px;overflow:hidden;box-shadow:var(--soft-shadow)}
+.statement-visual:before{border-radius:26px;border-color:#cdded4}
+.visual-caption{padding:34px}
+.visual-caption b{font-size:36px}
+.large-copy{font-size:25px;line-height:1.55;font-weight:600}
+.statement-copy>p:not(.large-copy){font-size:16px;line-height:1.95}
+.value-list{gap:25px}
+.value-list>div{gap:16px}
+.value-list b{font-size:15px;font-weight:800}
+.value-list small{font-size:14px;line-height:1.7}
+.guide-section{background:#fbfcfa}
+.guide-grid{gap:22px}
+.guide-card{
+  border-radius:22px;
+  padding:clamp(34px,3.5vw,48px);
+  min-height:390px;
+  background:#f0f5f1;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+}
+.guide-dark{background:linear-gradient(145deg,#173d38,#245b52);color:#fff}
+.guide-symbol{border-radius:16px;background:rgba(255,255,255,.6);border-color:#dce9e1;width:58px;height:58px}
+.guide-card h3{font-size:31px;font-weight:700;letter-spacing:-.045em}
+.guide-card p{font-size:15px;line-height:1.9;color:#687b74}
+.guide-dark p{color:#d1dfd8}
+.guide-card>a{font-size:13px;font-weight:800}
+.pricing-band{background:linear-gradient(125deg,#183f3a,#2a7166);padding-block:clamp(100px,10vw,145px)}
+.pricing-inner{gap:clamp(55px,9vw,130px)}
+.pricing-inner h2{font-size:clamp(50px,5.7vw,76px)}
+.pricing-inner>div:first-child>p{font-size:16px;line-height:1.95}
+.pricing-side{border-color:rgba(255,255,255,.24)}
+.price-feature strong{font-size:38px;font-weight:800}
+.price-feature span{font-size:14px}
+.faq-section{background:#f1f6f2}
+.faq-layout{gap:clamp(55px,9vw,130px)}
+.faq-item{border-color:#dce7e0}
+.faq-item>button{font-size:18px;font-weight:800;padding:27px 0}
+.faq-answer p{font-size:15px;line-height:1.9}
+.contact-section{background:linear-gradient(125deg,#183e39,#286b60);padding-block:clamp(100px,10vw,145px)}
+.contact-copy h2{font-size:clamp(52px,6vw,80px)}
+.contact-copy>p{font-size:16px;color:#d7e4de}
+.contact-detail b{font-size:16px}
+.contact-detail small{font-size:13px;color:#d7e4de}
+.doctor-about-photo,.doctor-about-photo>img{border-radius:26px}
+.doctor-about-copy h2{font-size:clamp(48px,5.5vw,76px)}
+.approach-card{border-radius:22px;background:#fff;border:1px solid #e6eee8;box-shadow:0 8px 28px rgba(23,62,52,.04)}
+.approach-card h3{font-size:25px;font-weight:800;letter-spacing:-.04em}
+.approach-card p{font-size:15px;line-height:1.9}
+.approach-icon{border-radius:17px;background:#eef5f0}
+.shared-review-card{border-radius:20px;border:1px solid #e6eee8;box-shadow:0 8px 28px rgba(23,62,52,.045);padding:26px}
+.shared-review-card p{font-size:15px;line-height:1.9}
+.footer{background:#173b36;color:#eff6f1}
+.footer-main p,.footer-main a{font-size:14px;line-height:1.9}
+.footer-bottom{font-size:12px}
+.button,.nav-cta,.text-link,.learn-link,.main-nav a,.treatment-jump a,
+.service-card,.guide-card,.approach-card,.option-card,.related-card,
+.shared-review-card,.card-arrow,.approach-icon{
+  transition:all .45s cubic-bezier(.2,.75,.25,1);
+}
+.button:hover,.nav-cta:hover{transform:translateY(-3px);box-shadow:0 15px 32px rgba(14,73,62,.18)}
+a:focus-visible,button:focus-visible{outline:3px solid rgba(57,135,125,.38);outline-offset:4px}
+
+/* Treatment detail pages: larger, calmer editorial layout */
+.treatment-page{background:#fbfcfa}
+.treatment-page .breadcrumbs{font-size:12px;color:#73857f;padding-block:18px}
+.treatment-page .treatment-hero{min-height:660px;border-radius:0 0 30px 30px;overflow:hidden}
+.treatment-page .treatment-hero-shade{
+  background:linear-gradient(90deg,rgba(13,43,39,.9),rgba(18,57,51,.68) 54%,rgba(18,57,51,.18)),
+  linear-gradient(0deg,rgba(13,43,39,.34),transparent 60%);
+}
+.treatment-page .treatment-hero-content{padding-block:80px}
+.treatment-page .treatment-hero h1{font-weight:800;font-size:clamp(56px,7vw,96px);letter-spacing:-.075em;max-width:950px}
+.treatment-page .treatment-hero-content>p{font-size:20px;line-height:1.85;max-width:720px}
+.treatment-page .treatment-hero-actions{gap:22px;margin-top:38px}
+.treatment-page .treatment-hero-actions>span{font-size:15px;color:#e4eee8}
+.treatment-page .treatment-jump{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:12px;
+  padding:30px 0;margin-block:0;
+}
+.treatment-page .treatment-jump>a{
+  border:1px solid #dce9e1!important;
+  border-radius:16px!important;
+  background:#f1f7f3!important;
+  color:#27675e!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  min-height:60px!important;
+  padding:16px 28px!important;
+  box-shadow:0 5px 18px rgba(29,79,65,.035);
+}
+.treatment-page .treatment-jump>a:hover{background:#e2f0e8!important;transform:translateY(-3px);box-shadow:var(--soft-shadow)}
+.treatment-page .treatment-intro{background:#eff6f1;padding-block:clamp(90px,10vw,140px)}
+.treatment-page .treatment-intro-grid{align-items:start;gap:clamp(50px,8vw,120px)}
+.treatment-page .treatment-intro h2,.treatment-page .treatment-options h2,
+.treatment-page .treatment-faq h2,.treatment-page .related-heading h2{
+  font-size:clamp(48px,5.7vw,76px);font-weight:800;line-height:1.05;
+}
+.treatment-page .treatment-intro-grid>div>p{font-size:17px;line-height:1.95;color:#526e65}
+.treatment-page .price-callout{border-radius:18px;background:#fff;border:1px solid #e3eee7;padding:24px 28px;box-shadow:var(--soft-shadow)}
+.treatment-page .price-callout b{font-size:28px;font-weight:800}
+.treatment-page .price-caveat{font-size:13px;line-height:1.8;color:#71817b}
+.treatment-page .treatment-options{padding-block:clamp(90px,10vw,140px);background:#fbfcfa}
+.treatment-page .options-intro{font-size:17px;max-width:700px;line-height:1.9;color:#657a73}
+.treatment-page .option-grid{gap:22px;margin-top:42px}
+.treatment-page .option-card{border-radius:22px;border:1px solid #e3ece6;background:#fff;padding:34px;box-shadow:0 8px 28px rgba(23,62,52,.045)}
+.treatment-page .option-card h3{font-size:27px;font-weight:800;letter-spacing:-.045em}
+.treatment-page .option-card>strong{font-size:24px;font-weight:800}
+.treatment-page .option-card p{font-size:15px;line-height:1.9}
+.treatment-page .treatment-content{background:#f3f7f4;padding-block:clamp(90px,10vw,140px)}
+.treatment-page .patient-section-heading h2{font-size:clamp(42px,5vw,68px);font-weight:800;letter-spacing:-.065em}
+.treatment-page .detail-grid{gap:18px}
+.treatment-page .detail-card{border-radius:20px;background:#fff;border:1px solid #e5eee8;padding:30px;box-shadow:0 8px 25px rgba(23,62,52,.035)}
+.treatment-page .detail-card h3{font-size:23px;font-weight:800;letter-spacing:-.035em}
+.treatment-page .detail-card p{font-size:15px;line-height:1.9;color:#687c75}
+.treatment-page .clinical-note{border-radius:18px;background:#e6f0e9;padding:24px 28px}
+.treatment-page .treatment-faq{background:#eef5f0;padding-block:clamp(90px,10vw,140px)}
+.treatment-page .treatment-faq-grid{gap:clamp(50px,8vw,120px)}
+.treatment-page .treatment-faq-grid>div:first-child>p{font-size:16px;line-height:1.9}
+.treatment-page .related-section{padding-block:clamp(85px,9vw,125px)}
+.treatment-page .related-card{border-radius:20px;border:1px solid #e5eee8;background:#fff;box-shadow:0 8px 26px rgba(23,62,52,.04)}
+.treatment-page .related-card:hover{transform:translateY(-6px);box-shadow:var(--lift-shadow)}
+.treatment-page .treatment-cta{background:linear-gradient(125deg,#173e39,#2c7166);padding-block:76px;border-radius:28px 28px 0 0}
+.treatment-page .treatment-cta h2{font-size:clamp(40px,5vw,62px);font-weight:800;letter-spacing:-.06em}
+
+/* Mobile: retain spacious type without squeezing cards or navigation */
+@media(max-width:760px){
+  body{font-size:16px;line-height:1.75}
+  .wrap{width:calc(100% - 36px)}
+  .nav-wrap{height:76px!important}
+  .hero{min-height:660px;border-radius:0 0 22px 22px}
+  .hero h1{font-size:clamp(48px,11vw,68px);line-height:1.02;font-weight:800}
+  .hero-lede{font-size:17px;line-height:1.8}
+  .section{padding-block:78px}
+  .section-heading h2,.statement-copy h2,.guide-top h2,.pricing-inner h2,
+  .faq-layout h2,.contact-copy h2,.doctor-about-copy h2,
+  .clinic-approach-heading h2{font-size:clamp(40px,9.5vw,56px);line-height:1.06}
+  .heading-aside p,.guide-top>p,.statement-copy>p:not(.large-copy),
+  .faq-intro,.contact-copy>p{font-size:14px;line-height:1.85}
+  .service-grid{gap:14px 11px}
+  .service-card{border-radius:16px}
+  .service-photo{height:clamp(135px,39vw,190px)}
+  .service-card-copy{padding:17px 13px 18px}
+  .service-card h3{font-size:17px;line-height:1.25}
+  .service-card p{font-size:12px;line-height:1.7;min-height:0}
+  .learn-link{font-size:10px}
+  .statement-section{padding-block:78px}
+  .statement-grid{gap:34px}
+  .statement-visual{border-radius:18px}
+  .large-copy{font-size:20px;line-height:1.55}
+  .guide-grid{gap:13px}
+  .guide-card{min-height:0;padding:27px;border-radius:17px}
+  .guide-card h3{font-size:25px}
+  .guide-card p{font-size:14px}
+  .pricing-band,.contact-section{padding-block:78px}
+  .pricing-inner{gap:32px}
+  .pricing-side{padding:25px 0 0}
+  .price-feature strong{font-size:29px}
+  .faq-layout,.contact-grid{gap:30px}
+  .faq-item>button{font-size:15px;padding:21px 0}
+  .faq-answer p{font-size:13px}
+  .treatment-page .treatment-hero{min-height:560px;border-radius:0 0 20px 20px}
+  .treatment-page .treatment-hero-content{padding:52px 0!important}
+  .treatment-page .treatment-hero h1{font-size:clamp(43px,10vw,62px)!important;line-height:1.04}
+  .treatment-page .treatment-hero-content>p{font-size:16px;line-height:1.8}
+  .treatment-page .treatment-hero-actions{align-items:flex-start;flex-direction:column;gap:16px}
+  .treatment-page .treatment-jump{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:9px!important;
+    width:calc(100% - 28px)!important;
+    padding:20px 0!important;
+    margin-inline:auto!important;
+  }
+  .treatment-page .treatment-jump>a{
+    display:flex!important;align-items:center;justify-content:center;
+    width:100%!important;min-width:0!important;min-height:54px!important;
+    height:auto!important;padding:8px 4px!important;margin:0!important;
+    border-radius:13px!important;font-size:11px!important;line-height:1.25!important;
+    text-align:center;white-space:normal;overflow-wrap:anywhere;
+  }
+  .treatment-page .treatment-intro,.treatment-page .treatment-options,
+  .treatment-page .treatment-content,.treatment-page .treatment-faq{padding-block:76px}
+  .treatment-page .treatment-intro h2,.treatment-page .treatment-options h2,
+  .treatment-page .treatment-faq h2,.treatment-page .related-heading h2{
+    font-size:clamp(39px,9vw,54px)!important;line-height:1.06
+  }
+  .treatment-page .treatment-intro-grid,.treatment-page .treatment-faq-grid{gap:28px}
+  .treatment-page .treatment-intro-grid>div>p,.treatment-page .options-intro{font-size:15px;line-height:1.85}
+  .treatment-page .price-callout{padding:20px;border-radius:15px}
+  .treatment-page .price-callout b{font-size:23px}
+  .treatment-page .option-grid{gap:13px;margin-top:28px}
+  .treatment-page .option-card{padding:24px;border-radius:17px}
+  .treatment-page .option-card h3{font-size:21px}
+  .treatment-page .option-card p,.treatment-page .detail-card p{font-size:14px}
+  .treatment-page .detail-grid{gap:12px}
+  .treatment-page .detail-card{padding:23px;border-radius:16px}
+  .treatment-page .detail-card h3{font-size:19px}
+  .treatment-page .clinical-note{padding:19px;border-radius:15px}
+  .treatment-page .related-card{border-radius:15px}
+  .treatment-page .treatment-cta{padding-block:55px;border-radius:20px 20px 0 0}
+}
+@media(max-width:390px){
+  .wrap{width:calc(100% - 30px)}
+  .service-card-copy{padding:14px 10px}
+  .service-card h3{font-size:15px}
+  .treatment-page .treatment-jump{gap:7px!important}
+  .treatment-page .treatment-jump>a{font-size:10px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
