@@ -1740,3 +1740,45 @@ a:focus-visible,button:focus-visible{outline:3px solid rgba(57,135,125,.38);outl
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+/* Mobile treatment/service navigation: compact single-row horizontal scroller */
+@media(max-width:760px){
+  .treatment-page .treatment-jump,
+  .treatment-jump{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:7px!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:10px 14px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    white-space:nowrap!important;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none!important;
+    -ms-overflow-style:none!important;
+    overscroll-behavior-x:contain;
+  }
+  .treatment-page .treatment-jump::-webkit-scrollbar,
+  .treatment-jump::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
+  .treatment-page .treatment-jump>a,
+  .treatment-jump>a{
+    display:inline-flex!important;
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    min-height:36px!important;
+    height:36px!important;
+    margin:0!important;
+    padding:7px 13px!important;
+    border-radius:999px!important;
+    font-size:11px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+  }
+}
