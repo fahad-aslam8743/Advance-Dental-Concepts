@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleUpload } from "@vercel/blob/client";
-import { del } from "@vercel/blob";
 import { getAdminSession } from "@/lib/admin-auth";
 import { ensureSchema, query, treatmentSlugs } from "@/lib/db";
 
