@@ -309,20 +309,20 @@ export default function AdminPage() {
         <p style={{fontSize:11,color:"#829087",lineHeight:1.6,marginBottom:0}}>Images: up to 15 MB. Videos: up to 100 MB. New uploads are added to the gallery; they do not replace existing photos.</p></div>
         <div style={cardStyle}>
           <h2 style={{fontSize:17,margin:"0 0 6px"}}>Before &amp; after comparison images</h2>
-          <p style={{fontSize:12,color:"#728078",lineHeight:1.7,marginTop:0}}>Choose the treatment and comparison pair, then upload the BEFORE and AFTER photographs separately. Uploading a new image replaces only that side of the selected pair. Only use real patient photographs when written consent for website publication is confirmed.</p>
+          <p style={{fontSize:12,color:"#728078",lineHeight:1.7,marginTop:0}}>Choose the treatment and comparison slot, then upload one combined mockup image containing both BEFORE and AFTER. A new upload replaces the complete mockup in that slot. Only use real patient photographs when written consent for website publication is confirmed.</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,alignItems:"end"}}>
             <label style={labelStyle}>Service page<select style={inputStyle} value={mediaTreatment} onChange={e=>setMediaTreatment(e.target.value)}>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
             <label style={labelStyle}>Comparison pair<select style={inputStyle} value={comparisonPair} onChange={e=>setComparisonPair(e.target.value)}><option value="1">Comparison 1</option><option value="2">Comparison 2</option></select></label>
             <label style={labelStyle}>Upload combined before &amp; after mockup<input style={inputStyle} type="file" accept="image/jpeg,image/png,image/webp,image/avif" disabled={busy||!patientConsentVerified} onChange={uploadComparison}/></label>
           </div>
           <label style={{display:"flex",alignItems:"flex-start",gap:9,fontSize:12,color:"#52645c",lineHeight:1.6,marginTop:14}}><input type="checkbox" checked={patientConsentVerified} onChange={e=>setPatientConsentVerified(e.target.checked)} style={{marginTop:3}}/>I confirm the clinic has obtained the patient's written permission to publish these photographs as a before-and-after comparison.</label>
-          <p style={{fontSize:11,color:"#829087",marginBottom:0}}>Comparison images are stored as a matched pair by treatment and pair number. Images are not uploaded until consent is confirmed.</p>
+          <p style={{fontSize:11,color:"#829087",marginBottom:0}}>One uploaded image contains both sides of the comparison. Images are not uploaded until consent is confirmed.</p>
         </div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}><b>{treatmentName(mediaTreatment)} · {mediaForTreatment.length} gallery items · {comparisonsForTreatment.length} comparison images</b><span style={{fontSize:11,color:"#829087"}}>Changes appear on the matching treatment page.</span></div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:14}}>{mediaForTreatment.length===0?<div style={cardStyle}>No media found for this treatment.</div>:mediaForTreatment.map(item=><article key={item.id} style={cardStyle}>
           <div style={{height:155,background:"#edf2ed",borderRadius:10,overflow:"hidden",display:"grid",placeItems:"center"}}>{item.kind==="video"?<video src={item.url} controls style={{width:"100%",height:"100%",objectFit:"contain"}}/>:<img src={item.url} alt={item.alt_text} style={{width:"100%",height:"100%",objectFit:"cover"}}/>}</div>
           <b style={{display:"block",marginTop:12}}>{treatmentName(item.treatment_slug)}</b>
-          <small style={{display:"block",color:"#52645c",marginTop:5}}>{item.placement==="gallery"?"Gallery image":item.placement==="comparison_before"?"Comparison condition / before · Pair "+item.pair_number:"Comparison care concept / after · Pair "+item.pair_number}</small>
+          <small style={{display:"block",color:"#52645c",marginTop:5}}>{item.placement==="gallery"?"Gallery image":item.placement==="comparison"?"Combined before and after mockup · Slot "+item.pair_number:item.placement+" · Slot "+item.pair_number}</small>
           <small style={{display:"block",color:"#829087",marginTop:5}}>{item.kind} · {item.is_illustrative?"Educational illustration":item.patient_consent_verified?"Consent confirmed":"Stock / clinic media"} · {item.alt_text}</small>
           <div style={{display:"flex",gap:8,marginTop:12,flexWrap:"wrap"}}><button onClick={()=>editMedia(item)} style={buttonStyle}>Edit details</button><button onClick={()=>deleteMedia(item.id)} style={{...buttonStyle,background:"#8e4545"}}>Delete</button></div>
         </article>)}</div>
@@ -330,7 +330,7 @@ export default function AdminPage() {
           <h2 style={{fontSize:17,marginTop:0}}>Before &amp; after images for {treatmentName(mediaTreatment)}</h2>
           {comparisonsForTreatment.length===0?<p style={{fontSize:12,color:"#829087"}}>No comparison images have been uploaded for this service yet.</p>:<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:12}}>{comparisonsForTreatment.map(item=><article key={item.id} style={{border:"1px solid #e2e9e2",borderRadius:12,padding:12}}>
             <img src={item.url} alt={item.alt_text||"Treatment comparison"} style={{width:"100%",height:150,objectFit:"cover",borderRadius:8,background:"#edf2ed"}}/>
-            <b style={{display:"block",marginTop:8}}>{item.placement==="comparison_before"?"BEFORE":"AFTER"} · Pair {item.pair_number}</b>
+            <b style={{display:"block",marginTop:8}}>BEFORE AND AFTER · Slot {item.pair_number}</b>
             <small style={{color:"#829087"}}>{item.patient_consent_verified?"Written consent confirmed":"Consent not confirmed"}</small>
             <button onClick={()=>deleteMedia(item.id)} style={{...buttonStyle,background:"#8e4545",marginTop:10}}>Delete image</button>
           </article>)}</div>}
