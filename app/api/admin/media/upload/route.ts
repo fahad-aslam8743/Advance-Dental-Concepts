@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
                 try { await del(item.url); } catch (error) { console.warn("Could not remove replaced media blob", error); }
               }
             }
-            await query("DELETE FROM treatment_media WHERE treatment_slug=$1 AND placement=$2 AND pair_number=$3", [payload.treatmentSlug, placement, pairNumber]);
+            await query("DELETE FROM treatment_media WHERE treatment_slug=$1 AND pair_number=$2 AND placement <> $3", [payload.treatmentSlug, pairNumber, "gallery"]);
           }
           await query(
             "INSERT INTO treatment_media (treatment_slug, kind, url, pathname, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified) VALUES ($1,$2,$3,$4,$5,$6,$7,100,FALSE,$8)",
