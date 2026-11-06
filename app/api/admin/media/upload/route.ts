@@ -6,7 +6,7 @@ import { ensureSchema, query, treatmentSlugs } from "@/lib/db";
 
 export const runtime = "nodejs";
 
-const allowedPlacements = ["gallery", "comparison_before", "comparison_after"] as const;
+const allowedPlacements = ["gallery", "comparison"] as const;
 
 export async function POST(request: NextRequest) {
   const session = await getAdminSession();
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
         if (!allowedPlacements.includes(requestedPlacement as typeof allowedPlacements[number])) throw new Error("Choose a valid media placement.");
         const placement = requestedPlacement;
         const pairNumber = Number(payload.pairNumber);
-        if (placement !== "gallery" && (pairNumber !== 1 && pairNumber !== 2 || kind !== "image")) throw new Error("Comparison images must be assigned to pair 1 or pair 2.");
+        if (placement !== "gallery" && (pairNumber !== 1 && pairNumber !== 2 || kind !== "image")) throw new Error("Combined mockups must be assigned to slot 1 or 2.");
         if (placement !== "gallery" && payload.patientConsentVerified !== true) {
           throw new Error("Before/after patient images require confirmed written patient consent. Use the educational illustrations until consent is confirmed.");
         }
@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
           const pairNumber = payload.pairNumber ?? null;
           if (placement !== "gallery") {
             const previous = await query<{id:number;url:string}>(
-              "SELECT id, url FROM treatment_media WHERE treatment_slug=$1 AND placement=$2 AND pair_number=$3",
-              [payload.treatmentSlug, placement, pairNumber]
+              "SELECT id, url FROM treatment_media WHERE treatment_slug=$1 AND pair_number=$2 AND placement IN ('comparison','comparison_before','comparison_after')",
+              [payload.treatmentSlug, pairNumber]
             );
             for (const item of previous) {
               if (item.url.includes(".blob.vercel-storage.com/")) {
