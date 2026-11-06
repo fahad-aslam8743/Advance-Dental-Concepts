@@ -53,24 +53,10 @@ export async function POST(request: NextRequest) {
           const settingKey = payload.kind === "logo" ? "logoUrl" : "heroImageUrl";
           await query("UPDATE site_settings SET data = jsonb_set(data, ARRAY[$1]::text[], to_jsonb($2::text), TRUE), updated_at = NOW() WHERE id = 'main'", [settingKey, blob.url]);
         } else {
-          const placement = payload.placement || "gallery";
-          const pairNumber = payload.pairNumber ?? null;
-          if (placement !== "gallery") {
-            const previous = await query<{id:number;url:string}>(
-              "SELECT id, url FROM treatment_media WHERE treatment_slug=$1 AND pair_number=$2 AND placement IN ('comparison','comparison_before','comparison_after')",
-              [payload.treatmentSlug, pairNumber]
-            );
-            for (const item of previous) {
-              if (item.url.includes(".blob.vercel-storage.com/")) {
-                try { await del(item.url); } catch (error) { console.warn("Could not remove replaced media blob", error); }
-              }
-            }
-            await query("DELETE FROM treatment_media WHERE treatment_slug=$1 AND pair_number=$2 AND placement <> $3", [payload.treatmentSlug, pairNumber, "gallery"]);
-          }
-          await query(
-            "INSERT INTO treatment_media (treatment_slug, kind, url, pathname, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified) VALUES ($1,$2,$3,$4,$5,$6,$7,100,FALSE,$8)",
-            [payload.treatmentSlug, payload.kind, blob.url, blob.pathname, payload.altText || "", placement, pairNumber, Boolean(payload.patientConsentVerified)]
-          );
+          // Treatment media is registered synchronously by the authenticated admin
+          // after upload() returns. This callback intentionally does not write a
+          // second database row, avoiding races and duplicate/missing UI records.
+          console.info("Treatment media upload completed", { pathname: blob.pathname });
         }
       }
     });
