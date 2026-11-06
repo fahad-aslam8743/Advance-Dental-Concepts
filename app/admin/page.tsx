@@ -177,7 +177,7 @@ export default function AdminPage() {
     finally { setBusy(false); event.target.value=""; }
   }
 
-  async function uploadComparison(event:React.ChangeEvent<HTMLInputElement>,placement:"comparison_before"|"comparison_after") {
+  async function uploadComparison(event:React.ChangeEvent<HTMLInputElement>) {
     const file=event.target.files?.[0]; if(!file)return;
     if(!patientConsentVerified){setError("Confirm written patient consent before uploading clinical before-and-after photographs.");event.target.value="";return;}
     setBusy(true); setError(""); setMessage("");
@@ -186,11 +186,11 @@ export default function AdminPage() {
         access:"public",handleUploadUrl:"/api/admin/media/upload",
         clientPayload:JSON.stringify({
           treatmentSlug:mediaTreatment,kind:"image",altText:"",
-          placement,pairNumber:Number(comparisonPair),patientConsentVerified:true
+          placement:"comparison",pairNumber:Number(comparisonPair),patientConsentVerified:true
         })
       });
       await refresh();
-      setMessage((placement==="comparison_before"?"Before":"After")+" image uploaded for "+treatmentName(mediaTreatment)+", comparison pair "+comparisonPair+".");
+      setMessage("Combined before-and-after mockup uploaded for "+treatmentName(mediaTreatment)+", comparison "+comparisonPair+".");
     } catch(e) { setError(e instanceof Error ? e.message : "Comparison image upload failed"); }
     finally { setBusy(false); event.target.value=""; }
   }
