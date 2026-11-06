@@ -40,6 +40,10 @@ export default function AdminPage() {
   const [manualVerified,setManualVerified] = useState(false);
   const [mediaTreatment,setMediaTreatment] = useState(services[0].slug);
   const [mediaKind,setMediaKind] = useState("image");
+  const [galleryFile,setGalleryFile] = useState<File|null>(null);
+  const [comparisonFile,setComparisonFile] = useState<File|null>(null);
+  const [galleryInputKey,setGalleryInputKey] = useState(0);
+  const [comparisonInputKey,setComparisonInputKey] = useState(0);
   const [comparisonPair,setComparisonPair] = useState("1");
   const [patientConsentVerified,setPatientConsentVerified] = useState(false);
   const [lastUpdated,setLastUpdated] = useState<Date|null>(null);
@@ -66,6 +70,12 @@ export default function AdminPage() {
     const timer=window.setInterval(()=>refresh().catch(e=>setError(e.message)),30000);
     return ()=>window.clearInterval(timer);
   }, [reviewStatus,authenticated,mustChange]);
+
+  useEffect(() => {
+    if(!message) return;
+    const timer=window.setTimeout(()=>setMessage(""),3500);
+    return ()=>window.clearTimeout(timer);
+  }, [message]);
 
   async function login(event:React.FormEvent) {
     event.preventDefault(); setBusy(true); setError("");
@@ -157,11 +167,11 @@ export default function AdminPage() {
     } catch(e) { setError(e instanceof Error ? e.message : "Could not add review"); }
   }
 
-  async function uploadMedia(event:React.ChangeEvent<HTMLInputElement>) {
-    const file=event.target.files?.[0]; if(!file)return;
+  async function uploadMedia() {
+    if(!galleryFile)return;
     setBusy(true); setError(""); setMessage("");
     try {
-      const result=await upload(file.name,file,{
+      const result=await upload(galleryFile.name,galleryFile,{
         access:"public", handleUploadUrl:"/api/admin/media/upload",
         clientPayload:JSON.stringify({
           treatmentSlug:mediaTreatment,
@@ -172,17 +182,20 @@ export default function AdminPage() {
           patientConsentVerified:false
         })
       });
-      await refresh(); setMessage("Media uploaded: "+result.pathname);
+      await refresh();
+      setGalleryFile(null);
+      setGalleryInputKey(key=>key+1);
+      setMessage((mediaKind==="video"?"Video":"Photo")+" uploaded successfully.");
     } catch(e) { setError(e instanceof Error ? e.message : "Upload failed"); }
-    finally { setBusy(false); event.target.value=""; }
+    finally { setBusy(false); }
   }
 
-  async function uploadComparison(event:React.ChangeEvent<HTMLInputElement>) {
-    const file=event.target.files?.[0]; if(!file)return;
-    if(!patientConsentVerified){setError("Confirm written patient consent before uploading clinical before-and-after photographs.");event.target.value="";return;}
+  async function uploadComparison() {
+    if(!comparisonFile)return;
+    if(!patientConsentVerified){setError("Confirm written patient consent before uploading clinical before-and-after photographs.");return;}
     setBusy(true); setError(""); setMessage("");
     try {
-      const result=await upload(file.name,file,{
+      await upload(comparisonFile.name,comparisonFile,{
         access:"public",handleUploadUrl:"/api/admin/media/upload",
         clientPayload:JSON.stringify({
           treatmentSlug:mediaTreatment,kind:"image",altText:"",
@@ -190,9 +203,12 @@ export default function AdminPage() {
         })
       });
       await refresh();
-      setMessage("Combined before-and-after mockup uploaded for "+treatmentName(mediaTreatment)+", comparison "+comparisonPair+".");
+      setComparisonFile(null);
+      setComparisonInputKey(key=>key+1);
+      setPatientConsentVerified(false);
+      setMessage("Before-and-after mockup saved successfully.");
     } catch(e) { setError(e instanceof Error ? e.message : "Comparison image upload failed"); }
-    finally { setBusy(false); event.target.value=""; }
+    finally { setBusy(false); }
   }
 
   function editMedia(item:Media) {
@@ -267,7 +283,7 @@ export default function AdminPage() {
     <div style={{maxWidth:1250,margin:"auto",padding:24}}>
       <nav style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:24}}>{tabs.map(([id,label])=><button key={id} onClick={()=>setTab(id)} style={{...buttonStyle,background:tab===id?"#173936":"#fff",color:tab===id?"#fff":"#34574e",border:"1px solid #dce5dc"}}>{label}</button>)}</nav>
       {error&&<div style={{...cardStyle,color:"#b42318",marginBottom:15}}>{error}</div>}
-      {message&&<div style={{...cardStyle,color:"#256344",marginBottom:15}}>{message}</div>}
+      {message&&<div role="status" aria-live="polite" style={{position:"fixed",right:20,bottom:20,zIndex:1000,maxWidth:"min(420px,calc(100vw - 40px))",background:"#183b39",color:"#fff",padding:"14px 18px",borderRadius:12,boxShadow:"0 12px 32px rgba(0,0,0,.2)",fontSize:13,fontWeight:700}}><span style={{marginRight:9}}>✓</span>{message}</div>}
 
       {tab==="overview"&&<section style={{display:"grid",gap:18}}>
         <div><h1 style={{fontSize:30,margin:"0 0 5px"}}>Good day</h1><p style={{color:"#728078",margin:0}}>Reviews, media and anonymous page-view counts come from your database. The overview refreshes every 30 seconds.</p><small style={{color:"#829087"}}>Last refreshed: {lastUpdated?lastUpdated.toLocaleTimeString():"Loading…"}</small><button onClick={()=>refresh().catch(e=>setError(e.message))} style={{...buttonStyle,marginTop:10}}>Refresh overview</button></div>
@@ -304,19 +320,19 @@ export default function AdminPage() {
         <div style={cardStyle}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,alignItems:"end"}}>
           <label style={labelStyle}>Treatment<select style={inputStyle} value={mediaTreatment} onChange={e=>setMediaTreatment(e.target.value)}>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
           <label style={labelStyle}>Media type<select style={inputStyle} value={mediaKind} onChange={e=>setMediaKind(e.target.value)}><option value="image">Photo</option><option value="video">Video</option></select></label>
-          <label style={labelStyle}>Choose file<input style={inputStyle} type="file" accept={mediaKind==="video"?"video/mp4,video/webm,video/quicktime":"image/jpeg,image/png,image/webp,image/avif"} onChange={uploadMedia} disabled={busy}/></label>
+          <label style={labelStyle}>Choose file<input key={galleryInputKey} style={inputStyle} type="file" accept={mediaKind==="video"?"video/mp4,video/webm,video/quicktime":"image/jpeg,image/png,image/webp,image/avif"} onChange={e=>setGalleryFile(e.target.files?.[0]||null)} disabled={busy}/></label>
         </div>
-        <p style={{fontSize:11,color:"#829087",lineHeight:1.6,marginBottom:0}}>Images: up to 15 MB. Videos: up to 100 MB. New uploads are added to the gallery; they do not replace existing photos.</p></div>
+        <p style={{fontSize:11,color:"#829087",lineHeight:1.6,marginBottom:0}}>Images: up to 15 MB. Videos: up to 100 MB. New uploads are added to the gallery; they do not replace existing photos.</p><div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap",marginTop:14}}>{galleryFile&&<span style={{fontSize:12,color:"#52645c"}}>Selected: {galleryFile.name}</span>}<button type="button" style={{...buttonStyle,opacity:busy||!galleryFile?0.55:1}} disabled={busy||!galleryFile} onClick={uploadMedia}>{busy?"Saving...":"Save gallery media"}</button></div></div>
         <div style={cardStyle}>
           <h2 style={{fontSize:17,margin:"0 0 6px"}}>Before &amp; after comparison images</h2>
           <p style={{fontSize:12,color:"#728078",lineHeight:1.7,marginTop:0}}>Choose the treatment and comparison slot, then upload one combined mockup image containing both BEFORE and AFTER. A new upload replaces the complete mockup in that slot. Only use real patient photographs when written consent for website publication is confirmed.</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,alignItems:"end"}}>
             <label style={labelStyle}>Service page<select style={inputStyle} value={mediaTreatment} onChange={e=>setMediaTreatment(e.target.value)}>{services.map(s=><option key={s.slug} value={s.slug}>{s.name}</option>)}</select></label>
             <label style={labelStyle}>Comparison pair<select style={inputStyle} value={comparisonPair} onChange={e=>setComparisonPair(e.target.value)}><option value="1">Comparison 1</option><option value="2">Comparison 2</option></select></label>
-            <label style={labelStyle}>Upload combined before &amp; after mockup<input style={inputStyle} type="file" accept="image/jpeg,image/png,image/webp,image/avif" disabled={busy||!patientConsentVerified} onChange={uploadComparison}/></label>
+            <label style={labelStyle}>Choose combined before &amp; after mockup<input key={comparisonInputKey} style={inputStyle} type="file" accept="image/jpeg,image/png,image/webp,image/avif" disabled={busy} onChange={e=>setComparisonFile(e.target.files?.[0]||null)}/></label>
           </div>
           <label style={{display:"flex",alignItems:"flex-start",gap:9,fontSize:12,color:"#52645c",lineHeight:1.6,marginTop:14}}><input type="checkbox" checked={patientConsentVerified} onChange={e=>setPatientConsentVerified(e.target.checked)} style={{marginTop:3}}/>I confirm the clinic has obtained the patient's written permission to publish these photographs as a before-and-after comparison.</label>
-          <p style={{fontSize:11,color:"#829087",marginBottom:0}}>One uploaded image contains both sides of the comparison. Images are not uploaded until consent is confirmed.</p>
+          <p style={{fontSize:11,color:"#829087",marginBottom:0}}>One uploaded image contains both sides of the comparison. Images are not uploaded until consent is confirmed.</p><div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap",marginTop:14}}>{comparisonFile&&<span style={{fontSize:12,color:"#52645c"}}>Selected: {comparisonFile.name}</span>}<button type="button" style={{...buttonStyle,opacity:busy||!comparisonFile||!patientConsentVerified?0.55:1}} disabled={busy||!comparisonFile||!patientConsentVerified} onClick={uploadComparison}>{busy?"Saving...":"Save before &amp; after mockup"}</button></div>
         </div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}><b>{treatmentName(mediaTreatment)} · {mediaForTreatment.length} gallery items · {comparisonsForTreatment.length} comparison images</b><span style={{fontSize:11,color:"#829087"}}>Changes appear on the matching treatment page.</span></div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:14}}>{mediaForTreatment.length===0?<div style={cardStyle}>No media found for this treatment.</div>:mediaForTreatment.map(item=><article key={item.id} style={cardStyle}>
