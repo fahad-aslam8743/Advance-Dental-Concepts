@@ -182,6 +182,10 @@ export default function AdminPage() {
           patientConsentVerified:false
         })
       });
+      await api("/api/admin/media/register",{method:"POST",body:JSON.stringify({
+        url:result.url, pathname:result.pathname, treatmentSlug:mediaTreatment,
+        kind:mediaKind, placement:"gallery", altText:""
+      })});
       await refresh();
       setGalleryFile(null);
       setGalleryInputKey(key=>key+1);
@@ -195,13 +199,18 @@ export default function AdminPage() {
     if(!patientConsentVerified){setError("Confirm written patient consent before uploading clinical before-and-after photographs.");return;}
     setBusy(true); setError(""); setMessage("");
     try {
-      await upload(comparisonFile.name,comparisonFile,{
+      const result=await upload(comparisonFile.name,comparisonFile,{
         access:"public",handleUploadUrl:"/api/admin/media/upload",
         clientPayload:JSON.stringify({
           treatmentSlug:mediaTreatment,kind:"image",altText:"",
           placement:"comparison",pairNumber:Number(comparisonPair),patientConsentVerified:true
         })
       });
+      await api("/api/admin/media/register",{method:"POST",body:JSON.stringify({
+        url:result.url, pathname:result.pathname, treatmentSlug:mediaTreatment,
+        kind:"image", placement:"comparison", pairNumber:Number(comparisonPair),
+        patientConsentVerified:true, altText:""
+      })});
       await refresh();
       setComparisonFile(null);
       setComparisonInputKey(key=>key+1);
