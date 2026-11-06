@@ -6,14 +6,14 @@ import { ensureSchema, query, treatmentSlugs } from "@/lib/db";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const placements = ["gallery", "comparison_before", "comparison_after"] as const;
+const placements = ["gallery", "comparison"] as const;
 
 export async function GET() {
   const session = await getAdminSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await ensureSchema();
   return NextResponse.json(await query(
-    "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified, created_at FROM treatment_media WHERE placement IN ('gallery','comparison_before','comparison_after') ORDER BY treatment_slug, placement, pair_number, sort_order ASC, created_at DESC"
+    "SELECT id, treatment_slug, kind, url, alt_text, placement, pair_number, sort_order, is_illustrative, patient_consent_verified, created_at FROM treatment_media WHERE placement IN ('gallery','comparison','comparison_before','comparison_after') ORDER BY treatment_slug, placement, pair_number, sort_order ASC, created_at DESC"
   ));
 }
 
@@ -35,7 +35,7 @@ export async function PATCH(request: NextRequest) {
     const current = await query<{kind:string;treatment_slug:string;placement:string}>("SELECT kind, treatment_slug, placement FROM treatment_media WHERE id=$1", [id]);
     if (!current[0]) return NextResponse.json({ error: "Media item not found." }, { status: 404 });
     if (!treatmentSlugs.includes(current[0].treatment_slug)) return NextResponse.json({ error: "The media item is not linked to a valid treatment." }, { status: 400 });
-    if (current[0].placement !== "gallery" && !["comparison_before","comparison_after"].includes(current[0].placement)) return NextResponse.json({ error: "Unsupported media placement." }, { status: 400 });
+    if (current[0].placement !== "gallery" && !["comparison","comparison_before","comparison_after"].includes(current[0].placement)) return NextResponse.json({ error: "Unsupported media placement." }, { status: 400 });
     if (current[0].kind === "video" && placement !== "gallery") {
       return NextResponse.json({ error: "Videos can only be placed in the treatment gallery." }, { status: 400 });
     }
